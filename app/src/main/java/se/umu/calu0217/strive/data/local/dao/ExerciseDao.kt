@@ -6,23 +6,41 @@ import se.umu.calu0217.strive.data.local.entities.*
 
 @Dao
 interface ExerciseDao {
-    @Query("SELECT * FROM exercises")
+    @Query("SELECT * FROM exercises ORDER BY name COLLATE NOCASE ASC")
     fun getAllExercises(): Flow<List<ExerciseEntity>>
 
     @Query("SELECT * FROM exercises WHERE id = :id")
     suspend fun getExerciseById(id: Long): ExerciseEntity?
 
-    @Query("SELECT * FROM exercises WHERE name LIKE '%' || :query || '%' OR equipment LIKE '%' || :query || '%'")
+    @Query("SELECT * FROM exercises WHERE name LIKE '%' || :query || '%' OR equipment LIKE '%' || :query || '%' ORDER BY name COLLATE NOCASE ASC")
     fun searchExercises(query: String): Flow<List<ExerciseEntity>>
 
-    @Query("SELECT * FROM exercises WHERE bodyParts LIKE '%' || :bodyPart || '%'")
+    @Query("SELECT * FROM exercises WHERE bodyParts LIKE '%' || :bodyPart || '%' ORDER BY name COLLATE NOCASE ASC")
     fun getExercisesByBodyPart(bodyPart: String): Flow<List<ExerciseEntity>>
+
+    @Query("SELECT COUNT(*) FROM exercises")
+    suspend fun countExercises(): Int
+
+    @Query("SELECT COUNT(*) FROM exercises WHERE imageUrl IS NULL OR imageUrl = ''")
+    suspend fun countExercisesMissingImage(): Int
+
+    @Query("SELECT * FROM exercises WHERE imageUrl IS NULL OR imageUrl = ''")
+    suspend fun getExercisesMissingImages(): List<ExerciseEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercises(exercises: List<ExerciseEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercise(exercise: ExerciseEntity): Long
+
+    @Update
+    suspend fun updateExercise(exercise: ExerciseEntity)
+
+    @Query("DELETE FROM exercises")
+    suspend fun deleteAllExercises()
+
+    @Query("SELECT * FROM exercises")
+    suspend fun getAllExercisesOnce(): List<ExerciseEntity>
 }
 
 @Dao
