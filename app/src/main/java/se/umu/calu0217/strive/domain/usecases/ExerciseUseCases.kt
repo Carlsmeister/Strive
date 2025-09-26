@@ -40,3 +40,19 @@ class SeedExercisesUseCase @Inject constructor(
         exerciseRepository.seedExercises()
     }
 }
+
+class BackfillMissingExerciseImagesUseCase @Inject constructor(
+    private val exerciseRepository: ExerciseRepository
+) {
+    suspend operator fun invoke() {
+        exerciseRepository.backfillMissingExerciseImages()
+    }
+}
+
+class ForceRefreshExercisesUseCase @Inject constructor(
+    private val exerciseRepository: ExerciseRepository
+) {
+    suspend operator fun invoke() {
+        exerciseRepository.forceRefreshExercises()
+    }
+}

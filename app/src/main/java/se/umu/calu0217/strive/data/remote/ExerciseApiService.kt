@@ -17,6 +17,9 @@ interface ExerciseApiService {
         @Path("bodyPart") bodyPart: String,
         @Query("limit") limit: Int = 50
     ): List<ExerciseDto>
+
+    @GET("exercises/bodyPartList")
+    suspend fun getBodyPartList(): List<String>
 }
 
 @Serializable
@@ -25,7 +28,12 @@ data class ExerciseDto(
     val name: String,
     val bodyPart: String,
     val equipment: String,
-    val gifUrl: String,
+    val gifUrl: String? = null,
+    val images: List<String> = emptyList(),
     val target: String,
-    val instructions: List<String>
+    val secondaryMuscles: List<String> = emptyList(),
+    val difficulty: String? = null,
+    val category: String? = null,
+    val description: String? = null,
+    val instructions: List<String> = emptyList()
 )

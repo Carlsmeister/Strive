@@ -9,6 +9,8 @@ interface ExerciseRepository {
     fun searchExercises(query: String): Flow<List<Exercise>>
     fun getExercisesByBodyPart(bodyPart: String): Flow<List<Exercise>>
     suspend fun seedExercises()
+    suspend fun backfillMissingExerciseImages()
+    suspend fun forceRefreshExercises()
 }
 
 interface WorkoutRepository {
@@ -17,6 +19,7 @@ interface WorkoutRepository {
     suspend fun insertTemplate(template: WorkoutTemplate): Long
     suspend fun updateTemplate(template: WorkoutTemplate)
     suspend fun deleteTemplate(template: WorkoutTemplate)
+    suspend fun addExerciseToTemplate(templateId: Long, templateExercise: TemplateExercise)
 
     suspend fun startWorkout(templateId: Long): Long
     suspend fun getActiveWorkoutSession(): WorkoutSession?
