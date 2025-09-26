@@ -1,6 +1,9 @@
 package se.umu.calu0217.strive.ui
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.FitnessCenter
@@ -10,8 +13,12 @@ import androidx.compose.material.icons.outlined.RunCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -19,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.ui.screens.explore.ExploreScreen
 import se.umu.calu0217.strive.ui.screens.history.HistoryScreen
 import se.umu.calu0217.strive.ui.screens.profile.ProfileScreen
@@ -41,7 +49,22 @@ fun StriveApp() {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("STRIVE", fontWeight = FontWeight.Bold) }
+                title = {
+                    // Option 1: Logo with text (current version)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo_with_no_bg),
+                            contentDescription = "Strive Logo",
+                            modifier = Modifier.size(40.dp),
+                        )
+                        Text(
+                            "TRIVE",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
