@@ -87,6 +87,18 @@ class WorkoutRepositoryImpl @Inject constructor(
         workoutTemplateDao.deleteTemplate(template.toEntity())
     }
 
+    override suspend fun addExerciseToTemplate(templateId: Long, templateExercise: TemplateExercise) {
+        val templateExerciseEntity = TemplateExerciseEntity(
+            templateId = templateId,
+            exerciseId = templateExercise.exerciseId,
+            sets = templateExercise.sets,
+            reps = templateExercise.reps,
+            restSec = templateExercise.restSec,
+            position = templateExercise.position
+        )
+        templateExerciseDao.insertTemplateExercise(templateExerciseEntity)
+    }
+
     override suspend fun startWorkout(templateId: Long): Long {
         val session = WorkoutSessionEntity(
             templateId = templateId,
