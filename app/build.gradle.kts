@@ -59,6 +59,11 @@ android {
         disable.add("CompositionLocalNaming")
         abortOnError = false
     }
+
+    // Hilt plugin configuration: disable aggregating task to avoid plugin-side JavaPoet usage
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
@@ -96,6 +101,7 @@ dependencies {
 
     // Coil for image loading
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
     // Play Services Location for GPS tracking
     implementation(libs.play.services.location)
