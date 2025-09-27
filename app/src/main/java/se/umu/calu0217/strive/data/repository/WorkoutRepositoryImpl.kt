@@ -3,6 +3,7 @@ package se.umu.calu0217.strive.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import se.umu.calu0217.strive.data.local.dao.*
 import se.umu.calu0217.strive.data.local.entities.*
 import se.umu.calu0217.strive.domain.models.*
@@ -30,9 +31,18 @@ class WorkoutRepositoryImpl @Inject constructor(
 
     override suspend fun getTemplateById(id: Long): WorkoutTemplate? {
         val template = workoutTemplateDao.getTemplateById(id) ?: return null
-        val exercises = templateExerciseDao.getTemplateExercises(id)
-        // Convert Flow to List for this specific case
-        return template.toDomainModel(emptyList()) // Simplified for now
+        // Collect the template exercises once for this template
+        val exerciseEntities = templateExerciseDao.getTemplateExercises(id).first()
+        val exercises = exerciseEntities.map { e ->
+            TemplateExercise(
+                exerciseId = e.exerciseId,
+                sets = e.sets,
+                reps = e.reps,
+                restSec = e.restSec,
+                position = e.position
+            )
+        }
+        return template.toDomainModel(exercises)
     }
 
     override suspend fun insertTemplate(template: WorkoutTemplate): Long {
