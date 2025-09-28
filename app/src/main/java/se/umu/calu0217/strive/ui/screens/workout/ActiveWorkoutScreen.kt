@@ -5,6 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -78,7 +81,8 @@ fun ActiveWorkoutScreen(
             WorkoutHeader(
                 templateName = template.name,
                 startTime = session.startedAt,
-                isPaused = uiState.isPaused
+                isPaused = uiState.isPaused,
+                onPauseToggle = { if (uiState.isPaused) viewModel.resumeWorkout() else viewModel.pauseWorkout() }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,39 +115,7 @@ fun ActiveWorkoutScreen(
                 // Push controls to the far right
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Right-aligned controls group
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    // Pause/Resume (compact)
-                    OutlinedButton(
-                        onClick = { if (uiState.isPaused) viewModel.resumeWorkout() else viewModel.pauseWorkout() },
-                        modifier = Modifier.height(36.dp),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        if (uiState.isPaused) {
-                            Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Resume")
-                        } else {
-                            Icon(Icons.Filled.Pause, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Pause")
-                        }
-                    }
-
-                    // Stop (compact)
-                    Button(
-                        onClick = { viewModel.finishWorkout(300, onNavigateBack) },
-                        modifier = Modifier.height(36.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Icon(Icons.Filled.Close, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Stop")
-                    }
-                }
+                // Right-aligned controls group removed; merged into bottom split FAB
             }
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -184,6 +156,21 @@ fun ActiveWorkoutScreen(
             }
         }
 
+        // Bottom-center split Complete|Stop button (FAB-like)
+        val completeEnabled = template.exercises.any { te ->
+            (0 until te.sets).all { setIndex ->
+                uiState.completedSets.containsKey("${te.exerciseId}_$setIndex")
+            }
+        }
+        SplitActionFab(
+            onComplete = { viewModel.finishWorkoutAuto(onNavigateBack) },
+            onStop = { viewModel.finishWorkoutAuto(onNavigateBack) },
+            completeEnabled = completeEnabled,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
+
     }
 
     if (showAddDialog) {
@@ -202,7 +189,8 @@ fun ActiveWorkoutScreen(
 private fun WorkoutHeader(
     templateName: String,
     startTime: Long,
-    isPaused: Boolean
+    isPaused: Boolean,
+    onPauseToggle: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -225,8 +213,31 @@ private fun WorkoutHeader(
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
-            // Live elapsed time clock
-            ElapsedTimeClock(startTime = startTime, isPaused = isPaused)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Elapsed time clock on the left
+                ElapsedTimeClock(startTime = startTime, isPaused = isPaused)
+                Spacer(modifier = Modifier.weight(1f))
+                // Pause/Resume button on the right
+                Button(
+                    onClick = onPauseToggle,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    if (isPaused) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Resume")
+                    } else {
+                        Icon(Icons.Filled.Pause, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Pause")
+                    }
+                }
+            }
         }
     }
 }
@@ -308,8 +319,7 @@ private fun ElapsedTimeClock(
     val elapsedSec = ((now - startTime) - totalPausedMs - pausedOngoing).coerceAtLeast(0L) / 1000L
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 8.dp)
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             Icons.Default.Timer,
@@ -322,6 +332,63 @@ private fun ElapsedTimeClock(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )
+    }
+}
+
+@Composable
+private fun SplitActionFab(
+    onComplete: () -> Unit,
+    onStop: () -> Unit,
+    completeEnabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(28.dp),
+        color = MaterialTheme.colorScheme.primary,
+        tonalElevation = 6.dp,
+        shadowElevation = 6.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .height(56.dp)
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .alpha(if (completeEnabled) 1f else 0.5f)
+                        .clickable(enabled = completeEnabled, onClick = onComplete),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Check, contentDescription = null)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Complete")
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f))
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { onStop() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Close, contentDescription = null)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Stop")
+                    }
+                }
+            }
+        }
     }
 }
 

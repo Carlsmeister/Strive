@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import se.umu.calu0217.strive.domain.models.*
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import se.umu.calu0217.strive.domain.repository.ExerciseRepository
+import se.umu.calu0217.strive.core.utils.FitnessUtils
 import javax.inject.Inject
 
 data class ActiveWorkoutUiState(
@@ -184,6 +185,26 @@ class ActiveWorkoutViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 workoutRepository.finishWorkout(sessionId, kcalBurned)
+                onWorkoutFinished()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
+            }
+        }
+    }
+
+    fun finishWorkoutAuto(onWorkoutFinished: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val session = _uiState.value.session
+                val start = session?.startedAt ?: System.currentTimeMillis()
+                val now = System.currentTimeMillis()
+                val elapsedMs = (now - start).coerceAtLeast(0L)
+                val timeHours = elapsedMs / 3_600_000.0
+                val defaultWeightKg = 70.0
+                val strengthTrainingMet = 6.0 // Moderate intensity strength training
+                val kcal = FitnessUtils.calculateCalories(strengthTrainingMet, defaultWeightKg, timeHours)
+                    .coerceAtLeast(if (elapsedMs > 0) 1 else 0)
+                workoutRepository.finishWorkout(sessionId, kcal)
                 onWorkoutFinished()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
