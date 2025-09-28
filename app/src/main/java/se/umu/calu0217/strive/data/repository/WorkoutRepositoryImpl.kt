@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import se.umu.calu0217.strive.data.local.dao.*
 import se.umu.calu0217.strive.data.local.entities.*
 import se.umu.calu0217.strive.domain.models.*
@@ -21,10 +23,28 @@ class WorkoutRepositoryImpl @Inject constructor(
 ) : WorkoutRepository {
 
     override fun getAllTemplates(): Flow<List<WorkoutTemplate>> {
-        return workoutTemplateDao.getAllTemplates().map { templates ->
-            templates.map { template ->
-                val exercises = templateExerciseDao.getTemplateExercises(template.id)
-                template.toDomainModel(emptyList()) // Will be loaded separately if needed
+        // Make this reactive to changes in template_exercises as well as workout_templates
+        return workoutTemplateDao.getAllTemplates().flatMapLatest { templates ->
+            if (templates.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                val exerciseFlows = templates.map { template ->
+                    templateExerciseDao.getTemplateExercises(template.id)
+                }
+                combine(exerciseFlows) { lists ->
+                    templates.mapIndexed { index, template ->
+                        val exercises = lists[index].map { e ->
+                            TemplateExercise(
+                                exerciseId = e.exerciseId,
+                                sets = e.sets,
+                                reps = e.reps,
+                                restSec = e.restSec,
+                                position = e.position
+                            )
+                        }
+                        template.toDomainModel(exercises)
+                    }
+                }
             }
         }
     }

@@ -3,20 +3,26 @@ package se.umu.calu0217.strive.ui.screens.workout
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,6 +173,7 @@ fun WorkoutScreen(
                             }
                         },
                         onEditTemplate = { viewModel.editTemplate(template) },
+                        onAddExercises = { viewModel.openAddExercisesDialog(template) },
                         onDeleteTemplate = { viewModel.deleteTemplate(template) }
                     )
                 }
@@ -183,6 +190,34 @@ fun WorkoutScreen(
             }
         )
     }
+
+    // Edit Template: Add Exercise Dialog
+    run {
+        val currentTemplate = uiState.editingTemplate
+        if (uiState.showEditDialog && currentTemplate != null) {
+            AddExerciseToTemplateDialog(
+                templateName = currentTemplate.name,
+                availableExercises = uiState.availableExercises,
+                onDismiss = { viewModel.hideEditTemplateDialog() },
+                onAdd = { exercise: Exercise, sets: Int, reps: Int, restSec: Int ->
+                    viewModel.addExerciseToTemplate(exercise.id, sets, reps, restSec)
+                }
+            )
+        }
+    }
+
+    // Full Template Editor Dialog
+    run {
+        val editTemplate = uiState.editorTemplate
+        if (uiState.showEditorDialog && editTemplate != null) {
+            TemplateEditorDialog(
+                template = editTemplate,
+                availableExercises = uiState.availableExercises,
+                onDismiss = { viewModel.hideTemplateEditor() },
+                onSave = { updated -> viewModel.saveEditedTemplate(updated) }
+            )
+        }
+    }
 }
 
 @Composable
@@ -190,6 +225,7 @@ private fun TemplateCard(
     template: WorkoutTemplate,
     onStartWorkout: () -> Unit,
     onEditTemplate: () -> Unit,
+    onAddExercises: () -> Unit,
     onDeleteTemplate: () -> Unit
 ) {
     Card(
@@ -257,7 +293,7 @@ private fun TemplateCard(
             } else {
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedButton(
-                    onClick = onEditTemplate,
+                    onClick = onAddExercises,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = null)
@@ -309,4 +345,374 @@ private fun CreateTemplateDialog(
             }
         }
     )
+}
+
+@Composable
+private fun AddExerciseToTemplateDialog(
+    templateName: String,
+    availableExercises: List<Exercise>,
+    onDismiss: () -> Unit,
+    onAdd: (Exercise, Int, Int, Int) -> Unit
+) {
+    var query by remember { mutableStateOf("") }
+    var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
+    var setsInput by remember { mutableStateOf("3") }
+    var repsInput by remember { mutableStateOf("10") }
+    var restInput by remember { mutableStateOf("60") }
+
+    val filtered = remember(query, availableExercises) {
+        if (query.isBlank()) availableExercises.take(20) else availableExercises.filter { it.name.contains(query, ignoreCase = true) }.take(20)
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add Exercise to \"$templateName\" workout") },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    label = { Text("Search exercises") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
+                    itemsIndexed(filtered) { _, ex ->
+                        ListItem(
+                            headlineContent = { Text(ex.name) },
+                            supportingContent = { Text(ex.bodyParts.joinToString()) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    selectedExercise = ex
+                                    query = ex.name
+                                }
+                        )
+                        Divider()
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                selectedExercise?.let {
+                    Text("Selected: ${it.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = setsInput,
+                        onValueChange = { setsInput = it.filter { ch -> ch.isDigit() }.take(2) },
+                        label = { Text("Sets") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = repsInput,
+                        onValueChange = { repsInput = it.filter { ch -> ch.isDigit() }.take(3) },
+                        label = { Text("Reps") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = restInput,
+                        onValueChange = { restInput = it.filter { ch -> ch.isDigit() }.take(4) },
+                        label = { Text("Rest (s)") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = selectedExercise != null,
+                onClick = {
+                    val ex = selectedExercise ?: return@TextButton
+                    val sets = setsInput.toIntOrNull() ?: 3
+                    val reps = repsInput.toIntOrNull() ?: 10
+                    val rest = restInput.toIntOrNull() ?: 60
+                    onAdd(ex, sets, reps, rest)
+                }
+            ) { Text("Add") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+
+@Composable
+private fun TemplateEditorDialog(
+    template: WorkoutTemplate,
+    availableExercises: List<Exercise>,
+    onDismiss: () -> Unit,
+    onSave: (WorkoutTemplate) -> Unit
+) {
+    var nameText by remember(template.id) { mutableStateOf(template.name) }
+    val items = remember(template.id) {
+        mutableStateListOf<se.umu.calu0217.strive.domain.models.TemplateExercise>().apply {
+            addAll(template.exercises.sortedBy { it.position })
+        }
+    }
+
+    fun exerciseName(exId: Long): String {
+        return availableExercises.firstOrNull { it.id == exId }?.name ?: "Exercise #$exId"
+    }
+
+    var showAddExerciseDialog by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text("Edit Template", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = { showAddExerciseDialog = true }) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Add Exercise")
+                }
+            }
+        },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = nameText,
+                    onValueChange = { nameText = it },
+                    label = { Text("Template name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                if (items.isEmpty()) {
+                    Text("No exercises in this template yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                } else {
+                    LazyColumn(modifier = Modifier.heightIn(max = 320.dp)) {
+                        itemsIndexed(items) { index, te ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        exerciseName(te.exerciseId),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        maxLines = 2,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    IconButton(onClick = { items.removeAt(index) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Remove")
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        // Sets
+                                        var setsStr by remember(te, index) { mutableStateOf(te.sets.toString()) }
+                                        OutlinedTextField(
+                                            value = setsStr,
+                                            onValueChange = { v ->
+                                                val filtered = v.filter { it.isDigit() }.take(2)
+                                                setsStr = filtered
+                                                val newVal = filtered.toIntOrNull() ?: te.sets
+                                                items[index] = items[index].copy(sets = newVal)
+                                            },
+                                            label = { Text("Sets") },
+                                            singleLine = true,
+                                            modifier = Modifier.width(70.dp)
+                                        )
+                                        // Reps
+                                        var repsStr by remember(te, index) { mutableStateOf(te.reps.toString()) }
+                                        OutlinedTextField(
+                                            value = repsStr,
+                                            onValueChange = { v ->
+                                                val filtered = v.filter { it.isDigit() }.take(3)
+                                                repsStr = filtered
+                                                val newVal = filtered.toIntOrNull() ?: te.reps
+                                                items[index] = items[index].copy(reps = newVal)
+                                            },
+                                            label = { Text("Reps") },
+                                            singleLine = true,
+                                            modifier = Modifier.width(70.dp)
+                                        )
+                                        // Rest
+                                        var restStr by remember(te, index) { mutableStateOf(te.restSec.toString()) }
+                                        OutlinedTextField(
+                                            value = restStr,
+                                            onValueChange = { v ->
+                                                val filtered = v.filter { it.isDigit() }.take(4)
+                                                restStr = filtered
+                                                val newVal = filtered.toIntOrNull() ?: te.restSec
+                                                items[index] = items[index].copy(restSec = newVal)
+                                            },
+                                            label = { Text("Rest", maxLines = 1) },
+                                            singleLine = true,
+                                            modifier = Modifier.width(90.dp)
+                                        )
+                                    }
+                                    // Side up/down arrows
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                if (index > 0) {
+                                                    val item = items.removeAt(index)
+                                                    items.add(index - 1, item)
+                                                }
+                                            },
+                                            enabled = index > 0
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.ArrowUpward,
+                                                contentDescription = "Move up",
+                                                tint = se.umu.calu0217.strive.ui.theme.EnergeticOrange
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                if (index < items.size - 1) {
+                                                    val item = items.removeAt(index)
+                                                    items.add(index + 1, item)
+                                                }
+                                            },
+                                            enabled = index < items.size - 1
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.ArrowDownward,
+                                                contentDescription = "Move down",
+                                                tint = se.umu.calu0217.strive.ui.theme.EnergeticOrange
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            Divider()
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Use the arrows on each exercise to reorder", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val updated = template.copy(
+                    name = nameText.ifBlank { template.name },
+                    exercises = items.mapIndexed { idx, e -> e.copy(position = idx) }
+                )
+                onSave(updated)
+            }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+
+    if (showAddExerciseDialog) {
+        var query by remember { mutableStateOf("") }
+        var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
+        var setsInput by remember { mutableStateOf("3") }
+        var repsInput by remember { mutableStateOf("10") }
+        var restInput by remember { mutableStateOf("60") }
+
+        val filtered = remember(query, availableExercises) {
+            if (query.isBlank()) availableExercises.take(20) else availableExercises.filter { it.name.contains(query, ignoreCase = true) }.take(20)
+        }
+
+        AlertDialog(
+            onDismissRequest = { showAddExerciseDialog = false },
+            title = { Text("Add Exercise") },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("Search exercises") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
+                        itemsIndexed(filtered) { _, ex ->
+                            ListItem(
+                                headlineContent = { Text(ex.name) },
+                                supportingContent = { Text(ex.bodyParts.joinToString()) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clickable {
+                                        selectedExercise = ex
+                                        query = ex.name
+                                    }
+                            )
+                            Divider()
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    selectedExercise?.let {
+                        Text("Selected: ${it.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = setsInput,
+                            onValueChange = { setsInput = it.filter { ch -> ch.isDigit() }.take(2) },
+                            label = { Text("Sets") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        OutlinedTextField(
+                            value = repsInput,
+                            onValueChange = { repsInput = it.filter { ch -> ch.isDigit() }.take(3) },
+                            label = { Text("Reps") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        OutlinedTextField(
+                            value = restInput,
+                            onValueChange = { restInput = it.filter { ch -> ch.isDigit() }.take(4) },
+                            label = { Text("Rest (s)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = selectedExercise != null,
+                    onClick = {
+                        val ex = selectedExercise ?: return@TextButton
+                        val sets = setsInput.toIntOrNull() ?: 3
+                        val reps = repsInput.toIntOrNull() ?: 10
+                        val rest = restInput.toIntOrNull() ?: 60
+                        items.add(0, se.umu.calu0217.strive.domain.models.TemplateExercise(
+                            exerciseId = ex.id,
+                            sets = sets,
+                            reps = reps,
+                            restSec = rest,
+                            position = 0
+                        ))
+                        showAddExerciseDialog = false
+                    }
+                ) { Text("Add") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddExerciseDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
 }
