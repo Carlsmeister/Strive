@@ -4,11 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import se.umu.calu0217.strive.domain.models.*
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import se.umu.calu0217.strive.domain.repository.ExerciseRepository
+import se.umu.calu0217.strive.core.utils.FitnessUtils
 import javax.inject.Inject
 
 data class ActiveWorkoutUiState(
@@ -37,6 +39,9 @@ class ActiveWorkoutViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ActiveWorkoutUiState())
     val uiState = _uiState.asStateFlow()
+
+    // Maintain a single rest timer job to avoid concurrent timers
+    private var restTimerJob: Job? = null
 
     init {
         // Load all available exercises for selection UI
@@ -103,6 +108,11 @@ class ActiveWorkoutViewModel @Inject constructor(
     fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int) {
         viewModelScope.launch {
             try {
+                // Prevent completing a new set while resting
+                if (_uiState.value.isRestMode) {
+                    return@launch
+                }
+
                 val template = _uiState.value.template ?: return@launch
                 val templateExercise = template.exercises.find { it.exerciseId == exerciseId }
                     ?: return@launch
@@ -125,7 +135,7 @@ class ActiveWorkoutViewModel @Inject constructor(
                     )
                 }
 
-                // Start rest timer if needed
+                // Start rest timer if needed (overwrites any previous)
                 if (setIndex < templateExercise.sets - 1) {
                     startRestTimer(templateExercise.restSec)
                 }
@@ -137,16 +147,24 @@ class ActiveWorkoutViewModel @Inject constructor(
     }
 
     private fun startRestTimer(restSeconds: Int) {
-        viewModelScope.launch {
+        // Cancel any existing rest timer to ensure only one is active
+        restTimerJob?.cancel()
+        restTimerJob = viewModelScope.launch {
+            // Initialize rest state
+            _uiState.update { it.copy(isRestMode = true, restTimeRemaining = restSeconds) }
             for (i in restSeconds downTo 1) {
                 _uiState.update { it.copy(restTimeRemaining = i) }
                 kotlinx.coroutines.delay(1000)
             }
+            // Rest finished
             _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
         }
     }
 
     fun skipRest() {
+        // Cancel the current timer and clear rest state
+        restTimerJob?.cancel()
+        restTimerJob = null
         _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
     }
 
@@ -180,10 +198,60 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    // Reorder exercises within the active workout session (local only, not persisted)
+    fun moveExercise(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            val current = _uiState.value
+            val template = current.template ?: return@launch
+            val ordered = template.exercises.sortedBy { it.position }.toMutableList()
+            if (fromIndex !in ordered.indices || toIndex !in ordered.indices || fromIndex == toIndex) return@launch
+            val item = ordered.removeAt(fromIndex)
+            ordered.add(toIndex, item)
+            val reindexed = ordered.mapIndexed { idx, te -> te.copy(position = idx) }
+            val exMap = current.exercises.associateBy { it.id }
+            val newExercises = reindexed.mapNotNull { exMap[it.exerciseId] }
+            _uiState.update {
+                it.copy(
+                    template = template.copy(exercises = reindexed),
+                    exercises = newExercises
+                )
+            }
+        }
+    }
+
+    fun moveExerciseUp(index: Int) {
+        if (index > 0) moveExercise(index, index - 1)
+    }
+
+    fun moveExerciseDown(index: Int) {
+        val size = _uiState.value.template?.exercises?.size ?: return
+        if (index < size - 1) moveExercise(index, index + 1)
+    }
+
     fun finishWorkout(kcalBurned: Int, onWorkoutFinished: () -> Unit) {
         viewModelScope.launch {
             try {
                 workoutRepository.finishWorkout(sessionId, kcalBurned)
+                onWorkoutFinished()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
+            }
+        }
+    }
+
+    fun finishWorkoutAuto(onWorkoutFinished: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val session = _uiState.value.session
+                val start = session?.startedAt ?: System.currentTimeMillis()
+                val now = System.currentTimeMillis()
+                val elapsedMs = (now - start).coerceAtLeast(0L)
+                val timeHours = elapsedMs / 3_600_000.0
+                val defaultWeightKg = 70.0
+                val strengthTrainingMet = 6.0 // Moderate intensity strength training
+                val kcal = FitnessUtils.calculateCalories(strengthTrainingMet, defaultWeightKg, timeHours)
+                    .coerceAtLeast(if (elapsedMs > 0) 1 else 0)
+                workoutRepository.finishWorkout(sessionId, kcal)
                 onWorkoutFinished()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }

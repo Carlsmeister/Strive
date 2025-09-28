@@ -524,10 +524,12 @@ fun AddToTemplateDialog(
                 TextField(
                     value = restSec,
                     onValueChange = { restSec = it },
-                    label = { Text("Rest (seconds)") },
+                    label = { Text("Rest (s)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 )
             }
         },
