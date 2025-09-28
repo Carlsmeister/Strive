@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -81,12 +83,18 @@ fun ActiveWorkoutScreen(
                 .padding(16.dp)
         ) {
             // Header with workout info
-            WorkoutHeader(
-                templateName = template.name,
-                startTime = session.startedAt,
-                isPaused = uiState.isPaused,
-                onPauseToggle = { if (uiState.isPaused) viewModel.resumeWorkout() else viewModel.pauseWorkout() }
-            )
+            run {
+                val totalSets = template.exercises.sumOf { it.sets }
+                val doneSets = uiState.completedSets.size
+                WorkoutHeader(
+                    templateName = template.name,
+                    startTime = session.startedAt,
+                    isPaused = uiState.isPaused,
+                    doneSets = doneSets,
+                    totalSets = totalSets,
+                    onPauseToggle = { if (uiState.isPaused) viewModel.resumeWorkout() else viewModel.pauseWorkout() }
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -140,7 +148,8 @@ fun ActiveWorkoutScreen(
             } else {
                 // Exercise list
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 70.dp)
                 ) {
                     itemsIndexed(template.exercises) { index, templateExercise ->
                         val exercise = uiState.exercises.find { it.id == templateExercise.exerciseId }
@@ -150,6 +159,10 @@ fun ActiveWorkoutScreen(
                                 templateExercise = templateExercise,
                                 completedSets = uiState.completedSets,
                                 isRestMode = uiState.isRestMode,
+                                canMoveUp = index > 0,
+                                canMoveDown = index < template.exercises.size - 1,
+                                onMoveUp = { viewModel.moveExerciseUp(index) },
+                                onMoveDown = { viewModel.moveExerciseDown(index) },
                                 onCompleteSet = { setIndex, reps ->
                                     viewModel.completeSet(exercise.id, setIndex, reps)
                                 }
@@ -208,6 +221,8 @@ private fun WorkoutHeader(
     templateName: String,
     startTime: Long,
     isPaused: Boolean,
+    doneSets: Int,
+    totalSets: Int,
     onPauseToggle: () -> Unit
 ) {
     Card(
@@ -219,12 +234,24 @@ private fun WorkoutHeader(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = templateName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = templateName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Sets $doneSets/$totalSets",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
             Text(
                 text = "Started: ${formatTime(startTime)}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -461,6 +488,10 @@ private fun ExerciseCard(
     templateExercise: TemplateExercise,
     completedSets: Map<String, Boolean>,
     isRestMode: Boolean,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
     onCompleteSet: (Int, Int) -> Unit
 ) {
     var showRepsDialog by remember { mutableStateOf<Int?>(null) }
@@ -479,11 +510,20 @@ private fun ExerciseCard(
                 Text(
                     text = exercise.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(onClick = onMoveUp, enabled = canMoveUp) {
+                    Icon(Icons.Filled.ArrowUpward, contentDescription = "Move up")
+                }
+                IconButton(onClick = onMoveDown, enabled = canMoveDown) {
+                    Icon(Icons.Filled.ArrowDownward, contentDescription = "Move down")
+                }
                 IconButton(onClick = { showInfoDialog = true }) {
-                    Icon(Icons.Filled.Info, contentDescription = "Exercise info", modifier = Modifier.size(30.dp))
+                    Icon(Icons.Filled.Info, contentDescription = "Exercise info", modifier = Modifier.size(24.dp))
                 }
             }
             Text(

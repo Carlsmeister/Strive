@@ -198,6 +198,36 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    // Reorder exercises within the active workout session (local only, not persisted)
+    fun moveExercise(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            val current = _uiState.value
+            val template = current.template ?: return@launch
+            val ordered = template.exercises.sortedBy { it.position }.toMutableList()
+            if (fromIndex !in ordered.indices || toIndex !in ordered.indices || fromIndex == toIndex) return@launch
+            val item = ordered.removeAt(fromIndex)
+            ordered.add(toIndex, item)
+            val reindexed = ordered.mapIndexed { idx, te -> te.copy(position = idx) }
+            val exMap = current.exercises.associateBy { it.id }
+            val newExercises = reindexed.mapNotNull { exMap[it.exerciseId] }
+            _uiState.update {
+                it.copy(
+                    template = template.copy(exercises = reindexed),
+                    exercises = newExercises
+                )
+            }
+        }
+    }
+
+    fun moveExerciseUp(index: Int) {
+        if (index > 0) moveExercise(index, index - 1)
+    }
+
+    fun moveExerciseDown(index: Int) {
+        val size = _uiState.value.template?.exercises?.size ?: return
+        if (index < size - 1) moveExercise(index, index + 1)
+    }
+
     fun finishWorkout(kcalBurned: Int, onWorkoutFinished: () -> Unit) {
         viewModelScope.launch {
             try {
