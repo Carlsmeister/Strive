@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import se.umu.calu0217.strive.domain.models.*
@@ -38,6 +39,9 @@ class ActiveWorkoutViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ActiveWorkoutUiState())
     val uiState = _uiState.asStateFlow()
+
+    // Maintain a single rest timer job to avoid concurrent timers
+    private var restTimerJob: Job? = null
 
     init {
         // Load all available exercises for selection UI
@@ -104,6 +108,11 @@ class ActiveWorkoutViewModel @Inject constructor(
     fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int) {
         viewModelScope.launch {
             try {
+                // Prevent completing a new set while resting
+                if (_uiState.value.isRestMode) {
+                    return@launch
+                }
+
                 val template = _uiState.value.template ?: return@launch
                 val templateExercise = template.exercises.find { it.exerciseId == exerciseId }
                     ?: return@launch
@@ -126,7 +135,7 @@ class ActiveWorkoutViewModel @Inject constructor(
                     )
                 }
 
-                // Start rest timer if needed
+                // Start rest timer if needed (overwrites any previous)
                 if (setIndex < templateExercise.sets - 1) {
                     startRestTimer(templateExercise.restSec)
                 }
@@ -138,16 +147,24 @@ class ActiveWorkoutViewModel @Inject constructor(
     }
 
     private fun startRestTimer(restSeconds: Int) {
-        viewModelScope.launch {
+        // Cancel any existing rest timer to ensure only one is active
+        restTimerJob?.cancel()
+        restTimerJob = viewModelScope.launch {
+            // Initialize rest state
+            _uiState.update { it.copy(isRestMode = true, restTimeRemaining = restSeconds) }
             for (i in restSeconds downTo 1) {
                 _uiState.update { it.copy(restTimeRemaining = i) }
                 kotlinx.coroutines.delay(1000)
             }
+            // Rest finished
             _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
         }
     }
 
     fun skipRest() {
+        // Cancel the current timer and clear rest state
+        restTimerJob?.cancel()
+        restTimerJob = null
         _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
     }
 

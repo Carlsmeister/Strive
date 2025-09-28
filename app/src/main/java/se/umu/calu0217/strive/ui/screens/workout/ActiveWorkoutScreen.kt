@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.models.TemplateExercise
+import se.umu.calu0217.strive.ui.screens.explore.ExerciseDetailDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,7 @@ fun ActiveWorkoutScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var showCongratsDialog by remember { mutableStateOf(false) }
 
     if (uiState.isLoading) {
         Box(
@@ -146,6 +149,7 @@ fun ActiveWorkoutScreen(
                                 exercise = exercise,
                                 templateExercise = templateExercise,
                                 completedSets = uiState.completedSets,
+                                isRestMode = uiState.isRestMode,
                                 onCompleteSet = { setIndex, reps ->
                                     viewModel.completeSet(exercise.id, setIndex, reps)
                                 }
@@ -163,7 +167,7 @@ fun ActiveWorkoutScreen(
             }
         }
         SplitActionFab(
-            onComplete = { viewModel.finishWorkoutAuto(onNavigateBack) },
+            onComplete = { showCongratsDialog = true },
             onStop = { viewModel.finishWorkoutAuto(onNavigateBack) },
             completeEnabled = completeEnabled,
             modifier = Modifier
@@ -180,6 +184,20 @@ fun ActiveWorkoutScreen(
             onAdd = { exercise, sets, reps, restSec ->
                 viewModel.addExercise(exercise.id, sets, reps, restSec)
                 showAddDialog = false
+            }
+        )
+    }
+
+    if (showCongratsDialog) {
+        AlertDialog(
+            onDismissRequest = { showCongratsDialog = false },
+            title = { Text("Well done!🎉") },
+            text = { Text("One step closer to your goal!🚀") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showCongratsDialog = false
+                    viewModel.finishWorkoutAuto(onNavigateBack)
+                }) { Text("Continue") }
             }
         )
     }
@@ -442,9 +460,11 @@ private fun ExerciseCard(
     exercise: Exercise,
     templateExercise: TemplateExercise,
     completedSets: Map<String, Boolean>,
+    isRestMode: Boolean,
     onCompleteSet: (Int, Int) -> Unit
 ) {
     var showRepsDialog by remember { mutableStateOf<Int?>(null) }
+    var showInfoDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -452,11 +472,20 @@ private fun ExerciseCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = exercise.name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = exercise.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { showInfoDialog = true }) {
+                    Icon(Icons.Filled.Info, contentDescription = "Exercise info", modifier = Modifier.size(30.dp))
+                }
+            }
             Text(
                 text = "${templateExercise.sets} sets × ${templateExercise.reps} reps",
                 style = MaterialTheme.typography.bodyMedium,
@@ -492,7 +521,8 @@ private fun ExerciseCard(
                         }
                     } else {
                         Button(
-                            onClick = { showRepsDialog = setIndex }
+                            onClick = { showRepsDialog = setIndex },
+                            enabled = !isRestMode
                         ) {
                             Text("Set ${setIndex + 1}")
                         }
@@ -500,6 +530,11 @@ private fun ExerciseCard(
                 }
             }
         }
+    }
+
+    // Exercise info dialog
+    if (showInfoDialog) {
+        ExerciseDetailDialog(exercise = exercise, onDismiss = { showInfoDialog = false })
     }
 
     // Reps input dialog
@@ -523,6 +558,7 @@ private fun ExerciseCard(
             },
             confirmButton = {
                 TextButton(
+                    enabled = !isRestMode,
                     onClick = {
                         val reps = repsInput.toIntOrNull() ?: templateExercise.reps
                         onCompleteSet(setIndex, reps)
