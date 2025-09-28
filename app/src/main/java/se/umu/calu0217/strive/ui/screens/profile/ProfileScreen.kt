@@ -27,15 +27,40 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.umu.calu0217.strive.ui.screens.history.HistoryViewModel
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+
+// DataStore for profile settings
+private val Context.profileDataStore by preferencesDataStore(name = "profile_prefs")
+
+private object ProfilePrefsKeys {
+    val WEIGHT = stringPreferencesKey("weight")
+    val AGE = stringPreferencesKey("age")
+    val HEIGHT = stringPreferencesKey("height")
+    val SEX = stringPreferencesKey("sex")
+    val ACTIVITY = stringPreferencesKey("activity")
+    val GOAL = stringPreferencesKey("goal")
+    val PROTEIN = stringPreferencesKey("protein_pct")
+    val CARBS = stringPreferencesKey("carbs_pct")
+    val FAT = stringPreferencesKey("fat_pct")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onNavigateBack: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     var userWeight by rememberSaveable { mutableStateOf("70.0") }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -48,6 +73,30 @@ fun ProfileScreen(
     var proteinPct by rememberSaveable { mutableStateOf("40") }
     var carbsPct by rememberSaveable { mutableStateOf("40") }
     var fatPct by rememberSaveable { mutableStateOf("20") }
+
+    // Load saved preferences once on composition
+    LaunchedEffect(Unit) {
+        val prefs = context.profileDataStore.data.first()
+        prefs[ProfilePrefsKeys.WEIGHT]?.let { userWeight = it }
+        prefs[ProfilePrefsKeys.AGE]?.let { age = it }
+        prefs[ProfilePrefsKeys.HEIGHT]?.let { heightCm = it }
+        prefs[ProfilePrefsKeys.SEX]?.let { v ->
+            runCatching { Sex.valueOf(v) }.getOrNull()?.let { sex = it }
+        }
+        prefs[ProfilePrefsKeys.ACTIVITY]?.let { v ->
+            runCatching { ActivityLevel.valueOf(v) }.getOrNull()?.let { activity = it }
+        }
+        prefs[ProfilePrefsKeys.GOAL]?.let { v ->
+            runCatching { Goal.valueOf(v) }.getOrNull()?.let { goal = it }
+        }
+        prefs[ProfilePrefsKeys.PROTEIN]?.let { proteinPct = it }
+        prefs[ProfilePrefsKeys.CARBS]?.let { carbsPct = it }
+        prefs[ProfilePrefsKeys.FAT]?.let { fatPct = it }
+    }
+
+    fun saveStr(key: androidx.datastore.preferences.core.Preferences.Key<String>, value: String) {
+        scope.launch { context.profileDataStore.edit { it[key] = value } }
+    }
 
     val historyViewModel: HistoryViewModel = hiltViewModel()
     val workoutSessions by historyViewModel.workoutSessions.collectAsState(initial = emptyList())
@@ -115,23 +164,56 @@ fun ProfileScreen(
             // Daily Macros Card
             DailyMacrosCard(
                 weightText = userWeight,
-                onWeightChange = { userWeight = it.filter { ch -> ch.isDigit() || ch == '.' }.take(6) },
+                onWeightChange = {
+                    val v = it.filter { ch -> ch.isDigit() || ch == '.' }.take(6)
+                    userWeight = v
+                    saveStr(ProfilePrefsKeys.WEIGHT, v)
+                },
                 age = age,
-                onAgeChange = { age = it.filter { ch -> ch.isDigit() }.take(3) },
+                onAgeChange = {
+                    val v = it.filter { ch -> ch.isDigit() }.take(3)
+                    age = v
+                    saveStr(ProfilePrefsKeys.AGE, v)
+                },
                 heightCm = heightCm,
-                onHeightChange = { heightCm = it.filter { ch -> ch.isDigit() }.take(3) },
+                onHeightChange = {
+                    val v = it.filter { ch -> ch.isDigit() }.take(3)
+                    heightCm = v
+                    saveStr(ProfilePrefsKeys.HEIGHT, v)
+                },
                 sex = sex,
-                onSexChange = { sex = it },
+                onSexChange = {
+                    sex = it
+                    saveStr(ProfilePrefsKeys.SEX, it.name)
+                },
                 activity = activity,
-                onActivityChange = { activity = it },
+                onActivityChange = {
+                    activity = it
+                    saveStr(ProfilePrefsKeys.ACTIVITY, it.name)
+                },
                 goal = goal,
-                onGoalChange = { goal = it },
+                onGoalChange = {
+                    goal = it
+                    saveStr(ProfilePrefsKeys.GOAL, it.name)
+                },
                 proteinPct = proteinPct,
-                onProteinChange = { proteinPct = it.filter { ch -> ch.isDigit() }.take(3) },
+                onProteinChange = {
+                    val v = it.filter { ch -> ch.isDigit() }.take(3)
+                    proteinPct = v
+                    saveStr(ProfilePrefsKeys.PROTEIN, v)
+                },
                 carbsPct = carbsPct,
-                onCarbsChange = { carbsPct = it.filter { ch -> ch.isDigit() }.take(3) },
+                onCarbsChange = {
+                    val v = it.filter { ch -> ch.isDigit() }.take(3)
+                    carbsPct = v
+                    saveStr(ProfilePrefsKeys.CARBS, v)
+                },
                 fatPct = fatPct,
-                onFatChange = { fatPct = it.filter { ch -> ch.isDigit() }.take(3) }
+                onFatChange = {
+                    val v = it.filter { ch -> ch.isDigit() }.take(3)
+                    fatPct = v
+                    saveStr(ProfilePrefsKeys.FAT, v)
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -159,7 +241,19 @@ fun ProfileScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // TODO: Implement data clearing
+                        scope.launch {
+                            context.profileDataStore.edit { it.clear() }
+                        }
+                        // Reset UI to defaults
+                        userWeight = "70.0"
+                        age = "25"
+                        heightCm = "175"
+                        sex = Sex.Male
+                        activity = ActivityLevel.ModeratelyActive
+                        goal = Goal.Maintain
+                        proteinPct = "40"
+                        carbsPct = "40"
+                        fatPct = "20"
                         showDeleteDialog = false
                     }
                 ) {
