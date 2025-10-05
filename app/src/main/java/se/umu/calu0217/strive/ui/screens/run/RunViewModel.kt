@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import se.umu.calu0217.strive.core.location.LocationTracker
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.domain.usecases.*
@@ -28,9 +31,30 @@ class RunViewModel @Inject constructor(
     private var startTime: Long = 0
     private var lastLocation: Pair<Double, Double>? = null
     private var totalDistance: Double = 0.0
+    private var timerJob: Job? = null
 
     init {
         checkForActiveRun()
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (isActive && activeRunId != null) {
+                val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000).toInt()
+                val pace = FitnessUtils.calculatePace(totalDistance, elapsedSeconds)
+                _uiState.value = _uiState.value.copy(
+                    elapsedTime = elapsedSeconds,
+                    pace = pace
+                )
+                delay(1000L)
+            }
+        }
+    }
+
+    private fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
     }
 
     private fun checkForActiveRun() {
@@ -46,6 +70,7 @@ class RunViewModel @Inject constructor(
                     elapsedTime = ((System.currentTimeMillis() - startTime) / 1000).toInt(),
                     pace = activeSession.pace
                 )
+                startTimer()
                 startLocationTracking()
             }
         }
@@ -68,6 +93,7 @@ class RunViewModel @Inject constructor(
                     error = null
                 )
 
+                startTimer()
                 startLocationTracking()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -83,9 +109,9 @@ class RunViewModel @Inject constructor(
                 val runId = activeRunId ?: return@launch
                 val currentState = _uiState.value
 
-                // Calculate calories based on pace and duration
+                // Calculate calories based on selected activity, pace and duration
                 val timeHours = currentState.elapsedTime / 3600.0
-                val metValue = FitnessUtils.getMetFromPace(currentState.pace)
+                val metValue = getMetForActivity(currentState.selectedActivity, currentState.pace)
                 val calories = FitnessUtils.calculateCalories(metValue, userWeight, timeHours)
 
                 finishRunUseCase(runId, calories)
@@ -95,12 +121,34 @@ class RunViewModel @Inject constructor(
                     showSummary = true
                 )
 
+                stopTimer()
                 locationTracker.stopLocationUpdates()
                 activeRunId = null
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = e.message ?: "Error stopping run"
                 )
+            }
+        }
+    }
+
+    private fun getMetForActivity(activity: ActivityType, paceMinPerKm: Double): Double {
+        // Convert pace (min/km) to speed (km/h)
+        val speedKmh = if (paceMinPerKm > 0) 60.0 / paceMinPerKm else 0.0
+        return when (activity) {
+            ActivityType.RUNNING -> FitnessUtils.getMetFromPace(paceMinPerKm)
+            ActivityType.WALKING -> when {
+                speedKmh < 4.0 -> 2.8
+                speedKmh < 5.5 -> 3.5
+                speedKmh < 6.5 -> 4.3
+                else -> 5.0
+            }
+            ActivityType.CYCLING -> when {
+                speedKmh < 16.0 -> 4.0
+                speedKmh < 19.0 -> 6.0
+                speedKmh < 22.0 -> 8.0
+                speedKmh < 25.0 -> 10.0
+                else -> 12.0
             }
         }
     }
@@ -115,7 +163,11 @@ class RunViewModel @Inject constructor(
                     )
                 }
                 .collect { location ->
-                    _uiState.value = _uiState.value.copy(gpsStatus = GpsStatus.READY)
+                    _uiState.value = _uiState.value.copy(
+                        gpsStatus = GpsStatus.READY,
+                        currentLatitude = location.latitude,
+                        currentLongitude = location.longitude
+                    )
 
                     activeRunId?.let { runId ->
                         // Add run point
@@ -151,8 +203,8 @@ class RunViewModel @Inject constructor(
         }
     }
 
-    fun setIntensity(intensity: RunIntensity) {
-        _uiState.value = _uiState.value.copy(selectedIntensity = intensity)
+    fun setActivity(activity: ActivityType) {
+        _uiState.value = _uiState.value.copy(selectedActivity = activity)
     }
 
     fun dismissSummary() {
@@ -177,6 +229,23 @@ class RunViewModel @Inject constructor(
     fun setGpsNotReady() {
         _uiState.value = _uiState.value.copy(gpsStatus = GpsStatus.SEARCHING)
     }
+
+    fun refreshCurrentLocation() {
+        viewModelScope.launch {
+            try {
+                val loc = locationTracker.getCurrentLocation()
+                if (loc != null) {
+                    _uiState.value = _uiState.value.copy(
+                        currentLatitude = loc.latitude,
+                        currentLongitude = loc.longitude,
+                        gpsStatus = GpsStatus.READY
+                    )
+                }
+            } catch (_: Exception) {
+                // ignore, leave state as is
+            }
+        }
+    }
 }
 
 // Data class for RunViewModel state
@@ -185,8 +254,12 @@ data class RunUiState(
     val distance: Double = 0.0, // in meters
     val elapsedTime: Int = 0, // in seconds
     val pace: Double = 0.0, // min/km
-    val selectedIntensity: RunIntensity = RunIntensity.MEDIUM,
+    val selectedActivity: ActivityType = ActivityType.RUNNING,
     val gpsStatus: GpsStatus = GpsStatus.SEARCHING,
     val showSummary: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val currentLatitude: Double? = null,
+    val currentLongitude: Double? = null
 )
+
+enum class ActivityType { RUNNING, CYCLING, WALKING }

@@ -28,3 +28,27 @@ If the API key is missing, invalid, or the network is unavailable, the app will 
 
 ## Why "optional"?
 Only the API setup above is optional. You can skip it and the app will work offline using the bundled seed data. The README itself is not optional—keep it for instructions and project info.
+
+
+## Google Maps setup (required for the Run screen map)
+To display the Map on the Run screen, you need a Google Maps API key configured at build time.
+
+Steps:
+1. Create or use a Google Cloud project: https://console.cloud.google.com/
+2. Enable the API: “Maps SDK for Android”.
+3. Create an API key and restrict it (recommended):
+   - Application restriction: Android apps
+   - Package name: se.umu.calu0217.strive
+   - Add your debug SHA-1 fingerprint (and release SHA-1 when you sign a release)
+4. Add the key to your local.properties (do NOT commit this file):
+
+```
+MAPS_API_KEY=your_google_maps_key_here
+```
+
+5. Rebuild and run the app.
+
+Notes:
+- Billing must be enabled on your Google Cloud project for Maps tiles to load.
+- The key is injected into AndroidManifest via a manifest placeholder and read by the Maps SDK at runtime.
+- If the key is missing/invalid, the map area may appear blank. STRIVE will now show a helpful message on the Run screen if no key is detected.
