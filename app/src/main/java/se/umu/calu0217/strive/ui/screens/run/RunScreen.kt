@@ -10,6 +10,11 @@ import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material.icons.filled.GpsOff
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.DirectionsRun
+import androidx.compose.material.icons.outlined.DirectionsBike
+import androidx.compose.material.icons.outlined.DirectionsWalk
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.core.utils.PermissionUtils
+import android.content.Context
+import android.content.pm.PackageManager
+import se.umu.calu0217.strive.ui.theme.Black
 
 @Composable
 fun RunScreen(
@@ -56,45 +64,120 @@ fun RunScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // GPS Status Indicator
-        GpsStatusCard(gpsStatus = uiState.gpsStatus)
+    // One-shot location refresh for initial map position
+    LaunchedEffect(Unit) {
+        viewModel.refreshCurrentLocation()
+    }
 
-        Spacer(modifier = Modifier.height(24.dp))
+    val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
+    var hasCentered by remember { mutableStateOf(false) }
 
-        // KPI Panel with large numbers
-        if (uiState.isRunning) {
-            RunningStatsPanel(
-                distance = uiState.distance,
-                elapsedTime = uiState.elapsedTime,
-                pace = uiState.pace
-            )
+    // Center camera on first valid location only
+    LaunchedEffect(uiState.currentLatitude, uiState.currentLongitude) {
+        val lat = uiState.currentLatitude
+        val lng = uiState.currentLongitude
+        if (!hasCentered && lat != null && lng != null) {
+            try {
+                cameraPositionState.animate(
+                    com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(
+                        com.google.android.gms.maps.model.LatLng(lat, lng),
+                        15f
+                    )
+                )
+                hasCentered = true
+            } catch (_: Exception) { }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Only render the map if a valid Google Maps API key is configured
+        val mapsConfigured = remember { isMapsApiKeyConfigured(context) }
+        if (mapsConfigured) {
+            // Google Map background
+            com.google.maps.android.compose.GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = com.google.maps.android.compose.MapProperties(
+                    isMyLocationEnabled = PermissionUtils.hasLocationPermissions(context)
+                ),
+                uiSettings = com.google.maps.android.compose.MapUiSettings(
+                    zoomControlsEnabled = false,
+                    myLocationButtonEnabled = false,
+                )
+            ) {
+                val lat = uiState.currentLatitude
+                val lng = uiState.currentLongitude
+                if (lat != null && lng != null) {
+                    val markerState = remember(lat, lng) {
+                        com.google.maps.android.compose.MarkerState(
+                            position = com.google.android.gms.maps.model.LatLng(lat, lng)
+                        )
+                    }
+                    com.google.maps.android.compose.Marker(
+                        state = markerState,
+                        icon = com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(
+                            com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_ORANGE
+                        ),
+                        title = null,
+                        snippet = null
+                    )
+                }
+            }
         } else {
-            ReadyToRunPanel()
+            // Fallback UI when API key is missing: show a helpful message instead of a blank screen
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Google Maps API key missing",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Add MAPS_API_KEY to local.properties and rebuild.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // Foreground UI overlay
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        // Intensity Selector (only show when not running)
-        if (!uiState.isRunning) {
-            IntensitySelector(
-                selectedIntensity = uiState.selectedIntensity,
-                onIntensitySelected = viewModel::setIntensity
-            )
+            // KPI Panel with large numbers
+            if (uiState.isRunning) {
+                RunningStatsPanel(
+                    distance = uiState.distance,
+                    elapsedTime = uiState.elapsedTime,
+                    pace = uiState.pace
+                )
+            } else {
+                ReadyToRunPanel(gpsStatus = uiState.gpsStatus)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
+
+
+            Spacer(modifier = Modifier.weight(1f))
+
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Start/Stop Button
-        RunControlButton(
+        FloatingRunControls(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = 24.dp),
             isRunning = uiState.isRunning,
+            selectedActivity = uiState.selectedActivity,
+            onActivitySelected = viewModel::setActivity,
             onStartRun = {
                 val hasPermissions = PermissionUtils.hasLocationPermissions(context)
                 if (hasPermissions) {
@@ -106,8 +189,6 @@ fun RunScreen(
             onStopRun = { viewModel.stopRun() },
             gpsReady = uiState.gpsStatus == GpsStatus.READY
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     // Error handling
@@ -135,7 +216,7 @@ fun GpsStatusCard(gpsStatus: GpsStatus) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = when (gpsStatus) {
-                GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer
+                GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
                 GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
                 GpsStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
             }
@@ -186,60 +267,122 @@ fun RunningStatsPanel(
     elapsedTime: Int,
     pace: Double
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+
+    val bg = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f)
+
+    Card (
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = bg),
+
     ) {
-        // Time (largest)
-        StatItem(
-            label = "TIME",
-            value = FitnessUtils.formatTime(elapsedTime),
-            textSize = 48.sp
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(32.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 8.dp),
         ) {
-            // Distance
+            // Time (largest)
             StatItem(
-                label = "DISTANCE",
-                value = FitnessUtils.formatDistance(distance),
-                textSize = 32.sp
+                label = "TIME",
+                value = FitnessUtils.formatTime(elapsedTime),
+                textSize = 48.sp
             )
 
-            // Pace
-            StatItem(
-                label = "PACE",
-                value = FitnessUtils.formatPace(pace),
-                textSize = 32.sp
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                // Distance
+                StatItem(
+                    label = "DISTANCE",
+                    value = FitnessUtils.formatDistance(distance),
+                    textSize = 32.sp
+                )
+
+                // Pace
+                StatItem(
+                    label = "PACE",
+                    value = FitnessUtils.formatPace(pace),
+                    textSize = 32.sp
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ReadyToRunPanel() {
+fun ReadyToRunPanel(gpsStatus: GpsStatus) {
+
+    val bg = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f)
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = bg),
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Ready to run?",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Select your intensity and start tracking your run",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            // Main content centered horizontally (keeps same inner padding as before)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 46.dp, bottom = 26.dp, start = 16.dp, end = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Ready to run?",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Choose activity and press Start to begin",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // GPS status badge at the actual top-left corner of the card
+            val badgeContainerColor = when (gpsStatus) {
+                GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
+                GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
+                GpsStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
+            }
+            val badgeContentColor = when (gpsStatus) {
+                GpsStatus.READY -> MaterialTheme.colorScheme.onPrimaryContainer
+                GpsStatus.SEARCHING -> MaterialTheme.colorScheme.onSecondaryContainer
+                GpsStatus.ERROR -> MaterialTheme.colorScheme.onErrorContainer
+            }
+            val badgeIcon = when (gpsStatus) {
+                GpsStatus.READY -> Icons.Default.GpsFixed
+                GpsStatus.SEARCHING -> Icons.Default.GpsNotFixed
+                GpsStatus.ERROR -> Icons.Default.GpsOff
+            }
+            val badgeText = when (gpsStatus) {
+                GpsStatus.READY -> "GPS Ready"
+                GpsStatus.SEARCHING -> "Searching for GPS..."
+                GpsStatus.ERROR -> "GPS Error"
+            }
+
+            Surface(
+                color = badgeContainerColor,
+                contentColor = badgeContentColor,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(badgeIcon, contentDescription = null, tint = badgeContentColor)
+                    Spacer(Modifier.width(6.dp))
+                    Text(badgeText, style = MaterialTheme.typography.labelMedium, color = badgeContentColor)
+                }
+            }
         }
     }
 }
@@ -269,33 +412,116 @@ fun StatItem(
 }
 
 @Composable
-fun IntensitySelector(
-    selectedIntensity: RunIntensity,
-    onIntensitySelected: (RunIntensity) -> Unit
+fun ActivitySelectorDropdown(
+    selectedActivity: ActivityType,
+    onActivitySelected: (ActivityType) -> Unit,
+    borderColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.outline
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Intensity",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            RunIntensity.entries.forEach { intensity ->
-                FilterChip(
-                    selected = selectedIntensity == intensity,
-                    onClick = { onIntensitySelected(intensity) },
-                    label = { Text(intensity.displayName) }
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        OutlinedButton(
+            onClick = { expanded = true },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
+        ){
+            Icon(
+                imageVector = activityIcon(selectedActivity),
+                contentDescription = null,
+                tint = Black
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(selectedActivity.label(), color = Black)
+            Spacer(Modifier.width(2.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = Black
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            ActivityType.values().forEach { type ->
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(activityIcon(type), contentDescription = null)
+                            Spacer(Modifier.width(4.dp))
+                            Text(type.label())
+                        }
+                    },
+                    onClick = {
+                        onActivitySelected(type)
+                        expanded = false
+                    }
                 )
             }
         }
     }
+}
+
+@Composable
+fun FloatingRunControls(
+    modifier: Modifier = Modifier,
+    isRunning: Boolean,
+    selectedActivity: ActivityType,
+    onActivitySelected: (ActivityType) -> Unit,
+    onStartRun: () -> Unit,
+    onStopRun: () -> Unit,
+    gpsReady: Boolean
+) {
+    val bg = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
+    val fg = MaterialTheme.colorScheme.onPrimary
+    Card(
+        modifier = modifier.padding(bottom = 10.dp, end = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = bg),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (!isRunning) {
+                Text(
+                    text = "Start ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = fg
+                )
+                ActivitySelectorDropdown(
+                    selectedActivity = selectedActivity,
+                    onActivitySelected = onActivitySelected,
+                    borderColor = fg
+                )
+                FilledIconButton(
+                    onClick = onStartRun
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = "Start")
+                }
+            } else {
+                Text(
+                    text = selectedActivity.label(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = fg
+                )
+                FilledIconButton(onClick = onStopRun, colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.error)) {
+                    Icon(Icons.Default.Stop, contentDescription = "Stop")
+                }
+            }
+        }
+    }
+}
+
+private fun ActivityType.label(): String = when (this) {
+    ActivityType.RUNNING -> "Running"
+    ActivityType.CYCLING -> "Cycling"
+    ActivityType.WALKING -> "Walking"
+}
+
+@Composable
+private fun activityIcon(activity: ActivityType) = when (activity) {
+    ActivityType.RUNNING -> Icons.Outlined.DirectionsRun
+    ActivityType.CYCLING -> Icons.Outlined.DirectionsBike
+    ActivityType.WALKING -> Icons.Outlined.DirectionsWalk
 }
 
 @Composable
@@ -307,7 +533,7 @@ fun RunControlButton(
 ) {
     Button(
         onClick = if (isRunning) onStopRun else onStartRun,
-        enabled = !isRunning || gpsReady,
+        enabled = true,
         modifier = Modifier
             .size(80.dp)
             .clip(CircleShape),
@@ -356,6 +582,19 @@ fun RunSummaryDialog(
     )
 }
 
+private fun isMapsApiKeyConfigured(context: Context): Boolean {
+    return try {
+        val appInfo = context.packageManager.getApplicationInfo(
+            context.packageName,
+            PackageManager.GET_META_DATA
+        )
+        val key = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
+        !key.isNullOrBlank()
+    } catch (_: Exception) {
+        false
+    }
+}
+
 // Add enum definitions at the end of the file
 enum class GpsStatus {
     SEARCHING,
@@ -363,8 +602,3 @@ enum class GpsStatus {
     ERROR
 }
 
-enum class RunIntensity(val displayName: String, val metValue: Double) {
-    SLOW("Slow", 5.5),
-    MEDIUM("Medium", 7.0),
-    FAST("Fast", 10.0)
-}

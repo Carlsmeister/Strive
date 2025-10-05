@@ -22,7 +22,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Read API key from local.properties
+        // Read API keys from local.properties
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
@@ -30,6 +30,9 @@ android {
         }
         val rapidApiKey = localProperties.getProperty("RAPIDAPI_KEY") ?: ""
         buildConfigField("String", "RAPIDAPI_KEY", "\"$rapidApiKey\"")
+
+        val mapsApiKey = localProperties.getProperty("MAPS_API_KEY") ?: ""
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
@@ -105,6 +108,10 @@ dependencies {
 
     // Play Services Location for GPS tracking
     implementation(libs.play.services.location)
+
+    // Google Maps and Compose Maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
 
     // Lifecycle ViewModel Compose
     implementation(libs.lifecycle.viewmodel.compose)

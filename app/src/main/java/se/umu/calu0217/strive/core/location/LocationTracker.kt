@@ -66,8 +66,20 @@ class LocationTracker @Inject constructor(
     @SuppressLint("MissingPermission")
     suspend fun getCurrentLocation(): Location? {
         return try {
-            // Prefer last location; proper await could be added if needed
-            fusedLocationClient.lastLocation.result
+            kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+                try {
+                    fusedLocationClient
+                        .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                        .addOnSuccessListener { loc ->
+                            if (cont.isActive) cont.resume(loc, onCancellation = {})
+                        }
+                        .addOnFailureListener { _ ->
+                            if (cont.isActive) cont.resume(null, onCancellation = {})
+                        }
+                } catch (e: Exception) {
+                    if (cont.isActive) cont.resume(null, onCancellation = {})
+                }
+            }
         } catch (e: Exception) {
             null
         }

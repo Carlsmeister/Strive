@@ -10,6 +10,8 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 # Updated Hilt version for better JavaPoet compatibility
 hilt = "2.51.1"
+mapsCompose = "4.4.1"
+playServicesMaps = "19.2.0"
 room = "2.6.1"
 retrofit = "2.9.0"
 okhttp = "4.12.0"
@@ -42,6 +44,8 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }

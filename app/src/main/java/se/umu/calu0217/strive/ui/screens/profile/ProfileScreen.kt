@@ -110,8 +110,6 @@ fun ProfileScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-
-
             // Daily Macros Card
             DailyMacrosCard(
                 weightText = userWeight,
@@ -135,6 +133,49 @@ fun ProfileScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            val context = androidx.compose.ui.platform.LocalContext.current
+            var autoStartGps by remember { mutableStateOf(se.umu.calu0217.strive.core.utils.PreferencesUtils.isAutoStartGpsEnabled(context)) }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = "Location",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Start GPS on app launch")
+                        Switch(
+                            checked = autoStartGps,
+                            onCheckedChange = {
+                                autoStartGps = it
+                                se.umu.calu0217.strive.core.utils.PreferencesUtils.setAutoStartGpsEnabled(context, it)
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedButton(onClick = {
+                        try {
+                            val intent = android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            context.startActivity(intent)
+                        } catch (_: Exception) { }
+                    }) {
+                        Icon(Icons.Default.Info, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Open Location settings")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Bottom row: About and Danger Zone side by side
             Row(
