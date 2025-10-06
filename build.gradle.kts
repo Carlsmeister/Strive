@@ -2,13 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-}
-
-// Force JavaPoet version across all subprojects to fix canonicalName() error
-subprojects {
-    configurations.all {
-        resolutionStrategy {
-            force("com.squareup:javapoet:1.13.0")
-        }
-    }
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.ksp) apply false
 }
