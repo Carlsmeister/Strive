@@ -34,9 +34,11 @@ class RunRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addRunPoint(runId: Long, lat: Double, lng: Double) {
+        // Basic validation for coordinates
+        if (lat.isNaN() || lng.isNaN()) return
+        if (lat !in -90.0..90.0 || lng !in -180.0..180.0) return
         val runPoint = RunPointEntity(
             runId = runId,
-            idx = 0, // Will be calculated based on existing points
             lat = lat,
             lng = lng,
             timestamp = System.currentTimeMillis()
@@ -47,10 +49,13 @@ class RunRepositoryImpl @Inject constructor(
     override suspend fun updateRunSession(runId: Long, distance: Double, elapsedSec: Int, pace: Double) {
         val runSession = runSessionDao.getRunSessionById(runId)
         runSession?.let {
+            val safeDistance = if (distance.isFinite() && distance >= 0.0) distance else it.distance
+            val safeElapsed = if (elapsedSec >= 0) elapsedSec else it.elapsedSec
+            val safePace = if (pace.isFinite() && pace >= 0.0) pace else it.pace
             val updatedSession = it.copy(
-                distance = distance,
-                elapsedSec = elapsedSec,
-                pace = pace
+                distance = safeDistance,
+                elapsedSec = safeElapsed,
+                pace = safePace
             )
             runSessionDao.updateRunSession(updatedSession)
         }
@@ -61,7 +66,7 @@ class RunRepositoryImpl @Inject constructor(
         runSession?.let {
             val updatedSession = it.copy(
                 endedAt = System.currentTimeMillis(),
-                kcal = kcal
+                kcal = kcal.coerceAtLeast(0)
             )
             runSessionDao.updateRunSession(updatedSession)
         }
@@ -73,9 +78,6 @@ class RunRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRunSessionById(id: Long): RunSession? {
-        return runSessionDao.getRunSessionById(id)?.toDomainModel(emptyList())
-    }
 }
 
 // Extension function for entity to domain model conversion
