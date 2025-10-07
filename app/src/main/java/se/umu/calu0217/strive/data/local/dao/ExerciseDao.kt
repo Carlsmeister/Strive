@@ -12,17 +12,16 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE id = :id")
     suspend fun getExerciseById(id: Long): ExerciseEntity?
 
-    @Query("SELECT * FROM exercises WHERE name LIKE '%' || :query || '%' OR equipment LIKE '%' || :query || '%' ORDER BY name COLLATE NOCASE ASC")
+    @Query("SELECT * FROM exercises WHERE name LIKE '%' || :query || '%' " +
+            "OR equipment LIKE '%' || :query || '%' " +
+            "OR bodyParts LIKE '%' || :query || '%' " +
+            "ORDER BY name COLLATE NOCASE ASC")
     fun searchExercises(query: String): Flow<List<ExerciseEntity>>
 
-    @Query("SELECT * FROM exercises WHERE bodyParts LIKE '%' || :bodyPart || '%' ORDER BY name COLLATE NOCASE ASC")
-    fun getExercisesByBodyPart(bodyPart: String): Flow<List<ExerciseEntity>>
 
     @Query("SELECT COUNT(*) FROM exercises")
     suspend fun countExercises(): Int
 
-    @Query("SELECT COUNT(*) FROM exercises WHERE imageUrl IS NULL OR imageUrl = ''")
-    suspend fun countExercisesMissingImage(): Int
 
     @Query("SELECT * FROM exercises WHERE imageUrl IS NULL OR imageUrl = ''")
     suspend fun getExercisesMissingImages(): List<ExerciseEntity>
@@ -30,8 +29,6 @@ interface ExerciseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercises(exercises: List<ExerciseEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExercise(exercise: ExerciseEntity): Long
 
     @Update
     suspend fun updateExercise(exercise: ExerciseEntity)
@@ -39,8 +36,6 @@ interface ExerciseDao {
     @Query("DELETE FROM exercises")
     suspend fun deleteAllExercises()
 
-    @Query("SELECT * FROM exercises")
-    suspend fun getAllExercisesOnce(): List<ExerciseEntity>
 }
 
 @Dao
@@ -72,11 +67,6 @@ interface TemplateExerciseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTemplateExercises(templateExercises: List<TemplateExerciseEntity>)
 
-    @Update
-    suspend fun updateTemplateExercise(templateExercise: TemplateExerciseEntity)
-
-    @Delete
-    suspend fun deleteTemplateExercise(templateExercise: TemplateExerciseEntity)
 
     @Query("DELETE FROM template_exercises WHERE templateId = :templateId")
     suspend fun deleteTemplateExercises(templateId: Long)
