@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -18,12 +17,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import se.umu.calu0217.strive.core.constants.UiConstants
+import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
+import se.umu.calu0217.strive.domain.models.TemplateExercise
+import se.umu.calu0217.strive.ui.components.AddExerciseDialog
+import se.umu.calu0217.strive.ui.components.TextInputDialog
+import se.umu.calu0217.strive.ui.components.LoadingIndicator
+import se.umu.calu0217.strive.ui.theme.EnergeticOrange
+import se.umu.calu0217.strive.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,154 +46,179 @@ fun WorkoutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(UiConstants.STANDARD_PADDING)
     ) {
-        // Header
-        Text(
-            text = "Workout",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // Start New Workout Button
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                ) {
-                    Icon(
-                        Icons.Default.FitnessCenter,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = "Quick Start",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-                Text(
-                    text = "Start a workout without a template",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Button(
-                    onClick = {
-                        viewModel.startQuickWorkout { sessionId ->
-                            onNavigateToActiveWorkout(sessionId)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Start New Workout")
-                }
+        // Quick Start Section
+        QuickStartCard(onStartWorkout = {
+            viewModel.startQuickWorkout { sessionId ->
+                onNavigateToActiveWorkout(sessionId)
             }
-        }
+        })
 
-        // Templates Section
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Workout Templates",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-            TextButton(
-                onClick = { viewModel.showCreateTemplateDialog() }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Create")
-            }
-        }
+        Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Templates Section Header
+        TemplatesHeader(onCreateTemplate = { viewModel.showCreateTemplateDialog() })
+
+        Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
         // Templates List
         if (uiState.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingIndicator()
         } else if (uiState.templates.isEmpty()) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        Icons.Default.FitnessCenter,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "No templates yet",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "Create your first workout template to get started",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
+            EmptyTemplatesCard()
         } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.templates) { template ->
-                    TemplateCard(
-                        template = template,
-                        onStartWorkout = {
-                            viewModel.startWorkoutFromTemplate(template.id) { sessionId ->
-                                onNavigateToActiveWorkout(sessionId)
-                            }
-                        },
-                        onEditTemplate = { viewModel.editTemplate(template) },
-                        onAddExercises = { viewModel.openAddExercisesDialog(template) },
-                        onDeleteTemplate = { viewModel.deleteTemplate(template) }
-                    )
-                }
-            }
+            TemplatesList(
+                templates = uiState.templates,
+                onStartWorkout = { template ->
+                    viewModel.startWorkoutFromTemplate(template.id) { sessionId ->
+                        onNavigateToActiveWorkout(sessionId)
+                    }
+                },
+                onEditTemplate = { viewModel.editTemplate(it) },
+                onAddExercises = { viewModel.openAddExercisesDialog(it) },
+                onDeleteTemplate = { viewModel.deleteTemplate(it) }
+            )
         }
     }
 
+    // Dialogs
+    WorkoutDialogs(
+        uiState = uiState,
+        viewModel = viewModel
+    )
+}
+
+@Composable
+private fun QuickStartCard(onStartWorkout: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 12.dp)
+            ) {
+                Icon(
+                    Icons.Default.FitnessCenter,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(UiConstants.SMALL_ICON_SIZE)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = stringResource(R.string.quick_start),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Text(
+                text = stringResource(R.string.start_new_workout_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
+            )
+            Button(
+                onClick = onStartWorkout,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                Text(stringResource(R.string.start_new_workout))
+            }
+        }
+    }
+}
+
+@Composable
+private fun TemplatesHeader(onCreateTemplate: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.workout_templates),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        TextButton(onClick = onCreateTemplate) {
+            Icon(Icons.Default.Add, contentDescription = null)
+            Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
+            Text(stringResource(R.string.create))
+        }
+    }
+}
+
+@Composable
+private fun EmptyTemplatesCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(UiConstants.LARGE_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                Icons.Default.FitnessCenter,
+                contentDescription = null,
+                modifier = Modifier.size(UiConstants.LARGE_ICON_SIZE),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
+            Text(
+                text = stringResource(R.string.no_templates_yet),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun TemplatesList(
+    templates: List<WorkoutTemplate>,
+    onStartWorkout: (WorkoutTemplate) -> Unit,
+    onEditTemplate: (WorkoutTemplate) -> Unit,
+    onAddExercises: (WorkoutTemplate) -> Unit,
+    onDeleteTemplate: (WorkoutTemplate) -> Unit
+) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        items(templates) { template ->
+            TemplateCard(
+                template = template,
+                onStartWorkout = { onStartWorkout(template) },
+                onEditTemplate = { onEditTemplate(template) },
+                onAddExercises = { onAddExercises(template) },
+                onDeleteTemplate = { onDeleteTemplate(template) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutDialogs(
+    uiState: WorkoutUiState,
+    viewModel: WorkoutViewModel
+) {
     // Create Template Dialog
     if (uiState.showCreateDialog) {
-        CreateTemplateDialog(
+        TextInputDialog(
+            title = stringResource(R.string.create_template),
+            label = stringResource(R.string.template_name),
+            description = stringResource(R.string.template_name_prompt),
+            confirmText = stringResource(R.string.create),
+            dismissText = stringResource(R.string.cancel),
             onDismiss = { viewModel.hideCreateTemplateDialog() },
             onConfirm = { templateName ->
                 viewModel.createTemplate(templateName)
@@ -191,32 +226,29 @@ fun WorkoutScreen(
         )
     }
 
-    // Edit Template: Add Exercise Dialog
-    run {
-        val currentTemplate = uiState.editingTemplate
-        if (uiState.showEditDialog && currentTemplate != null) {
-            AddExerciseToTemplateDialog(
-                templateName = currentTemplate.name,
-                availableExercises = uiState.availableExercises,
-                onDismiss = { viewModel.hideEditTemplateDialog() },
-                onAdd = { exercise: Exercise, sets: Int, reps: Int, restSec: Int ->
-                    viewModel.addExerciseToTemplate(exercise.id, sets, reps, restSec)
-                }
-            )
-        }
+    // Add Exercise Dialog
+    if (uiState.showEditDialog && uiState.editingTemplate != null) {
+        val template = uiState.editingTemplate!!
+        AddExerciseDialog(
+            title = "Add Exercise to \"${template.name}\" workout",
+            availableExercises = uiState.availableExercises,
+            onDismiss = { viewModel.hideEditTemplateDialog() },
+            onAdd = { exercise, sets, reps, rest ->
+                viewModel.addExerciseToTemplate(exercise.id, sets, reps, rest)
+            }
+        )
     }
 
-    // Full Template Editor Dialog
-    run {
-        val editTemplate = uiState.editorTemplate
-        if (uiState.showEditorDialog && editTemplate != null) {
-            TemplateEditorDialog(
-                template = editTemplate,
-                availableExercises = uiState.availableExercises,
-                onDismiss = { viewModel.hideTemplateEditor() },
-                onSave = { updated -> viewModel.saveEditedTemplate(updated) }
-            )
-        }
+    // Template Editor Dialog
+    if (uiState.showEditorDialog && uiState.editorTemplate != null) {
+        TemplateEditorDialog(
+            template = uiState.editorTemplate!!,
+            availableExercises = uiState.availableExercises,
+            onDismiss = { viewModel.hideTemplateEditor() },
+            onSave = { updatedTemplate ->
+                viewModel.saveEditedTemplate(updatedTemplate)
+            }
+        )
     }
 }
 
@@ -228,11 +260,12 @@ private fun TemplateCard(
     onAddExercises: () -> Unit,
     onDeleteTemplate: () -> Unit
 ) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(UiConstants.STANDARD_PADDING)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -248,7 +281,11 @@ private fun TemplateCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "${template.exercises.size} exercises",
+                        text = context.resources.getQuantityString(
+                            R.plurals.exercises_count,
+                            template.exercises.size,
+                            template.exercises.size
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -256,7 +293,7 @@ private fun TemplateCard(
                         val totalSets = template.exercises.sumOf { it.sets }
                         val avgRest = template.exercises.map { it.restSec }.average().toInt()
                         Text(
-                            text = "$totalSets sets • ${avgRest}s avg rest",
+                            text = stringResource(R.string.sets_and_avg_rest, totalSets, avgRest),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -266,14 +303,14 @@ private fun TemplateCard(
                     IconButton(onClick = onEditTemplate) {
                         Icon(
                             Icons.Default.Edit,
-                            contentDescription = "Edit template",
+                            contentDescription = stringResource(R.string.edit_template),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onDeleteTemplate) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Delete template",
+                            contentDescription = stringResource(R.string.clear_all_data),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -287,8 +324,8 @@ private fun TemplateCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Start Workout")
+                    Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                    Text(stringResource(R.string.start_workout))
                 }
             } else {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -297,150 +334,13 @@ private fun TemplateCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Add Exercises")
+                    Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                    Text(stringResource(R.string.add_exercises))
                 }
             }
         }
     }
 }
-
-@Composable
-private fun CreateTemplateDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
-    var templateName by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Create Template") },
-        text = {
-            Column {
-                Text("Enter a name for your new workout template")
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = templateName,
-                    onValueChange = { templateName = it },
-                    label = { Text("Template name") },
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (templateName.isNotBlank()) {
-                        onConfirm(templateName)
-                        onDismiss()
-                    }
-                }
-            ) {
-                Text("Create")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
-private fun AddExerciseToTemplateDialog(
-    templateName: String,
-    availableExercises: List<Exercise>,
-    onDismiss: () -> Unit,
-    onAdd: (Exercise, Int, Int, Int) -> Unit
-) {
-    var query by remember { mutableStateOf("") }
-    var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
-    var setsInput by remember { mutableStateOf("3") }
-    var repsInput by remember { mutableStateOf("10") }
-    var restInput by remember { mutableStateOf("60") }
-
-    val filtered = remember(query, availableExercises) {
-        if (query.isBlank()) availableExercises.take(20) else availableExercises.filter { it.name.contains(query, ignoreCase = true) }.take(20)
-    }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Add Exercise to \"$templateName\" workout") },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    label = { Text("Search exercises") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
-                    itemsIndexed(filtered) { _, ex ->
-                        ListItem(
-                            headlineContent = { Text(ex.name) },
-                            supportingContent = { Text(ex.bodyParts.joinToString()) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    selectedExercise = ex
-                                    query = ex.name
-                                }
-                        )
-                        Divider()
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                selectedExercise?.let {
-                    Text("Selected: ${it.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = setsInput,
-                        onValueChange = { setsInput = it.filter { ch -> ch.isDigit() }.take(2) },
-                        label = { Text("Sets") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = repsInput,
-                        onValueChange = { repsInput = it.filter { ch -> ch.isDigit() }.take(3) },
-                        label = { Text("Reps") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = restInput,
-                        onValueChange = { restInput = it.filter { ch -> ch.isDigit() }.take(4) },
-                        label = { Text("Rest (s)") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = selectedExercise != null,
-                onClick = {
-                    val ex = selectedExercise ?: return@TextButton
-                    val sets = setsInput.toIntOrNull() ?: 3
-                    val reps = repsInput.toIntOrNull() ?: 10
-                    val rest = restInput.toIntOrNull() ?: 60
-                    onAdd(ex, sets, reps, rest)
-                }
-            ) { Text("Add") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
-
 
 @Composable
 private fun TemplateEditorDialog(
@@ -451,7 +351,7 @@ private fun TemplateEditorDialog(
 ) {
     var nameText by remember(template.id) { mutableStateOf(template.name) }
     val items = remember(template.id) {
-        mutableStateListOf<se.umu.calu0217.strive.domain.models.TemplateExercise>().apply {
+        mutableStateListOf<TemplateExercise>().apply {
             addAll(template.exercises.sortedBy { it.position })
         }
     }
@@ -522,7 +422,7 @@ private fun TemplateEditorDialog(
                                         OutlinedTextField(
                                             value = setsStr,
                                             onValueChange = { v ->
-                                                val filtered = v.filter { it.isDigit() }.take(2)
+                                                val filtered = v.digits(2)
                                                 setsStr = filtered
                                                 val newVal = filtered.toIntOrNull() ?: te.sets
                                                 items[index] = items[index].copy(sets = newVal)
@@ -536,7 +436,7 @@ private fun TemplateEditorDialog(
                                         OutlinedTextField(
                                             value = repsStr,
                                             onValueChange = { v ->
-                                                val filtered = v.filter { it.isDigit() }.take(3)
+                                                val filtered = v.digits(3)
                                                 repsStr = filtered
                                                 val newVal = filtered.toIntOrNull() ?: te.reps
                                                 items[index] = items[index].copy(reps = newVal)
@@ -550,7 +450,7 @@ private fun TemplateEditorDialog(
                                         OutlinedTextField(
                                             value = restStr,
                                             onValueChange = { v ->
-                                                val filtered = v.filter { it.isDigit() }.take(4)
+                                                val filtered = v.digits(4)
                                                 restStr = filtered
                                                 val newVal = filtered.toIntOrNull() ?: te.restSec
                                                 items[index] = items[index].copy(restSec = newVal)
@@ -576,7 +476,7 @@ private fun TemplateEditorDialog(
                                             Icon(
                                                 Icons.Filled.ArrowUpward,
                                                 contentDescription = "Move up",
-                                                tint = se.umu.calu0217.strive.ui.theme.EnergeticOrange
+                                                tint = EnergeticOrange
                                             )
                                         }
                                         IconButton(
@@ -591,13 +491,13 @@ private fun TemplateEditorDialog(
                                             Icon(
                                                 Icons.Filled.ArrowDownward,
                                                 contentDescription = "Move down",
-                                                tint = se.umu.calu0217.strive.ui.theme.EnergeticOrange
+                                                tint = EnergeticOrange
                                             )
                                         }
                                     }
                                 }
                             }
-                            Divider()
+                            HorizontalDivider()
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -622,96 +522,19 @@ private fun TemplateEditorDialog(
     )
 
     if (showAddExerciseDialog) {
-        var query by remember { mutableStateOf("") }
-        var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
-        var setsInput by remember { mutableStateOf("3") }
-        var repsInput by remember { mutableStateOf("10") }
-        var restInput by remember { mutableStateOf("60") }
-
-        val filtered = remember(query, availableExercises) {
-            if (query.isBlank()) availableExercises.take(20) else availableExercises.filter { it.name.contains(query, ignoreCase = true) }.take(20)
-        }
-
-        AlertDialog(
-            onDismissRequest = { showAddExerciseDialog = false },
-            title = { Text("Add Exercise") },
-            text = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        label = { Text("Search exercises") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
-                        itemsIndexed(filtered) { _, ex ->
-                            ListItem(
-                                headlineContent = { Text(ex.name) },
-                                supportingContent = { Text(ex.bodyParts.joinToString()) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                                    .clickable {
-                                        selectedExercise = ex
-                                        query = ex.name
-                                    }
-                            )
-                            Divider()
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    selectedExercise?.let {
-                        Text("Selected: ${it.name}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
-                            value = setsInput,
-                            onValueChange = { setsInput = it.filter { ch -> ch.isDigit() }.take(2) },
-                            label = { Text("Sets") },
-                            singleLine = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                        OutlinedTextField(
-                            value = repsInput,
-                            onValueChange = { repsInput = it.filter { ch -> ch.isDigit() }.take(3) },
-                            label = { Text("Reps") },
-                            singleLine = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                        OutlinedTextField(
-                            value = restInput,
-                            onValueChange = { restInput = it.filter { ch -> ch.isDigit() }.take(4) },
-                            label = { Text("Rest (s)") },
-                            singleLine = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = selectedExercise != null,
-                    onClick = {
-                        val ex = selectedExercise ?: return@TextButton
-                        val sets = setsInput.toIntOrNull() ?: 3
-                        val reps = repsInput.toIntOrNull() ?: 10
-                        val rest = restInput.toIntOrNull() ?: 60
-                        items.add(0, se.umu.calu0217.strive.domain.models.TemplateExercise(
-                            exerciseId = ex.id,
-                            sets = sets,
-                            reps = reps,
-                            restSec = rest,
-                            position = 0
-                        ))
-                        showAddExerciseDialog = false
-                    }
-                ) { Text("Add") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAddExerciseDialog = false }) { Text("Cancel") }
+        AddExerciseDialog(
+            title = "Add Exercise",
+            availableExercises = availableExercises,
+            onDismiss = { showAddExerciseDialog = false },
+            onAdd = { exercise, sets, reps, rest ->
+                items.add(0, TemplateExercise(
+                    exerciseId = exercise.id,
+                    sets = sets,
+                    reps = reps,
+                    restSec = rest,
+                    position = 0
+                ))
+                showAddExerciseDialog = false
             }
         )
     }

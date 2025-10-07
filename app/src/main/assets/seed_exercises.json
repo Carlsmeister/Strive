@@ -1,0 +1,1802 @@
+[
+  {
+    "name": "Push-ups",
+    "bodyParts": [
+      "chest",
+      "shoulders",
+      "triceps",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start in a high plank with hands slightly wider than shoulders",
+      "Lower chest toward the floor keeping elbows at ~45°",
+      "Push back to the starting position",
+      "Keep core braced and body in a straight line"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Squats",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Stand with feet shoulder-width apart",
+      "Push hips back and bend knees to lower",
+      "Descend until thighs are parallel to floor",
+      "Drive through heels to stand tall"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Deadlifts",
+    "bodyParts": [
+      "hamstrings",
+      "glutes",
+      "lower back",
+      "lats"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Set bar over mid-foot, grip just outside legs",
+      "Flatten back, brace, and drive through heels",
+      "Extend hips and knees to stand tall",
+      "Lower with control keeping bar close to body"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Pull-ups",
+    "bodyParts": [
+      "lats",
+      "biceps",
+      "rear delts",
+      "mid back",
+      "core"
+    ],
+    "equipment": "pull-up bar",
+    "instructions": [
+      "Hang from bar with overhand grip",
+      "Pull elbows down to bring chin above bar",
+      "Pause briefly, then lower under control",
+      "Keep ribs down and core engaged"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bench Press",
+    "bodyParts": [
+      "chest",
+      "triceps",
+      "front delts"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Lie on bench, feet flat and shoulder blades retracted",
+      "Grip bar slightly wider than shoulders",
+      "Lower bar to mid-chest with forearms vertical",
+      "Press bar back up over shoulders"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Plank",
+    "bodyParts": [
+      "core",
+      "shoulders",
+      "glutes",
+      "lower back"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Set forearms on floor with elbows under shoulders",
+      "Extend legs, forming a straight line head to heels",
+      "Brace abs and glutes",
+      "Hold while breathing steadily"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Lunges",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Stand tall and step forward into a lunge",
+      "Lower until both knees are ~90°",
+      "Drive through front heel to stand",
+      "Alternate legs each rep"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Mountain Climbers",
+    "bodyParts": [
+      "core",
+      "shoulders",
+      "hip flexors",
+      "legs"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start in a high plank",
+      "Drive one knee toward chest",
+      "Switch legs quickly in a running motion",
+      "Maintain flat back and braced core"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Dumbbell Rows",
+    "bodyParts": [
+      "lats",
+      "mid back",
+      "biceps",
+      "rear delts"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Brace one hand on bench, flat back and hips hinged",
+      "Row dumbbell toward hip, squeezing shoulder blade",
+      "Lower under control and repeat",
+      "Keep torso square to the floor"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Shoulder Press",
+    "bodyParts": [
+      "front deltoids",
+      "lateral deltoids",
+      "triceps",
+      "upper chest"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Sit upright with dumbbells at shoulder height",
+      "Press overhead until arms are extended",
+      "Lower to the starting position",
+      "Keep ribs down and glutes tight"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bicep Curls",
+    "bodyParts": [
+      "biceps",
+      "forearms"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Stand tall holding dumbbells at sides",
+      "Curl weights while keeping elbows near torso",
+      "Squeeze at the top and lower slowly",
+      "Avoid swinging the body"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Tricep Dips",
+    "bodyParts": [
+      "triceps",
+      "chest",
+      "front delts"
+    ],
+    "equipment": "bench",
+    "instructions": [
+      "Place hands on bench behind you, legs extended",
+      "Lower body by bending elbows to ~90°",
+      "Press back up by extending elbows",
+      "Keep shoulders down and chest lifted"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Calf Raises",
+    "bodyParts": [
+      "calves"
+    ],
+    "equipment": "machine",
+    "instructions": [
+      "Stand with balls of feet on a platform",
+      "Rise onto toes by extending ankles",
+      "Pause at top then lower slowly",
+      "Keep knees soft and controlled"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Russian Twists",
+    "bodyParts": [
+      "obliques",
+      "upper abs",
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Sit with knees bent and lean back slightly",
+      "Lift feet if able and brace core",
+      "Rotate torso to tap hands beside hip",
+      "Alternate sides with control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Leg Raises",
+    "bodyParts": [
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with legs straight",
+      "Brace core and lift legs until vertical",
+      "Lower legs without touching the floor",
+      "Keep lower back pressed down"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Side Plank",
+    "bodyParts": [
+      "obliques",
+      "glute medius",
+      "shoulders"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on side and prop up on forearm",
+      "Stack feet and lift hips into a straight line",
+      "Keep shoulder over elbow and ribs down",
+      "Hold while breathing steadily"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Hip Thrusts",
+    "bodyParts": [
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Place upper back on bench, feet flat",
+      "Position barbell across hips",
+      "Drive through heels to extend hips",
+      "Squeeze glutes at top; lower under control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Leg Press",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "equipment": "machine",
+    "instructions": [
+      "Set feet shoulder-width on platform",
+      "Unlock and lower until knees ~90°",
+      "Press through mid-foot to extend knees",
+      "Avoid locking knees at top"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Crunches",
+    "bodyParts": [
+      "upper abs"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on your back with knees bent",
+      "Lift shoulders off floor by contracting abs",
+      "Pause briefly, then lower slowly",
+      "Avoid pulling on the neck"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bent Over Barbell Row",
+    "bodyParts": [
+      "mid back",
+      "lats",
+      "biceps",
+      "rear delts"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Hinge at hips with flat back, overhand grip",
+      "Row bar to lower chest/upper abs",
+      "Squeeze shoulder blades together",
+      "Lower bar under control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Front Raises",
+    "bodyParts": [
+      "front deltoids"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hold dumbbells in front of thighs",
+      "Raise arms forward to shoulder level",
+      "Lower with control and repeat",
+      "Keep torso still; avoid swinging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Side Lateral Raises",
+    "bodyParts": [
+      "lateral deltoids"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hold dumbbells at sides, palms facing in",
+      "Lift arms out to sides until parallel",
+      "Lower slowly; keep shoulders down",
+      "Maintain slight elbow bend"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Chest Flyes",
+    "bodyParts": [
+      "chest",
+      "front delts"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Lie on bench with dumbbells over chest",
+      "Lower arms in a wide arc with slight elbow bend",
+      "Bring weights back together over chest",
+      "Keep shoulders packed and motion controlled"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Hammer Curls",
+    "bodyParts": [
+      "brachialis",
+      "biceps",
+      "forearms"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hold dumbbells with palms facing each other",
+      "Curl while keeping elbows at sides",
+      "Squeeze at top and lower slowly",
+      "Avoid leaning back or swinging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Overhead Tricep Extension",
+    "bodyParts": [
+      "triceps",
+      "shoulders",
+      "forearms"
+    ],
+    "equipment": "dumbbell",
+    "instructions": [
+      "Hold one dumbbell overhead with both hands",
+      "Bend elbows to lower weight behind head",
+      "Extend elbows to press weight up",
+      "Keep upper arms vertical and ribs down"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Seated Cable Row",
+    "bodyParts": [
+      "mid back",
+      "lats",
+      "rear delts",
+      "biceps"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Sit with feet on platform and neutral spine",
+      "Pull handle toward lower ribs, squeezing shoulder blades",
+      "Pause, then extend arms under control",
+      "Avoid shrugging or leaning back excessively"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Romanian Deadlift (RDL)",
+    "bodyParts": [
+      "hamstrings",
+      "glutes",
+      "lower back"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Stand tall holding bar at hips, soft knees",
+      "Hinge by pushing hips back, keeping bar close to legs",
+      "Lower until hamstrings are stretched, spine neutral",
+      "Drive hips forward to stand tall"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Side Bridge",
+    "bodyParts": [
+      "obliques",
+      "glutes",
+      "shoulders"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on side and prop up on forearm",
+      "Lift hips to form a straight line",
+      "Keep neck neutral and core braced",
+      "Hold for time with steady breathing"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Glute Bridge",
+    "bodyParts": [
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with knees bent and feet flat",
+      "Brace core and drive through heels",
+      "Lift hips until knees, hips, and shoulders align",
+      "Lower with control and repeat"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Arnold Press",
+    "bodyParts": [
+      "front deltoids",
+      "lateral delts",
+      "triceps"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Start with dumbbells at upper chest, palms facing you",
+      "Rotate palms away while pressing overhead",
+      "Reverse the motion to return",
+      "Keep core tight and back neutral"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Wide-Grip Lat Pulldown",
+    "bodyParts": [
+      "lats",
+      "biceps",
+      "rear delts",
+      "mid back"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Grip bar wide and sit tall with slight lean back",
+      "Pull bar to upper chest by driving elbows down",
+      "Pause, then control the ascent",
+      "Avoid shrugging and swinging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Cable Crossover",
+    "bodyParts": [
+      "chest",
+      "front delts"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Set pulleys high and step forward with slight lean",
+      "With elbows soft, bring handles together in front",
+      "Squeeze chest, then return with control",
+      "Keep ribs down and shoulders packed"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Jumping Jacks",
+    "bodyParts": [
+      "full body",
+      "calves",
+      "shoulders",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start standing with feet together and arms at sides",
+      "Jump feet apart while raising arms overhead",
+      "Jump feet back together lowering arms",
+      "Maintain rhythm and soft landings"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "bodyParts": [
+      "upper chest",
+      "triceps",
+      "front delts"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Set bench to 30–45° incline and lie back with dumbbells at chest",
+      "Press up over shoulders; keep wrists neutral",
+      "Lower to ~90° elbow angle with scapula retracted",
+      "Press back up with a slight inward arc"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Decline Push-up",
+    "bodyParts": [
+      "upper chest",
+      "front delts",
+      "triceps",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Place feet on a bench and hands slightly wider than shoulders",
+      "Lower chest toward floor with elbows at ~45°",
+      "Keep core tight and body straight",
+      "Press back to start without flaring elbows"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Pike Push-up",
+    "bodyParts": [
+      "front deltoids",
+      "triceps",
+      "upper chest",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start in a pike with hips high and spine neutral",
+      "Bend elbows to lower head toward floor",
+      "Maintain 45° elbow path and braced core",
+      "Press back to the pike position"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Diamond Push-up",
+    "bodyParts": [
+      "triceps",
+      "chest",
+      "front delts",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Form a diamond with thumbs and index fingers under chest",
+      "Lower torso keeping elbows close to body",
+      "Stop before shoulders roll forward",
+      "Press up while keeping core tight"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Chest Dip",
+    "bodyParts": [
+      "lower chest",
+      "triceps",
+      "front delts"
+    ],
+    "equipment": "dip bars",
+    "instructions": [
+      "Grip parallel bars and support bodyweight",
+      "Lean torso slightly forward and bend knees behind",
+      "Lower until shoulders are just below elbows",
+      "Press through palms, keeping forward lean"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Face Pull",
+    "bodyParts": [
+      "rear deltoids",
+      "mid traps",
+      "external rotators"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Set cable at upper-chest height with rope",
+      "Pull toward face with elbows high, thumbs back",
+      "Externally rotate at end range",
+      "Return slowly without shrugging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Rear Delt Fly",
+    "bodyParts": [
+      "rear deltoids",
+      "mid traps",
+      "rhomboids"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hinge at hips, dumbbells under shoulders",
+      "Raise arms out to sides with slight elbow bend",
+      "Squeeze shoulder blades at top",
+      "Lower slowly without rounding back"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "T-Bar Row",
+    "bodyParts": [
+      "mid back",
+      "lats",
+      "rear delts",
+      "biceps"
+    ],
+    "equipment": "machine",
+    "instructions": [
+      "Set torso support and grip handles",
+      "Row handle toward sternum while keeping chest down",
+      "Pause and squeeze shoulder blades",
+      "Lower with control without bouncing"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Chin-up",
+    "bodyParts": [
+      "lats",
+      "biceps",
+      "mid back",
+      "core"
+    ],
+    "equipment": "pull-up bar",
+    "instructions": [
+      "Hang from bar with supinated grip",
+      "Pull elbows down/back until chin clears bar",
+      "Pause and lower under control",
+      "Avoid kipping or shrugging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "bodyParts": [
+      "triceps",
+      "chest",
+      "front delts"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Grip bar just inside shoulder width",
+      "Lower to lower chest keeping elbows tucked",
+      "Press up tracking bar over shoulders",
+      "Keep shoulder blades retracted"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Skullcrusher (Lying Triceps Extension)",
+    "bodyParts": [
+      "triceps",
+      "forearms"
+    ],
+    "equipment": "ez-bar",
+    "instructions": [
+      "Lie on bench and press EZ-bar over chest",
+      "Hinge at elbows to lower bar toward forehead",
+      "Keep upper arms vertical and elbows tucked",
+      "Extend elbows to return"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Cable Triceps Pushdown",
+    "bodyParts": [
+      "triceps",
+      "forearms"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Set cable high and grasp attachment",
+      "Pin elbows to sides and extend arms down",
+      "Squeeze triceps at full extension",
+      "Return under control without elbow drift"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Preacher Curl",
+    "bodyParts": [
+      "biceps",
+      "brachialis",
+      "forearms"
+    ],
+    "equipment": "ez-bar",
+    "instructions": [
+      "Set upper arms on preacher pad with full elbow extension",
+      "Curl bar toward shoulders without lifting triceps off pad",
+      "Pause and squeeze at top",
+      "Lower slowly to full stretch"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Concentration Curl",
+    "bodyParts": [
+      "biceps",
+      "brachialis",
+      "forearms"
+    ],
+    "equipment": "dumbbell",
+    "instructions": [
+      "Sit, brace upper arm against inner thigh",
+      "Curl dumbbell to shoulder keeping torso still",
+      "Squeeze at top and lower slowly",
+      "Repeat then switch arms"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "EZ-Bar Curl",
+    "bodyParts": [
+      "biceps",
+      "forearms"
+    ],
+    "equipment": "ez-bar",
+    "instructions": [
+      "Stand tall holding EZ-bar with underhand grip",
+      "Curl bar while keeping elbows fixed",
+      "Avoid swinging or leaning back",
+      "Lower slowly to full extension"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Reverse Curl",
+    "bodyParts": [
+      "brachioradialis",
+      "biceps",
+      "extensors"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Grip bar with pronated grip",
+      "Curl bar keeping wrists neutral",
+      "Squeeze at top without elbows flaring",
+      "Lower slowly with control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Wrist Curl",
+    "bodyParts": [
+      "forearm flexors"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Sit and rest forearms on thighs/pad with palms up",
+      "Allow bar to roll to fingertips",
+      "Curl wrists to raise bar and squeeze",
+      "Lower slowly maintaining control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Cable Hip Abduction",
+    "bodyParts": [
+      "glute medius",
+      "glute minimus",
+      "core"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Attach ankle cuff to low cable and stand tall",
+      "Sweep leg outward in a controlled arc",
+      "Pause and squeeze side glutes",
+      "Return slowly without rotating hips"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves",
+      "core"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Place back foot on bench behind, front foot forward",
+      "Descend until back knee nears floor",
+      "Keep front knee tracking over toes",
+      "Drive through front heel to stand"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Step-up",
+    "bodyParts": [
+      "glutes",
+      "quadriceps",
+      "hamstrings",
+      "calves"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Place whole foot on box/bench",
+      "Drive through heel to stand tall on platform",
+      "Control the descent back to floor",
+      "Alternate legs or complete reps per side"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Goblet Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "kettlebell",
+    "instructions": [
+      "Hold kettlebell at chest with elbows down",
+      "Sit hips down between heels while keeping chest tall",
+      "Keep knees tracking over toes",
+      "Drive through mid-foot to stand"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Front Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "upper back",
+      "core"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Rack bar on front delts with clean or cross grip",
+      "Keep elbows high and chest up",
+      "Sit down between heels maintaining upright torso",
+      "Drive up through mid-foot to stand"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Dumbbell Romanian Deadlift",
+    "bodyParts": [
+      "hamstrings",
+      "glutes",
+      "lower back"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hold dumbbells at thighs, soft knees",
+      "Push hips back and keep spine neutral",
+      "Lower until hamstrings stretch while weights track thighs",
+      "Drive hips forward to stand"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Kettlebell Swing",
+    "bodyParts": [
+      "glutes",
+      "hamstrings",
+      "lower back",
+      "core"
+    ],
+    "equipment": "kettlebell",
+    "instructions": [
+      "Hike bell back between legs with neutral spine",
+      "Explosively extend hips to project bell forward",
+      "Let bell float to chest height with arms relaxed",
+      "Hinge again as bell returns; do not squat"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Sumo Deadlift",
+    "bodyParts": [
+      "glutes",
+      "hamstrings",
+      "adductors",
+      "back"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Set feet wide with toes out, grip inside knees",
+      "Brace and drive floor apart with feet",
+      "Stand tall keeping bar close",
+      "Lower with control maintaining knee tracking"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Lying Leg Curl",
+    "bodyParts": [
+      "hamstrings",
+      "calves"
+    ],
+    "equipment": "machine",
+    "instructions": [
+      "Lie prone and align knees with machine axis",
+      "Curl pad toward glutes without lifting hips",
+      "Squeeze at top then lower slowly",
+      "Avoid hyperextending lower back"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Nordic Hamstring Curl",
+    "bodyParts": [
+      "hamstrings",
+      "glutes",
+      "calves"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Anchor heels and kneel upright",
+      "Lower torso forward slowly resisting with hamstrings",
+      "Catch with hands at bottom if needed",
+      "Push up lightly and pull with hamstrings to return"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Copenhagen Plank",
+    "bodyParts": [
+      "adductors",
+      "obliques",
+      "glutes",
+      "shoulders"
+    ],
+    "equipment": "bench",
+    "instructions": [
+      "Place top leg on bench, bottom leg hanging below",
+      "Support on forearm with shoulders stacked",
+      "Lift hips and hold a straight line",
+      "Keep pelvis level and breathe"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Hanging Knee Raise",
+    "bodyParts": [
+      "lower abs",
+      "hip flexors",
+      "obliques"
+    ],
+    "equipment": "pull-up bar",
+    "instructions": [
+      "Hang from bar with active shoulders",
+      "Tuck pelvis and raise knees to hip height or higher",
+      "Control the descent without swinging",
+      "Avoid arching or shrugging"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bicycle Crunch",
+    "bodyParts": [
+      "obliques",
+      "upper abs",
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with hands lightly at temples",
+      "Bring one knee toward chest while rotating torso",
+      "Reach opposite elbow toward knee without pulling neck",
+      "Alternate sides in a controlled cadence"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Pallof Press",
+    "bodyParts": [
+      "core",
+      "obliques",
+      "glutes"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Stand perpendicular to cable with handle at chest",
+      "Press handle straight out resisting rotation",
+      "Hold briefly then return to chest",
+      "Maintain square hips and shoulders"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Ab Wheel Rollout",
+    "bodyParts": [
+      "core",
+      "lats",
+      "shoulders",
+      "hip flexors"
+    ],
+    "equipment": "ab wheel",
+    "instructions": [
+      "Kneel with wheel under shoulders and brace core",
+      "Roll forward keeping hips from sagging",
+      "Stop before losing lumbar neutrality",
+      "Pull back to start using lats and abs"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Farmer's Carry",
+    "bodyParts": [
+      "grip",
+      "traps",
+      "core",
+      "glutes",
+      "calves"
+    ],
+    "equipment": "kettlebells",
+    "instructions": [
+      "Stand tall holding heavy weights at sides",
+      "Brace core, pack shoulders, and walk controlled steps",
+      "Maintain neutral spine and steady breathing",
+      "Turn safely; avoid banging weights on legs"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Overhead Carry",
+    "bodyParts": [
+      "shoulders",
+      "traps",
+      "core",
+      "glutes"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Press weights overhead and lock elbows",
+      "Pack shoulders and keep ribs down",
+      "Walk slow, controlled steps",
+      "Lower safely to finish"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Turkish Get-Up",
+    "bodyParts": [
+      "full body",
+      "shoulders",
+      "core",
+      "glutes",
+      "hips"
+    ],
+    "equipment": "kettlebell",
+    "instructions": [
+      "From supine, press bell and post to elbow then hand",
+      "Bridge hips, sweep leg, and half-kneel",
+      "Stand up while keeping eyes on bell",
+      "Reverse steps to return to floor"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Battle Rope Waves",
+    "bodyParts": [
+      "full body",
+      "shoulders",
+      "forearms",
+      "core"
+    ],
+    "equipment": "battle ropes",
+    "instructions": [
+      "Stand athletic with slight knee bend and neutral spine",
+      "Move arms alternately to create waves",
+      "Keep waves continuous without shrugging",
+      "Breathe rhythmically and maintain posture"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Box Jump",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "calves",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "plyo box",
+    "instructions": [
+      "Stand an arm’s length from box and load hips back",
+      "Swing arms and jump, landing softly with knees tracking",
+      "Stand tall on box then step down under control",
+      "Reset between reps to maintain quality"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Pull-Up",
+    "bodyParts": [
+      "lats",
+      "biceps",
+      "mid back",
+      "core"
+    ],
+    "equipment": "pull-up bar",
+    "instructions": [
+      "Attach weight belt or hold a dumbbell between feet",
+      "Hang from bar with desired grip",
+      "Pull chin above bar keeping core tight",
+      "Lower slowly under control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Push-Up",
+    "bodyParts": [
+      "chest",
+      "triceps",
+      "shoulders",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Place weight plate or wear vest on back",
+      "Perform push-ups with elbows at 45°",
+      "Keep body straight and core braced",
+      "Lower and press up under control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Landmine Press",
+    "bodyParts": [
+      "front deltoids",
+      "upper chest",
+      "triceps"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Place one end of barbell in landmine or corner",
+      "Hold free end with both hands or one hand",
+      "Press bar upward in an arc",
+      "Lower under control keeping core tight"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Zercher Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Place barbell in crooks of elbows with arms wrapped",
+      "Stand with feet shoulder-width",
+      "Sit hips down keeping chest upright",
+      "Drive through feet to stand"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Overhead Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "upper back",
+      "shoulders",
+      "core"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Press bar overhead with wide grip",
+      "Sit hips down between heels maintaining bar over mid-foot",
+      "Keep chest up and arms locked",
+      "Stand up while maintaining overhead position"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Cable Hammer Curl",
+    "bodyParts": [
+      "brachialis",
+      "biceps",
+      "forearms"
+    ],
+    "equipment": "cable",
+    "instructions": [
+      "Attach rope handle to low pulley",
+      "Hold rope with palms facing each other",
+      "Curl upward while keeping elbows pinned",
+      "Lower slowly back to start"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Barbell Shrug",
+    "bodyParts": [
+      "traps",
+      "upper back",
+      "forearms"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Hold barbell at thighs with overhand grip",
+      "Elevate shoulders upward toward ears",
+      "Pause at top then lower slowly",
+      "Avoid rolling shoulders"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Dumbbell Shrug",
+    "bodyParts": [
+      "traps",
+      "upper back"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hold dumbbells at sides",
+      "Elevate shoulders straight up",
+      "Hold briefly then lower",
+      "Avoid swinging or rolling"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Barbell Curl",
+    "bodyParts": [
+      "biceps",
+      "forearms"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Hold bar with shoulder-width underhand grip",
+      "Curl bar upward keeping elbows close",
+      "Squeeze at top, then lower slowly",
+      "Avoid using momentum or leaning back"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Step-Up",
+    "bodyParts": [
+      "glutes",
+      "quadriceps",
+      "hamstrings",
+      "calves"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Place foot on box, weight held across back or at sides",
+      "Drive through heel to step up",
+      "Pause then step down under control",
+      "Alternate legs or complete one side at a time"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Seated Calf Raise",
+    "bodyParts": [
+      "calves"
+    ],
+    "equipment": "machine",
+    "instructions": [
+      "Sit with knees under pads and balls of feet on platform",
+      "Push through toes to raise heels",
+      "Pause at top then lower slowly",
+      "Keep motion controlled without bouncing"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Sit-Up",
+    "bodyParts": [
+      "upper abs",
+      "hip flexors"
+    ],
+    "equipment": "plate",
+    "instructions": [
+      "Lie on back with knees bent and plate held at chest",
+      "Sit up by curling torso toward knees",
+      "Return under control without letting plate drop",
+      "Keep feet anchored or use partner if needed"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Russian Twist",
+    "bodyParts": [
+      "obliques",
+      "upper abs",
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "plate",
+    "instructions": [
+      "Sit with knees bent and hold plate with both hands",
+      "Lean back slightly and lift feet off floor",
+      "Rotate torso to move plate side to side",
+      "Control the motion and maintain balance"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Medicine Ball Slam",
+    "bodyParts": [
+      "full body",
+      "shoulders",
+      "core",
+      "glutes"
+    ],
+    "equipment": "medicine ball",
+    "instructions": [
+      "Lift medicine ball overhead with arms extended",
+      "Forcefully slam ball down to the ground",
+      "Catch or retrieve and reset quickly",
+      "Repeat continuously with good posture"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Jump Rope",
+    "bodyParts": [
+      "full body",
+      "calves",
+      "shoulders",
+      "forearms",
+      "core"
+    ],
+    "equipment": "jump rope",
+    "instructions": [
+      "Hold rope handles at sides and swing rope overhead",
+      "Jump when rope nears feet",
+      "Land softly on balls of feet",
+      "Maintain rhythm and adjust speed as needed"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "High Knees",
+    "bodyParts": [
+      "quadriceps",
+      "hip flexors",
+      "calves",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Stand with feet hip-width apart",
+      "Run in place lifting knees to hip height",
+      "Move arms naturally to assist",
+      "Keep core engaged and land softly"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Side Lunge",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "adductors",
+      "hamstrings"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Stand with feet together",
+      "Step out to one side and bend that knee",
+      "Keep opposite leg straight and hips back",
+      "Push off to return and repeat other side"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Box Squat",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "barbell",
+    "instructions": [
+      "Set a box or bench behind you",
+      "With barbell on back, sit back until glutes touch box",
+      "Keep shins vertical and chest up",
+      "Drive through feet to stand without rocking"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Weighted Dip",
+    "bodyParts": [
+      "triceps",
+      "chest",
+      "front delts"
+    ],
+    "equipment": "dip bars",
+    "instructions": [
+      "Attach weight belt or hold dumbbell between feet",
+      "Perform dips keeping elbows tucked",
+      "Lower until arms are at 90°",
+      "Press back to start, maintaining good form"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Rowing Machine",
+    "bodyParts": [
+      "full body",
+      "back",
+      "legs",
+      "core",
+      "arms"
+    ],
+    "equipment": "rowing machine",
+    "instructions": [
+      "Strap feet in and grab handle",
+      "Drive with legs, lean back slightly, then pull with arms",
+      "Reverse the motion: arms, hinge, then legs",
+      "Maintain smooth rhythm and controlled breathing"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Treadmill Run",
+    "bodyParts": [
+      "legs",
+      "glutes",
+      "hip flexors",
+      "core"
+    ],
+    "equipment": "treadmill",
+    "instructions": [
+      "Set treadmill to desired speed and incline",
+      "Run with midfoot strike and relaxed arms",
+      "Keep posture upright and core engaged",
+      "Maintain consistent breathing throughout"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Stationary Bike",
+    "bodyParts": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves"
+    ],
+    "equipment": "stationary bike",
+    "instructions": [
+      "Adjust seat height and resistance",
+      "Pedal smoothly with full range of motion",
+      "Maintain steady cadence and posture",
+      "Adjust resistance and speed as needed"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Stair Climber",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves",
+      "core"
+    ],
+    "equipment": "stair climber",
+    "instructions": [
+      "Step onto machine and grip handles lightly",
+      "Climb stairs at a consistent pace",
+      "Keep posture upright and core engaged",
+      "Adjust speed and resistance to suit fitness level"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bear Crawl",
+    "bodyParts": [
+      "core",
+      "shoulders",
+      "glutes",
+      "legs"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start on hands and feet with hips low",
+      "Move opposite hand and foot forward",
+      "Keep back flat and core engaged",
+      "Continue crawling for distance or time"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Wall Sit",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lean back against wall and slide down until knees are 90°",
+      "Keep feet shoulder-width and knees over ankles",
+      "Hold position with core engaged",
+      "Breathe steadily and maintain posture"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Clamshell",
+    "bodyParts": [
+      "glute medius",
+      "glute minimus"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on side with knees bent and feet together",
+      "Keep hips stacked and lift top knee open",
+      "Pause at top then lower",
+      "Maintain feet together and don't rotate torso"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Fire Hydrant",
+    "bodyParts": [
+      "glute medius",
+      "glute maximus",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start on hands and knees with neutral spine",
+      "Lift one knee out to the side keeping knee bent",
+      "Pause at top then lower",
+      "Repeat on other leg with controlled motion"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Donkey Kick",
+    "bodyParts": [
+      "glute maximus",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start on hands and knees",
+      "Flex foot and lift heel toward ceiling keeping knee bent",
+      "Squeeze glute at top then lower",
+      "Avoid arching back during the movement"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bird Dog",
+    "bodyParts": [
+      "core",
+      "glutes",
+      "shoulders",
+      "lower back"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start on hands and knees with neutral spine",
+      "Extend one arm and opposite leg simultaneously",
+      "Hold briefly then return and switch sides",
+      "Keep hips and shoulders level throughout"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Superman",
+    "bodyParts": [
+      "lower back",
+      "glutes",
+      "hamstrings"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie prone with arms extended overhead",
+      "Simultaneously lift arms, chest, and legs off the floor",
+      "Hold briefly then lower",
+      "Keep gaze neutral and squeeze glutes"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Reverse Crunch",
+    "bodyParts": [
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with knees bent and feet off floor",
+      "Use abs to curl hips off floor, drawing knees toward chest",
+      "Lower slowly without letting feet touch ground",
+      "Keep movement controlled and avoid using momentum"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Bicycle Kick",
+    "bodyParts": [
+      "obliques",
+      "upper abs",
+      "lower abs",
+      "hip flexors"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with hands at temples",
+      "Alternate bringing opposite elbow to knee while extending other leg",
+      "Maintain a steady, controlled pace",
+      "Keep lower back pressed into floor"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Plank with Shoulder Tap",
+    "bodyParts": [
+      "core",
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Start in high plank with hands under shoulders",
+      "Lift one hand to tap opposite shoulder",
+      "Alternate sides while keeping hips stable",
+      "Engage core to prevent rotation"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Sprawl",
+    "bodyParts": [
+      "full body",
+      "chest",
+      "shoulders",
+      "legs",
+      "core"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "From standing, drop hands to floor and kick legs back into plank",
+      "Immediately jump legs back in and stand up",
+      "Repeat quickly for continuous reps",
+      "Keep core tight throughout"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "YTWL",
+    "bodyParts": [
+      "rear deltoids",
+      "mid traps",
+      "rotator cuff"
+    ],
+    "equipment": "dumbbells",
+    "instructions": [
+      "Hinge at hips with light dumbbells",
+      "Raise arms overhead forming a Y",
+      "Lower and raise arms to form T, W, and L positions sequentially",
+      "Perform each letter slowly with control"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Heel Touch",
+    "bodyParts": [
+      "obliques",
+      "upper abs",
+      "lower abs"
+    ],
+    "equipment": "bodyweight",
+    "instructions": [
+      "Lie on back with knees bent and feet flat",
+      "Crunch up slightly and reach right hand toward right heel",
+      "Return to center and reach left hand to left heel",
+      "Alternate sides with controlled movement"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Lateral Band Walk",
+    "bodyParts": [
+      "glute medius",
+      "hip abductors"
+    ],
+    "equipment": "resistance band",
+    "instructions": [
+      "Place band above knees or around ankles",
+      "Assume athletic stance and take small steps sideways",
+      "Keep tension on band and hips level",
+      "Step for desired distance then switch directions"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Monster Walk",
+    "bodyParts": [
+      "glute medius",
+      "hip abductors",
+      "quads"
+    ],
+    "equipment": "resistance band",
+    "instructions": [
+      "Place band around legs above knees",
+      "Take diagonal steps forward and outward",
+      "Maintain slight squat and tension on band",
+      "Repeat backward or forward for distance"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Sled Push",
+    "bodyParts": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves",
+      "core"
+    ],
+    "equipment": "sled",
+    "instructions": [
+      "Lean into sled with arms extended",
+      "Drive through legs to push sled forward",
+      "Maintain low body position and tight core",
+      "Control speed and distance of push"
+    ],
+    "imageUrl": null
+  },
+  {
+    "name": "Sled Pull",
+    "bodyParts": [
+      "hamstrings",
+      "glutes",
+      "quadriceps",
+      "core"
+    ],
+    "equipment": "sled",
+    "instructions": [
+      "Attach straps to sled and hold handles",
+      "Walk backward pulling sled, leaning slightly forward",
+      "Keep knees bent and drive through heels",
+      "Maintain steady pace and engage core"
+    ],
+    "imageUrl": null
+  }
+]
