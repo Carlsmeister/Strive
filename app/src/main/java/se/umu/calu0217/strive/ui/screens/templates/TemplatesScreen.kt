@@ -11,11 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
+import se.umu.calu0217.strive.ui.components.TextInputDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -173,39 +176,16 @@ fun CreateTemplateDialog(
     onDismiss: () -> Unit,
     onCreate: (String) -> Unit
 ) {
-    var templateName by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Create Template") },
-        text = {
-            Column {
-                Text("Enter a name for your workout template:")
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = templateName,
-                    onValueChange = { templateName = it },
-                    placeholder = { Text("Template name") },
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (templateName.isNotBlank()) {
-                        onCreate(templateName)
-                    }
-                },
-                enabled = templateName.isNotBlank()
-            ) {
-                Text("Create")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+    TextInputDialog(
+        title = stringResource(R.string.create_template),
+        label = stringResource(R.string.template_name),
+        description = stringResource(R.string.template_name_prompt),
+        confirmText = stringResource(R.string.create),
+        dismissText = stringResource(R.string.cancel),
+        onDismiss = onDismiss,
+        onConfirm = { templateName ->
+            onCreate(templateName)
+            onDismiss()
         }
     )
 }

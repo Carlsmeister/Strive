@@ -83,7 +83,6 @@ data class RunPointEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val runId: Long,
-    val idx: Int,
     val lat: Double,
     val lng: Double,
     val timestamp: Long

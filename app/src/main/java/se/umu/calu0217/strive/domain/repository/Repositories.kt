@@ -7,7 +7,6 @@ interface ExerciseRepository {
     fun getAllExercises(): Flow<List<Exercise>>
     suspend fun getExerciseById(id: Long): Exercise?
     fun searchExercises(query: String): Flow<List<Exercise>>
-    fun getExercisesByBodyPart(bodyPart: String): Flow<List<Exercise>>
     suspend fun seedExercises()
     suspend fun backfillMissingExerciseImages()
     suspend fun forceRefreshExercises()
@@ -36,5 +35,4 @@ interface RunRepository {
     suspend fun updateRunSession(runId: Long, distance: Double, elapsedSec: Int, pace: Double)
     suspend fun finishRun(runId: Long, kcal: Int)
     fun getAllRunSessions(): Flow<List<RunSession>>
-    suspend fun getRunSessionById(id: Long): RunSession?
 }

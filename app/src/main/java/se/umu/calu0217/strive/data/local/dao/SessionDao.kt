@@ -27,17 +27,8 @@ interface WorkoutSessionDao {
 
 @Dao
 interface WorkoutSetDao {
-    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY setIndex")
-    fun getSessionSets(sessionId: Long): Flow<List<WorkoutSetEntity>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSet(workoutSet: WorkoutSetEntity)
-
-    @Update
-    suspend fun updateSet(workoutSet: WorkoutSetEntity)
-
-    @Query("DELETE FROM workout_sets WHERE sessionId = :sessionId")
-    suspend fun deleteSessionSets(sessionId: Long)
 }
 
 @Dao
@@ -63,15 +54,7 @@ interface RunSessionDao {
 
 @Dao
 interface RunPointDao {
-    @Query("SELECT * FROM run_points WHERE runId = :runId ORDER BY idx")
-    fun getRunPoints(runId: Long): Flow<List<RunPointEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRunPoint(runPoint: RunPointEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRunPoints(runPoints: List<RunPointEntity>)
-
-    @Query("DELETE FROM run_points WHERE runId = :runId")
-    suspend fun deleteRunPoints(runId: Long)
 }

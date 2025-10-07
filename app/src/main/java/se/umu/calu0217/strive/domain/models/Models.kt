@@ -56,7 +56,6 @@ data class RunSession(
 
 data class RunPoint(
     val runId: Long,
-    val idx: Int,
     val lat: Double,
     val lng: Double,
     val timestamp: Long

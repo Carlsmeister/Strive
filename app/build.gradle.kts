@@ -3,7 +3,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    // New plugins for STRIVE - KSP only approach
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp)
@@ -62,77 +61,60 @@ android {
         disable.add("CompositionLocalNaming")
         abortOnError = false
     }
-
-    // Hilt plugin configuration: disable aggregating task to avoid plugin-side JavaPoet usage
-    hilt {
-        enableAggregatingTask = false
-    }
 }
 
 dependencies {
-    // Existing dependencies
+    // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.navigation.compose)
 
-    // New STRIVE dependencies - ALL using KSP
-    // Hilt for dependency injection (switched to KSP)
+    // Hilt - Dependency Injection (using KSP)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
-    // Room for local database (already using KSP)
+    // Room - Local Database (using KSP)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    // Retrofit + OkHttp for networking
+    // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
-
-    // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
 
-    // Coil for image loading
+    // Image Loading - Coil (supports GIFs by default, no need for separate gif dependency)
     implementation(libs.coil.compose)
-    implementation(libs.coil.gif)
 
-    // Play Services Location for GPS tracking
+    // Location & Maps
     implementation(libs.play.services.location)
-
-    // Google Maps and Compose Maps
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
 
-    // Lifecycle ViewModel Compose
-    implementation(libs.lifecycle.viewmodel.compose)
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
 
-
-    // Testing dependencies
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    // FORCE JAVAPOET VERSION - Fix for canonicalName() method error
-    implementation("com.squareup:javapoet:1.13.0")
-    // Also ensure KSP processors get the correct JavaPoet
-    configurations.all {
-        resolutionStrategy {
-            force("com.squareup:javapoet:1.13.0")
-        }
-    }
 }

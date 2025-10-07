@@ -1,3 +1,165 @@
 <resources>
     <string name="app_name">Strive</string>
+
+    <!-- Navigation -->
+    <string name="nav_workout">Workout</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Workout Screen -->
+    <string name="quick_start">Quick Start</string>
+    <string name="start_new_workout">Start New Workout</string>
+    <string name="start_new_workout_desc">Start a workout without a template</string>
+    <string name="workout_templates">Workout Templates</string>
+    <string name="no_templates_yet">No templates yet. Create one to get started!</string>
+    <string name="create">Create</string>
+    <string name="start_workout">Start Workout</string>
+    <string name="add_exercises">Add Exercises</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="add_your_first_exercise">Add your first exercise</string>
+    <string name="create_template">Create Template</string>
+    <string name="edit_template">Edit Template</string>
+    <string name="template_name">Template name</string>
+    <string name="template_name_prompt">Enter a name for your new workout template</string>
+    <string name="add_exercise_to_template">Add Exercise to \"%1$s\" workout</string>
+    <string name="selected_exercise">Selected: %1$s</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="no_exercises_added">No exercises added yet</string>
+    <string name="no_exercises_in_template">No exercises in this template yet.</string>
+    <string name="finish">Finish</string>
+    <string name="go_back">Go Back</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
+    <string name="remove">Remove</string>
+    <string name="reorder_hint">Use the arrows on each exercise to reorder</string>
+
+    <!-- Exercise Settings -->
+    <string name="sets">Sets</string>
+    <string name="reps">Reps</string>
+    <string name="rest_seconds">Rest (s)</string>
+    <string name="rest">Rest</string>
+    <string name="reps_completed">Reps completed</string>
+    <string name="complete_set">Complete Set</string>
+    <string name="set_number">Set %1$d</string>
+    <string name="sets_progress">Sets %1$d/%2$d</string>
+    <string name="started_at">Started: %1$s</string>
+    <string name="rest_time">Rest: %1$s</string>
+    <string name="skip">Skip</string>
+    <string name="sets_and_avg_rest">%1$d sets • %2$ds avg rest</string>
+
+    <!-- Exercise Details -->
+    <string name="equipment">Equipment</string>
+    <string name="body_parts">Body parts</string>
+    <string name="how_to_do_it">How to do it</string>
+    <string name="search_exercises">Search exercises</string>
+    <string name="no_exercises_found">No exercises found</string>
+    <string name="step_number">%1$d.</string>
+
+    <!-- Templates -->
+    <string name="no_templates_found">No workout templates found. Create a new template to add this exercise.</string>
+    <string name="select_template">Select Template:</string>
+    <string name="exercise_settings">Exercise Settings:</string>
+    <string name="template_name_label">Template Name</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    <string name="location">Location</string>
+    <string name="start_gps_on_launch">Start GPS on app launch</string>
+    <string name="open_location_settings">Open Location settings</string>
+    <string name="this_week">This Week</string>
+    <string name="daily_macros">Daily Macros</string>
+    <string name="weight_kg">Weight (kg)</string>
+    <string name="height_cm">Height (cm)</string>
+    <string name="age_years">Age (y)</string>
+    <string name="activity">Activity</string>
+    <string name="goal">Goal</string>
+    <string name="macro_split">Macro split (%)</string>
+    <string name="protein_percent">Protein %</string>
+    <string name="carbs_percent">Carbs %</string>
+    <string name="fat_percent">Fat %</string>
+    <string name="calories">Calories</string>
+    <string name="protein">Protein</string>
+    <string name="carbs">Carbs</string>
+    <string name="fat">Fat</string>
+    <string name="macro_sum_warning">Note: Macro percentages sum to %1$d%%. Consider adjusting to 100%% for accuracy.</string>
+    <string name="app_version">Version %1$s</string>
+    <string name="strive_fitness">Strive Fitness</string>
+    <string name="danger_zone">Danger Zone</string>
+    <string name="clear_all_data">Clear All Data</string>
+    <string name="clear_all_confirmation">This will permanently delete all your workouts, templates, and settings. This action cannot be undone.</string>
+    <string name="clear_all_title">Clear All Data?</string>
+    <string name="clear_all">Clear All</string>
+
+    <!-- Run Screen -->
+    <string name="start">Start</string>
+    <string name="start_activity">Start activity</string>
+    <string name="start_with_activity">Start %1$s</string>
+    <string name="gym">Gym</string>
+    <string name="run">Run</string>
+    <string name="ready_to_run">Ready to run?</string>
+    <string name="choose_activity_hint">Choose activity and press Start to begin</string>
+    <string name="time">TIME</string>
+    <string name="distance">DISTANCE</string>
+    <string name="pace">PACE</string>
+    <string name="distance_value">Distance: %1$s</string>
+    <string name="time_value">Time: %1$s</string>
+    <string name="pace_value">Pace: %1$s</string>
+    <string name="maps_api_key_missing_title">Google Maps API key missing</string>
+    <string name="maps_api_key_missing">Add MAPS_API_KEY to local.properties and rebuild.</string>
+    <string name="gps_ready">GPS Ready</string>
+    <string name="gps_searching">Searching for GPS...</string>
+    <string name="gps_error">GPS Error</string>
+
+    <!-- History -->
+    <string name="activity_history">Activity History</string>
+    <string name="workout_history">Workout History</string>
+    <string name="run_history">Run History</string>
+    <string name="no_workouts">No workouts yet</string>
+    <string name="no_runs">No runs yet</string>
+
+    <!-- Error Messages -->
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="force_refresh">Force Refresh</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Activity Types -->
+    <string name="activity_sedentary">Sedentary (little/no exercise)</string>
+    <string name="activity_lightly_active">Lightly active (1–3 days/wk)</string>
+    <string name="activity_moderately_active">Moderately active (3–5 days/wk)</string>
+    <string name="activity_very_active">Very active (6–7 days/wk)</string>
+    <string name="activity_extra_active">Extra active (physical job)</string>
+
+    <!-- Goals -->
+    <string name="goal_lose">Lose weight (~-500 kcal)</string>
+    <string name="goal_maintain">Maintain</string>
+    <string name="goal_gain">Gain weight (~+300 kcal)</string>
+
+    <!-- Gender -->
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
+    <!-- Units -->
+    <string name="kcal_value">%1$d kcal</string>
+    <string name="grams_value">%1$d g</string>
+    <string name="seconds_short">%1$ds</string>
+
+    <!-- Plurals -->
+    <plurals name="exercises_count">
+        <item quantity="one">%1$d exercise</item>
+        <item quantity="other">%1$d exercises</item>
+    </plurals>
+
+    <plurals name="sets_count">
+        <item quantity="one">%1$d set</item>
+        <item quantity="other">%1$d sets</item>
+    </plurals>
+
+    <plurals name="reps_count">
+        <item quantity="one">%1$d rep</item>
+        <item quantity="other">%1$d reps</item>
+    </plurals>
 </resources>

@@ -18,21 +18,6 @@ object PermissionUtils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun getMissingPermissions(context: Context): List<String> {
-        val missingPermissions = mutableListOf<String>()
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            missingPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            missingPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
-
-        return missingPermissions
-    }
 
     val LOCATION_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
