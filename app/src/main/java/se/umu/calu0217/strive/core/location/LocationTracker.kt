@@ -43,6 +43,8 @@ class LocationTracker @Inject constructor(
         }
         activeCallback = callback
         try {
+            // Enforce a single active subscription
+            stopLocationUpdates()
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 callback,

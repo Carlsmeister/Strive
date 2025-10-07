@@ -32,8 +32,5 @@ data class ExerciseDto(
     val images: List<String> = emptyList(),
     val target: String,
     val secondaryMuscles: List<String> = emptyList(),
-    val difficulty: String? = null,
-    val category: String? = null,
-    val description: String? = null,
     val instructions: List<String> = emptyList()
 )

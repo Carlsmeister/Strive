@@ -36,11 +36,3 @@ val Typography = Typography(
         fontSize = 22.sp
     )
 )
-
-val NumbersTextStyle = TextStyle(
-    fontFamily = FontFamily.Monospace,
-    fontWeight = FontWeight.Medium,
-    fontSize = 32.sp,
-    lineHeight = 36.sp,
-    letterSpacing = 0.sp
-)

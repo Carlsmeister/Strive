@@ -7,17 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.DirectionsRun
-import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.RunCircle
 import androidx.compose.material.icons.outlined.SportsGymnastics
-import androidx.compose.material.icons.outlined.TempleHindu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +39,6 @@ import se.umu.calu0217.strive.ui.screens.explore.ExploreScreen
 import se.umu.calu0217.strive.ui.screens.history.HistoryScreen
 import se.umu.calu0217.strive.ui.screens.profile.ProfileScreen
 import se.umu.calu0217.strive.ui.screens.run.RunScreen
-import se.umu.calu0217.strive.ui.screens.templates.TemplatesScreen
 import se.umu.calu0217.strive.ui.screens.workout.WorkoutScreen
 import se.umu.calu0217.strive.ui.screens.workout.ActiveWorkoutScreen
 import androidx.compose.foundation.layout.Box
@@ -223,7 +215,7 @@ fun StriveApp() {
                                             restoreState = true
                                         }
                                     }) {
-                                        Icon(Icons.Outlined.DirectionsRun, contentDescription = null)
+                                        Icon(Icons.AutoMirrored.Outlined.DirectionsRun, contentDescription = null)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text("Run")
                                     }
@@ -244,11 +236,7 @@ fun StriveApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("explore") {
-                ExploreScreen(
-                    onExerciseClick = { exerciseId ->
-                        // Navigate to exercise detail (to be implemented)
-                    }
-                )
+                ExploreScreen()
             }
             composable("workout") {
                 WorkoutScreen(
@@ -260,8 +248,7 @@ fun StriveApp() {
             composable(
                 route = "active_workout/{sessionId}",
                 arguments = listOf(navArgument("sessionId") { type = NavType.LongType })
-            ) { backStackEntry ->
-                val sessionId = backStackEntry.arguments?.getLong("sessionId") ?: 0L
+            ) {
                 ActiveWorkoutScreen(
                     onNavigateBack = {
                         navController.popBackStack()
@@ -269,21 +256,10 @@ fun StriveApp() {
                 )
             }
             composable("run") {
-                RunScreen(
-                    onNavigateToRunDetail = { runId ->
-                        // Navigate to run detail (to be implemented)
-                    }
-                )
+                RunScreen()
             }
             composable("history") {
-                HistoryScreen(
-                    onWorkoutClick = { sessionId ->
-                        // Navigate to workout session detail (to be implemented)
-                    },
-                    onRunClick = { runId ->
-                        // Navigate to run detail (to be implemented)
-                    }
-                )
+                HistoryScreen()
             }
             composable("profile") {
                 ProfileScreen(

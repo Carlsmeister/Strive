@@ -18,7 +18,7 @@ import se.umu.calu0217.strive.data.local.entities.*
         RunSessionEntity::class,
         RunPointEntity::class
     ],
-    version = 2, // Incremented version due to schema changes
+    version = 3, // Incremented version due to schema changes (removed RunPoint.idx)
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)
