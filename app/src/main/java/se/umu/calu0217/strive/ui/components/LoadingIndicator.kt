@@ -5,7 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import se.umu.calu0217.strive.core.constants.UiConstants
 
 /**
  * Reusable loading indicator component.
@@ -25,7 +25,7 @@ fun LoadingIndicator(
         ) {
             CircularProgressIndicator()
             if (message != null) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
                 Text(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
@@ -35,4 +35,3 @@ fun LoadingIndicator(
         }
     }
 }
-

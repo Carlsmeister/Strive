@@ -5,7 +5,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 
 @Composable
 fun ErrorCard(
@@ -19,7 +21,7 @@ fun ErrorCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(UiConstants.STANDARD_PADDING)
         ) {
             Text(
                 text = when {
@@ -32,7 +34,7 @@ fun ErrorCard(
                 color = MaterialTheme.colorScheme.onErrorContainer
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
 
             Text(
                 text = error,
@@ -40,7 +42,7 @@ fun ErrorCard(
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -50,11 +52,11 @@ fun ErrorCard(
                 TextButton(onClick = onDismiss) {
                     Text("Dismiss")
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                 Button(onClick = onRetry) {
                     Text("Try Again")
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                 Button(
                     onClick = onForceRefresh,
                     colors = ButtonDefaults.buttonColors(
@@ -62,7 +64,7 @@ fun ErrorCard(
                     )
                 ) {
                     Text(
-                        text = "Force Refresh",
+                        text = stringResource(R.string.force_refresh),
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
