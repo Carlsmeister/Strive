@@ -25,13 +25,6 @@ class SearchExercisesUseCase @Inject constructor(
     }
 }
 
-class GetExercisesByBodyPartUseCase @Inject constructor(
-    private val exerciseRepository: ExerciseRepository
-) {
-    operator fun invoke(bodyPart: String): Flow<List<Exercise>> {
-        return exerciseRepository.getExercisesByBodyPart(bodyPart)
-    }
-}
 
 class SeedExercisesUseCase @Inject constructor(
     private val exerciseRepository: ExerciseRepository

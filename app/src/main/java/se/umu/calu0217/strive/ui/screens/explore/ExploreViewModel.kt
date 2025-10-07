@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import se.umu.calu0217.strive.core.error.toAppError
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.usecases.BackfillMissingExerciseImagesUseCase
 import se.umu.calu0217.strive.domain.usecases.ForceRefreshExercisesUseCase
@@ -56,10 +57,13 @@ class ExploreViewModel @Inject constructor(
             searchExercisesUseCase(query).map { list ->
                 val filtered = if (filters.isEmpty()) list
                 else list.filter { exercise -> matchesFilters(exercise, filters) }
-                // De-duplicate by name (case-insensitive) to avoid duplicates from mixed sources
+
+                // Optimize: compute trim().lowercase() only once per item
                 filtered
-                    .distinctBy { it.name.trim().lowercase() }
-                    .sortedBy { it.name.trim().lowercase() }
+                    .map { it to it.name.trim().lowercase() }
+                    .distinctBy { it.second }
+                    .sortedBy { it.second }
+                    .map { it.first }
             }
         }
         .stateIn(
@@ -91,9 +95,10 @@ class ExploreViewModel @Inject constructor(
                 backfillMissingExerciseImagesUseCase()
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
+                val appError = e.toAppError()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Failed to initialize: ${e.localizedMessage}"
+                    error = appError.message
                 )
             }
         }
@@ -129,9 +134,10 @@ class ExploreViewModel @Inject constructor(
                 forceRefreshExercisesUseCase()
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
+                val appError = e.toAppError()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Failed to refresh exercises: ${e.localizedMessage}"
+                    error = appError.message
                 )
             }
         }
@@ -145,7 +151,8 @@ class ExploreViewModel @Inject constructor(
                     _templates.value = templates
                 }
             } catch (e: Exception) {
-                // Handle error silently or add error state for templates if needed
+                val appError = e.toAppError()
+                _uiState.value = _uiState.value.copy(error = appError.message)
             }
         }
     }
@@ -178,9 +185,8 @@ class ExploreViewModel @Inject constructor(
                 // Refresh templates
                 loadTemplates()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    error = "Failed to add exercise to template: ${e.localizedMessage}"
-                )
+                val appError = e.toAppError()
+                _uiState.value = _uiState.value.copy(error = appError.message)
             }
         }
     }

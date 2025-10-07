@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import se.umu.calu0217.strive.data.local.dao.*
 import se.umu.calu0217.strive.data.local.entities.*
+import se.umu.calu0217.strive.data.mappers.*
 import se.umu.calu0217.strive.domain.models.*
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import javax.inject.Inject
@@ -18,8 +19,7 @@ class WorkoutRepositoryImpl @Inject constructor(
     private val workoutTemplateDao: WorkoutTemplateDao,
     private val templateExerciseDao: TemplateExerciseDao,
     private val workoutSessionDao: WorkoutSessionDao,
-    private val workoutSetDao: WorkoutSetDao,
-    private val exerciseDao: ExerciseDao
+    private val workoutSetDao: WorkoutSetDao
 ) : WorkoutRepository {
 
     override fun getAllTemplates(): Flow<List<WorkoutTemplate>> {
@@ -34,13 +34,7 @@ class WorkoutRepositoryImpl @Inject constructor(
                 combine(exerciseFlows) { lists ->
                     templates.mapIndexed { index, template ->
                         val exercises = lists[index].map { e ->
-                            TemplateExercise(
-                                exerciseId = e.exerciseId,
-                                sets = e.sets,
-                                reps = e.reps,
-                                restSec = e.restSec,
-                                position = e.position
-                            )
+                            e.toDomainModel()
                         }
                         template.toDomainModel(exercises)
                     }
@@ -53,15 +47,7 @@ class WorkoutRepositoryImpl @Inject constructor(
         val template = workoutTemplateDao.getTemplateById(id) ?: return null
         // Collect the template exercises once for this template
         val exerciseEntities = templateExerciseDao.getTemplateExercises(id).first()
-        val exercises = exerciseEntities.map { e ->
-            TemplateExercise(
-                exerciseId = e.exerciseId,
-                sets = e.sets,
-                reps = e.reps,
-                restSec = e.restSec,
-                position = e.position
-            )
-        }
+        val exercises = exerciseEntities.map { e -> e.toDomainModel() }
         return template.toDomainModel(exercises)
     }
 
@@ -161,7 +147,7 @@ class WorkoutRepositoryImpl @Inject constructor(
         session?.let {
             val updatedSession = it.copy(
                 endedAt = System.currentTimeMillis(),
-                kcal = kcal
+                kcal = kcal.coerceAtLeast(0)
             )
             workoutSessionDao.updateSession(updatedSession)
         }
@@ -176,33 +162,4 @@ class WorkoutRepositoryImpl @Inject constructor(
     override suspend fun getWorkoutSessionById(id: Long): WorkoutSession? {
         return workoutSessionDao.getSessionById(id)?.toDomainModel(emptyList())
     }
-}
-
-// Extension functions for entity/domain model conversion
-private fun WorkoutTemplateEntity.toDomainModel(exercises: List<TemplateExercise>): WorkoutTemplate {
-    return WorkoutTemplate(
-        id = id,
-        name = name,
-        createdAt = createdAt,
-        exercises = exercises
-    )
-}
-
-private fun WorkoutTemplate.toEntity(): WorkoutTemplateEntity {
-    return WorkoutTemplateEntity(
-        id = id,
-        name = name,
-        createdAt = createdAt
-    )
-}
-
-private fun WorkoutSessionEntity.toDomainModel(completedSets: List<WorkoutSet>): WorkoutSession {
-    return WorkoutSession(
-        id = id,
-        templateId = templateId,
-        startedAt = startedAt,
-        endedAt = endedAt,
-        kcal = kcal,
-        completedSets = completedSets
-    )
 }
