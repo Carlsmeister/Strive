@@ -1,6 +1,5 @@
 package se.umu.calu0217.strive.ui.screens.run
 
-import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,15 +39,23 @@ class RunViewModel @Inject constructor(
     private fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            while (isActive && activeRunId != null) {
-                val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000).toInt()
-                val pace = FitnessUtils.calculatePace(totalDistance, elapsedSeconds)
-                _uiState.value = _uiState.value.copy(
-                    elapsedTime = elapsedSeconds,
-                    pace = pace
-                )
-                delay(1000L)
+            tickerFlow(1000L).collect {
+                if (activeRunId != null) {
+                    val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000).toInt()
+                    val pace = FitnessUtils.calculatePace(totalDistance, elapsedSeconds)
+                    _uiState.value = _uiState.value.copy(
+                        elapsedTime = elapsedSeconds,
+                        pace = pace
+                    )
+                }
             }
+        }
+    }
+
+    private fun tickerFlow(periodMs: Long) = flow {
+        while (kotlinx.coroutines.currentCoroutineContext().isActive) {
+            emit(Unit)
+            delay(periodMs)
         }
     }
 

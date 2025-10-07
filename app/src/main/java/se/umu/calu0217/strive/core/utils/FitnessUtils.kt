@@ -72,8 +72,12 @@ object FitnessUtils {
     fun formatPace(paceMinPerKm: Double): String {
         if (paceMinPerKm <= 0) return "--:--"
 
-        val minutes = paceMinPerKm.toInt()
-        val seconds = ((paceMinPerKm - minutes) * 60).roundToInt()
+        var minutes = paceMinPerKm.toInt()
+        var seconds = ((paceMinPerKm - minutes) * 60).roundToInt()
+        if (seconds == 60) {
+            minutes += 1
+            seconds = 0
+        }
 
         return "${minutes}:${seconds.toString().padStart(2, '0')}"
     }
