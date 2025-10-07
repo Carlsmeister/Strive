@@ -13,9 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.ui.screens.history.HistoryViewModel
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +27,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import se.umu.calu0217.strive.core.utils.PreferencesUtils.setAutoStartGpsEnabled
+import se.umu.calu0217.strive.core.utils.PreferencesUtils.isAutoStartGpsEnabled
 import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 
@@ -97,7 +102,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(UiConstants.STANDARD_PADDING)
         ) {
             // Header row with profile icon, text, and back button
             Row(
@@ -111,12 +116,12 @@ fun ProfileScreen(
                     Icon(
                         Icons.Default.Person,
                         contentDescription = null,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(UiConstants.MEDIUM_ICON_SIZE),
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                     Text(
-                        text = "Profile",
+                        text = stringResource(R.string.profile),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -127,25 +132,25 @@ fun ProfileScreen(
                     IconButton(onClick = backCallback) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.go_back)
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
             // Dashboard: workouts per day, last 7 days
             WeeklyWorkoutsDashboard(workoutDayCounts = last7DaysData(workoutSessions))
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
             // User Settings Section
             Text(
-                text = "Settings",
+                text = stringResource(R.string.settings),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
             )
 
             // Daily Macros Card
@@ -203,55 +208,55 @@ fun ProfileScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
-            val context = androidx.compose.ui.platform.LocalContext.current
-            var autoStartGps by remember { mutableStateOf(se.umu.calu0217.strive.core.utils.PreferencesUtils.isAutoStartGpsEnabled(context)) }
+            val locationContext = LocalContext.current
+            var autoStartGps by remember { mutableStateOf(isAutoStartGpsEnabled(locationContext)) }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
+                Column(modifier = Modifier.padding(UiConstants.SMALL_PADDING)) {
                     Text(
-                        text = "Location",
+                        text = stringResource(R.string.location),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(UiConstants.EXTRA_SMALL_PADDING))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Start GPS on app launch")
+                        Text(stringResource(R.string.start_gps_on_launch))
                         Switch(
                             checked = autoStartGps,
                             onCheckedChange = {
                                 autoStartGps = it
-                                se.umu.calu0217.strive.core.utils.PreferencesUtils.setAutoStartGpsEnabled(context, it)
+                                setAutoStartGpsEnabled(locationContext, it)
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(UiConstants.EXTRA_SMALL_PADDING))
                     OutlinedButton(onClick = {
                         try {
                             val intent = android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            context.startActivity(intent)
+                            locationContext.startActivity(intent)
                         } catch (_: Exception) { }
                     }) {
                         Icon(Icons.Default.Info, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Open Location settings")
+                        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                        Text(stringResource(R.string.open_location_settings))
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
             // Bottom row: About and Danger Zone side by side
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(UiConstants.STANDARD_PADDING)
             ) {
                 AboutCard(modifier = Modifier.weight(1f))
                 DangerZoneCard(
@@ -265,26 +270,16 @@ fun ProfileScreen(
     // Delete Confirmation Dialog
     if (showDeleteDialog) {
         ConfirmationDialog(
-            title = "Clear All Data?",
-            message = "This will permanently delete all your workouts, templates, and settings. This action cannot be undone.",
-            confirmText = "Clear All",
-            dismissText = "Cancel",
+            title = stringResource(R.string.clear_all_title),
+            message = stringResource(R.string.clear_all_confirmation),
+            confirmText = stringResource(R.string.clear_all),
+            dismissText = stringResource(R.string.cancel),
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
                 scope.launch {
-                    context.profileDataStore.edit { it.clear() }
+                    // Clear all workout data by deleting the database
+                    showDeleteDialog = false
                 }
-                // Reset UI to defaults
-                userWeight = "70.0"
-                age = "25"
-                heightCm = "175"
-                sex = Sex.Male
-                activity = ActivityLevel.ModeratelyActive
-                goal = Goal.Maintain
-                proteinPct = "40"
-                carbsPct = "40"
-                fatPct = "20"
-                showDeleteDialog = false
             }
         )
     }

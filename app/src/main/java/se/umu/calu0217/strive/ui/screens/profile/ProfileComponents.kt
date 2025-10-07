@@ -13,12 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.core.validation.InputValidator.validateHeight
 import se.umu.calu0217.strive.core.validation.InputValidator.validateWeight
 import java.text.SimpleDateFormat
@@ -34,11 +37,11 @@ import kotlin.math.roundToInt
 @Composable
 fun WeeklyWorkoutsDashboard(workoutDayCounts: List<DayLabelCount>) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("This Week", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
+            Text(stringResource(R.string.this_week), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(12.dp))
             val maxVal = (workoutDayCounts.maxOfOrNull { it.count } ?: 0).coerceAtLeast(1)
-            val barWidth = 24.dp
+            val barWidth = UiConstants.SMALL_ICON_SIZE
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Bottom,
@@ -105,7 +108,7 @@ fun AboutCard(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(UiConstants.STANDARD_PADDING),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -116,12 +119,12 @@ fun AboutCard(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Strive Fitness",
+                    text = stringResource(R.string.strive_fitness),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "Version 1.0.0",
+                    text = stringResource(R.string.app_version, "1.0.0"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -133,14 +136,14 @@ fun AboutCard(modifier: Modifier = Modifier) {
 @Composable
 fun DangerZoneCard(onClearAll: () -> Unit, modifier: Modifier = Modifier) {
     Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
             Text(
-                text = "Danger Zone",
+                text = stringResource(R.string.danger_zone),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.error,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
             OutlinedButton(
                 onClick = onClearAll,
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -148,9 +151,9 @@ fun DangerZoneCard(onClearAll: () -> Unit, modifier: Modifier = Modifier) {
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Clear All Data")
+                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(UiConstants.STANDARD_PADDING))
+                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                Text(stringResource(R.string.clear_all_data))
             }
         }
     }
@@ -164,7 +167,7 @@ fun ResultChip(title: String, value: String) {
         shadowElevation = 0.dp,
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = UiConstants.SMALL_PADDING), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         }
@@ -196,8 +199,8 @@ fun DailyMacrosCard(
     var heightError by remember { mutableStateOf<String?>(null) }
 
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Daily Macros", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+        Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
+            Text(stringResource(R.string.daily_macros), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(12.dp))
 
             // Inputs row 1: Weight, Height
@@ -208,7 +211,7 @@ fun DailyMacrosCard(
                         onWeightChange(it)
                         weightError = validateWeight(it)
                     },
-                    label = { Text("Weight (kg)") },
+                    label = { Text(stringResource(R.string.weight_kg)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     isError = weightError != null,
@@ -221,7 +224,7 @@ fun DailyMacrosCard(
                         onHeightChange(it)
                         heightError = validateHeight(it)
                     },
-                    label = { Text("Height (cm)") },
+                    label = { Text(stringResource(R.string.height_cm)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     isError = heightError != null,
@@ -237,7 +240,7 @@ fun DailyMacrosCard(
                 OutlinedTextField(
                     value = age,
                     onValueChange = onAgeChange,
-                    label = { Text("Age (y)") },
+                    label = { Text(stringResource(R.string.age_years)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
@@ -256,12 +259,12 @@ fun DailyMacrosCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Inputs row 3: Macro percentages
-            Text("Macro split (%)", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.macro_split), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = proteinPct,
                     onValueChange = onProteinChange,
-                    label = { Text("Protein %") },
+                    label = { Text(stringResource(R.string.protein_percent)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
@@ -269,7 +272,7 @@ fun DailyMacrosCard(
                 OutlinedTextField(
                     value = carbsPct,
                     onValueChange = onCarbsChange,
-                    label = { Text("Carbs %") },
+                    label = { Text(stringResource(R.string.carbs_percent)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
@@ -277,14 +280,14 @@ fun DailyMacrosCard(
                 OutlinedTextField(
                     value = fatPct,
                     onValueChange = onFatChange,
-                    label = { Text("Fat %") },
+                    label = { Text(stringResource(R.string.fat_percent)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
             val pctP = proteinPct.toIntOrNull() ?: 0
             val pctC = carbsPct.toIntOrNull() ?: 0
@@ -303,16 +306,16 @@ fun DailyMacrosCard(
 
             // Results
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                ResultChip(title = "Calories", value = tdee.roundToInt().toString() + " kcal")
-                ResultChip(title = "Protein", value = proteinG.roundToInt().toString() + " g")
-                ResultChip(title = "Carbs", value = carbsG.roundToInt().toString() + " g")
-                ResultChip(title = "Fat", value = fatG.roundToInt().toString() + " g")
+                ResultChip(title = stringResource(R.string.calories), value = stringResource(R.string.kcal_value, tdee.roundToInt()))
+                ResultChip(title = stringResource(R.string.protein), value = stringResource(R.string.grams_value, proteinG.roundToInt()))
+                ResultChip(title = stringResource(R.string.carbs), value = stringResource(R.string.grams_value, carbsG.roundToInt()))
+                ResultChip(title = stringResource(R.string.fat), value = stringResource(R.string.grams_value, fatG.roundToInt()))
             }
 
             if (pctSum != 100) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                 Text(
-                    text = "Note: Macro percentages sum to $pctSum%. Consider adjusting to 100% for accuracy.",
+                    text = stringResource(R.string.macro_sum_warning, pctSum),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -328,13 +331,13 @@ fun SegmentedButtonsSex(current: Sex, onChange: (Sex) -> Unit, modifier: Modifie
             selected = current == Sex.Male,
             onClick = { onChange(Sex.Male) },
             shape = SegmentedButtonDefaults.itemShape(0, 2),
-            label = { Text("Male", textAlign = TextAlign.Center) }
+            label = { Text(stringResource(R.string.male), textAlign = TextAlign.Center) }
         )
         SegmentedButton(
             selected = current == Sex.Female,
             onClick = { onChange(Sex.Female) },
             shape = SegmentedButtonDefaults.itemShape(1, 2),
-            label = { Text("Female", textAlign = TextAlign.Center) }
+            label = { Text(stringResource(R.string.female), textAlign = TextAlign.Center) }
         )
     }
 }
@@ -347,7 +350,7 @@ fun DropdownActivity(current: ActivityLevel, onChange: (ActivityLevel) -> Unit, 
             readOnly = true,
             value = current.label,
             onValueChange = {},
-            label = { Text("Activity") },
+            label = { Text(stringResource(R.string.activity)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )
@@ -370,7 +373,7 @@ fun DropdownGoal(current: Goal, onChange: (Goal) -> Unit, modifier: Modifier = M
             readOnly = true,
             value = current.label,
             onValueChange = {},
-            label = { Text("Goal") },
+            label = { Text(stringResource(R.string.goal)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )

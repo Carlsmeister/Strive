@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.ui.screens.explore.ExploreScreen
 import se.umu.calu0217.strive.ui.screens.history.HistoryScreen
 import se.umu.calu0217.strive.ui.screens.profile.ProfileScreen
@@ -57,10 +59,10 @@ fun StriveApp() {
     var showStartDialog by remember { mutableStateOf(false) }
 
     val items = listOf(
-        BottomDestination("explore", "Exercises", Icons.Outlined.FitnessCenter),
-        BottomDestination("workout", "Workout", Icons.Outlined.SportsGymnastics),
-        BottomDestination("run", "Run", Icons.AutoMirrored.Outlined.DirectionsRun),
-        BottomDestination("history", "History", Icons.Outlined.History)
+        BottomDestination("explore", stringResource(R.string.nav_explore), Icons.Outlined.FitnessCenter),
+        BottomDestination("workout", stringResource(R.string.nav_workout), Icons.Outlined.SportsGymnastics),
+        BottomDestination("run", stringResource(R.string.run), Icons.AutoMirrored.Outlined.DirectionsRun),
+        BottomDestination("history", stringResource(R.string.nav_history), Icons.Outlined.History)
     )
 
     Scaffold(
@@ -73,8 +75,8 @@ fun StriveApp() {
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.app_logo_with_no_bg),
-                            contentDescription = "Strive Logo",
-                            modifier = Modifier.size(40.dp),
+                            contentDescription = stringResource(R.string.app_name),
+                            modifier = Modifier.size(UiConstants.LARGE_ICON_SIZE),
                         )
                         Text(
                             "TRIVE",
@@ -93,7 +95,7 @@ fun StriveApp() {
                     ) {
                         Icon(
                             Icons.Outlined.Person,
-                            contentDescription = "Profile"
+                            contentDescription = stringResource(R.string.nav_profile)
                         )
                     }
                 }
@@ -125,7 +127,7 @@ fun StriveApp() {
                     // Center placeholder to reserve space for the FAB
                     NavigationBarItem(
                         modifier = Modifier.offset(y = (15).dp),
-                        icon = { Spacer(modifier = Modifier.size(24.dp)) },
+                        icon = { Spacer(modifier = Modifier.size(UiConstants.SMALL_ICON_SIZE)) },
                         label = { Text("") },
                         selected = false,
                         onClick = { },
@@ -159,7 +161,7 @@ fun StriveApp() {
                         .align(Alignment.Center)
                         .offset(y = (-15).dp)
                 ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "Start")
+                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start))
                 }
 
                 if (showStartDialog) {
@@ -171,8 +173,8 @@ fun StriveApp() {
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.app_logo_with_no_bg),
-                                    contentDescription = "Strive Logo",
-                                    modifier = Modifier.size(40.dp),
+                                    contentDescription = stringResource(R.string.app_name),
+                                    modifier = Modifier.size(UiConstants.LARGE_ICON_SIZE),
                                 )
                                 Text(
                                     "TRIVE",
@@ -181,18 +183,18 @@ fun StriveApp() {
                                     )
                             }
                         },
-                        title = { Text("Start activity", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                        title = { Text(stringResource(R.string.start_activity), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                         text = {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    "What workout would you like to do?",
+                                    stringResource(R.string.choose_activity_hint),
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center
                                 )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
                                 Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceEvenly) {
                                     Button(onClick = {
                                         showStartDialog = false
@@ -203,10 +205,10 @@ fun StriveApp() {
                                         }
                                     }) {
                                         Icon(Icons.Outlined.FitnessCenter, contentDescription = null)
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Gym")
+                                        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                                        Text(stringResource(R.string.gym))
                                     }
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                                     OutlinedButton(onClick = {
                                         showStartDialog = false
                                         navController.navigate("run") {
@@ -216,8 +218,8 @@ fun StriveApp() {
                                         }
                                     }) {
                                         Icon(Icons.AutoMirrored.Outlined.DirectionsRun, contentDescription = null)
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Run")
+                                        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                                        Text(stringResource(R.string.run))
                                     }
                                 }
 
@@ -272,8 +274,4 @@ fun StriveApp() {
     }
 }
 
-data class BottomDestination(
-    val route: String,
-    val label: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-)
+data class BottomDestination(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)

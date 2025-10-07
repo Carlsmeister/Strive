@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.ui.screens.explore.ExploreViewModel
 
@@ -49,7 +50,7 @@ fun ExerciseDetailDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(180.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(UiConstants.SMALL_PADDING))
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -86,7 +87,7 @@ fun ExerciseDetailDialog(
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(UiConstants.EXTRA_SMALL_PADDING))
 
                     exercise.instructions.forEachIndexed { index, step ->
                         Row(modifier = Modifier.padding(bottom = 6.dp)) {
@@ -95,7 +96,7 @@ fun ExerciseDetailDialog(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                             Text(
                                 text = step,
                                 style = MaterialTheme.typography.bodyMedium
@@ -142,31 +143,31 @@ fun AddToTemplateDialog(
                 if (templates.isEmpty()) {
                     // No templates available
                     Text(
-                        text = "No workout templates found. Create a new template to add this exercise.",
+                        text = stringResource(R.string.no_templates_found),
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
                     )
                 } else {
                     // Template selection
                     Text(
-                        text = "Select Template:",
+                        text = stringResource(R.string.select_template),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
                     )
 
                     templates.forEach { template ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
+                                .padding(vertical = UiConstants.EXTRA_SMALL_PADDING),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
                                 selected = selectedTemplateId == template.id,
                                 onClick = { selectedTemplateId = template.id }
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                             Text(
                                 text = template.name,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -175,51 +176,51 @@ fun AddToTemplateDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
                 }
 
                 // Exercise parameters
                 Text(
-                    text = "Exercise Settings:",
+                    text = stringResource(R.string.exercise_settings),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
                 // Sets input
                 TextField(
                     value = sets,
                     onValueChange = { sets = it },
-                    label = { Text("Sets") },
+                    label = { Text(stringResource(R.string.sets)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
                 // Reps input
                 TextField(
                     value = reps,
                     onValueChange = { reps = it },
-                    label = { Text("Reps") },
+                    label = { Text(stringResource(R.string.reps)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
                 // Rest time input
                 TextField(
                     value = restSec,
                     onValueChange = { restSec = it },
-                    label = { Text("Rest (s)") },
+                    label = { Text(stringResource(R.string.rest_seconds)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = UiConstants.SMALL_PADDING)
                 )
             }
         },
@@ -232,7 +233,7 @@ fun AddToTemplateDialog(
                     Text("New Template")
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
 
                 // Add to selected template button
                 Button(
@@ -254,7 +255,7 @@ fun AddToTemplateDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -262,10 +263,10 @@ fun AddToTemplateDialog(
     // Create new template dialog
     if (showCreateTemplateDialog) {
         TextInputDialog(
-            title = "Create New Template",
-            label = "Template Name",
-            confirmText = "Create",
-            dismissText = "Cancel",
+            title = stringResource(R.string.create_template),
+            label = stringResource(R.string.template_name_label),
+            confirmText = stringResource(R.string.create),
+            dismissText = stringResource(R.string.cancel),
             onDismiss = { showCreateTemplateDialog = false },
             onConfirm = { templateName ->
                 onCreateNewTemplate(templateName)
