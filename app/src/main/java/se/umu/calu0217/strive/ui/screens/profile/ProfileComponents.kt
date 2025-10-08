@@ -34,6 +34,12 @@ import kotlin.math.roundToInt
  * Promote individual components to ui/components/ when they become shared across features.
  */
 
+/**
+ * Displays a weekly workout frequency chart showing activity counts per day.
+ * Renders a bar chart with day labels (M, T, W, T, F, S, S).
+ *
+ * @param workoutDayCounts List of day labels with their corresponding workout counts.
+ */
 @Composable
 fun WeeklyWorkoutsDashboard(workoutDayCounts: List<DayLabelCount>) {
     Card(modifier = Modifier.fillMaxWidth()) {

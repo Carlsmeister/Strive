@@ -3,17 +3,20 @@ package se.umu.calu0217.strive.core.utils
 import kotlin.math.*
 
 /**
- * Utility functions for distance calculations and fitness metrics
+ * Utility functions for distance calculations and fitness metrics.
+ * Provides calculations for GPS distance, pace, calories, and formatting functions.
+ * @author Carl Lundholm
  */
 object FitnessUtils {
 
     /**
-     * Calculate distance between two GPS coordinates using Haversine formula
-     * @param lat1 Latitude of first point in degrees
-     * @param lng1 Longitude of first point in degrees
-     * @param lat2 Latitude of second point in degrees
-     * @param lng2 Longitude of second point in degrees
-     * @return Distance in meters
+     * Calculate distance between two GPS coordinates using Haversine formula.
+     * @param lat1 Latitude of first point in degrees.
+     * @param lng1 Longitude of first point in degrees.
+     * @param lat2 Latitude of second point in degrees.
+     * @param lng2 Longitude of second point in degrees.
+     * @return Distance in meters.
+     * @author Carl Lundholm
      */
     fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
         val earthRadius = 6371000.0 // Earth radius in meters
@@ -28,10 +31,11 @@ object FitnessUtils {
     }
 
     /**
-     * Calculate pace in minutes per kilometer
-     * @param distanceMeters Distance in meters
-     * @param timeSeconds Time in seconds
-     * @return Pace in minutes per kilometer
+     * Calculate pace in minutes per kilometer.
+     * @param distanceMeters Distance in meters.
+     * @param timeSeconds Time in seconds.
+     * @return Pace in minutes per kilometer.
+     * @author Carl Lundholm
      */
     fun calculatePace(distanceMeters: Double, timeSeconds: Int): Double {
         if (distanceMeters <= 0 || timeSeconds <= 0) return 0.0
@@ -43,18 +47,23 @@ object FitnessUtils {
     }
 
     /**
-     * Calculate calories burned during running
-     * @param metValue MET value for the activity intensity
-     * @param weightKg User weight in kilograms
-     * @param timeHours Activity duration in hours
-     * @return Estimated calories burned
+     * Calculate calories burned during activity using MET formula.
+     * @param metValue MET value for the activity intensity.
+     * @param weightKg User weight in kilograms.
+     * @param timeHours Activity duration in hours.
+     * @return Estimated calories burned.
+     * @author Carl Lundholm
      */
     fun calculateCalories(metValue: Double, weightKg: Double, timeHours: Double): Int {
         return (metValue * weightKg * timeHours).roundToInt()
     }
 
     /**
-     * Get MET value based on pace (min/km)
+     * Get MET value based on running pace (min/km).
+     * MET values range from 5.5 (slow) to 12.0 (very fast).
+     * @param paceMinPerKm Pace in minutes per kilometer.
+     * @return MET (Metabolic Equivalent of Task) value.
+     * @author Carl Lundholm
      */
     fun getMetFromPace(paceMinPerKm: Double): Double {
         return when {
@@ -67,7 +76,10 @@ object FitnessUtils {
     }
 
     /**
-     * Format pace for display (MM:SS per km)
+     * Format pace for display (MM:SS per km).
+     * @param paceMinPerKm Pace in minutes per kilometer.
+     * @return Formatted pace string (e.g., "5:30").
+     * @author Carl Lundholm
      */
     fun formatPace(paceMinPerKm: Double): String {
         if (paceMinPerKm <= 0) return "--:--"
@@ -83,7 +95,11 @@ object FitnessUtils {
     }
 
     /**
-     * Format distance for display
+     * Format distance for display.
+     * Shows meters if less than 1km, otherwise shows kilometers.
+     * @param meters Distance in meters.
+     * @return Formatted distance string (e.g., "500m" or "2.50km").
+     * @author Carl Lundholm
      */
     fun formatDistance(meters: Double): String {
         return when {
@@ -93,7 +109,11 @@ object FitnessUtils {
     }
 
     /**
-     * Format time duration for display
+     * Format time duration for display.
+     * Shows H:MM:SS if hours > 0, otherwise M:SS.
+     * @param seconds Duration in seconds.
+     * @return Formatted time string (e.g., "1:25:30" or "25:30").
+     * @author Carl Lundholm
      */
     fun formatTime(seconds: Int): String {
         val hours = seconds / 3600

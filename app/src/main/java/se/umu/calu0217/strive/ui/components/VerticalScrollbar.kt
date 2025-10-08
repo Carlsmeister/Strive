@@ -12,6 +12,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.lazy.LazyListState
 
+/**
+ * A custom vertical scrollbar indicator for LazyColumn or LazyRow lists.
+ * Displays a track and thumb that represents the current scroll position and visible content proportion.
+ *
+ * The scrollbar automatically calculates:
+ * - The thumb size based on the proportion of visible content
+ * - The thumb position based on the current scroll offset
+ * - Minimum thumb size to ensure visibility (at least 5% of track height)
+ *
+ * @param listState The state of the lazy list to track scroll position and content.
+ * @param modifier Modifier to be applied to the scrollbar canvas.
+ */
 @Composable
 fun VerticalScrollbar(
     listState: LazyListState,

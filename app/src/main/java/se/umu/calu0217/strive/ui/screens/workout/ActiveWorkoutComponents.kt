@@ -30,6 +30,17 @@ import se.umu.calu0217.strive.domain.models.TemplateExercise
 import se.umu.calu0217.strive.ui.components.ExerciseDetailDialog
 import java.util.Locale
 
+/**
+ * Header card displaying workout session information.
+ * Shows template name, start time, pause state, and progress through sets.
+ *
+ * @param templateName Name of the workout template being followed.
+ * @param startTime Timestamp when the workout started.
+ * @param isPaused Whether the workout is currently paused.
+ * @param doneSets Number of completed sets.
+ * @param totalSets Total number of sets in the workout.
+ * @param onPauseToggle Callback to toggle pause/resume state.
+ */
 @Composable
 fun WorkoutHeader(
     templateName: String,

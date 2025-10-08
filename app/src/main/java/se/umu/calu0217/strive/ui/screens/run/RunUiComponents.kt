@@ -19,6 +19,10 @@ import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.ui.components.StatItem
 
+/**
+ * Displays a notice when Google Maps API key is missing.
+ * Provides instructions for configuring the API key.
+ */
 @Composable
 fun MapsApiKeyMissingNotice() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -43,7 +47,14 @@ fun MapsApiKeyMissingNotice() {
     }
 }
 
-
+/**
+ * Displays real-time running statistics during an active run session.
+ * Shows distance, elapsed time, pace, and estimated calories burned.
+ *
+ * @param distance Distance covered in kilometers.
+ * @param elapsedTime Time elapsed in seconds.
+ * @param pace Current pace in minutes per kilometer.
+ */
 @Composable
 fun RunningStatsPanel(
     distance: Double,

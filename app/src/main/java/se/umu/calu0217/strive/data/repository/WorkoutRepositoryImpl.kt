@@ -14,6 +14,15 @@ import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementation of WorkoutRepository using Room database.
+ * Manages workout templates, exercises, and session data with reactive flows.
+ * @param workoutTemplateDao DAO for workout template operations.
+ * @param templateExerciseDao DAO for template exercise operations.
+ * @param workoutSessionDao DAO for workout session operations.
+ * @param workoutSetDao DAO for workout set operations.
+ * @author Carl Lundholm
+ */
 @Singleton
 class WorkoutRepositoryImpl @Inject constructor(
     private val workoutTemplateDao: WorkoutTemplateDao,

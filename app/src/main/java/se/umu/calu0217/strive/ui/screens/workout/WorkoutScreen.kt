@@ -35,6 +35,13 @@ import se.umu.calu0217.strive.ui.components.LoadingIndicator
 import se.umu.calu0217.strive.ui.theme.EnergeticOrange
 import se.umu.calu0217.strive.R
 
+/**
+ * Main workout screen for managing workout templates and starting workout sessions.
+ * Provides quick start functionality and displays a list of saved workout templates.
+ *
+ * @param onNavigateToActiveWorkout Callback to navigate to the active workout screen with session ID.
+ * @param viewModel The view model managing workout templates and sessions (injected via Hilt).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutScreen(
@@ -89,6 +96,11 @@ fun WorkoutScreen(
     )
 }
 
+/**
+ * Card component for quickly starting a workout without a template.
+ *
+ * @param onStartWorkout Callback invoked when the quick start button is clicked.
+ */
 @Composable
 private fun QuickStartCard(onStartWorkout: () -> Unit) {
     Card(

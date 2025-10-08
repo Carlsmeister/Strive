@@ -17,6 +17,12 @@ import se.umu.calu0217.strive.domain.models.WorkoutSession
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Displays a card with weekly workout and run statistics.
+ * Shows total activities, minutes exercised, and distance covered.
+ *
+ * @param weeklyStats The weekly statistics data to display.
+ */
 @Composable
 fun WeeklyStatsCard(weeklyStats: WeeklyStats) {
     Card(
@@ -221,4 +227,3 @@ fun EmptyStateMessage(
         }
     }
 }
-

@@ -23,6 +23,13 @@ import se.umu.calu0217.strive.ui.components.ExerciseDetailDialog
 import se.umu.calu0217.strive.ui.components.LoadingIndicator
 import se.umu.calu0217.strive.ui.components.VerticalScrollbar
 
+/**
+ * Main screen for exploring and discovering exercises.
+ * Provides search functionality, filtering by body parts, and the ability to view exercise details
+ * or add exercises to workout templates.
+ *
+ * @param viewModel The view model managing exercise data and search state (injected via Hilt).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreScreen(
@@ -115,13 +122,12 @@ fun ExploreScreen(
     }
 }
 
-
-
-
-
-
-
-
+/**
+ * Search bar component for filtering exercises by name, equipment, or body parts.
+ *
+ * @param value The current search query text.
+ * @param onValueChange Callback invoked when the search query changes.
+ */
 @Composable
 private fun ExploreSearchBar(
     value: String,
@@ -137,6 +143,13 @@ private fun ExploreSearchBar(
     )
 }
 
+/**
+ * Horizontal row of filter chips for selecting body part categories.
+ * Allows multi-selection of body parts to filter exercises.
+ *
+ * @param selectedFilters Set of currently selected filter strings.
+ * @param onToggle Callback invoked when a filter is toggled on/off.
+ */
 @Composable
 private fun ExploreFiltersRow(
     selectedFilters: Set<String>,
@@ -154,7 +167,14 @@ private fun ExploreFiltersRow(
     }
 }
 
-
+/**
+ * Displays an error state with retry and refresh options.
+ *
+ * @param error The error message to display.
+ * @param onDismiss Callback to dismiss the error.
+ * @param onRetry Callback to retry the failed operation.
+ * @param onForceRefresh Callback to force refresh exercise data from the API.
+ */
 @Composable
 private fun ExploreErrorState(
     error: String,
@@ -170,6 +190,9 @@ private fun ExploreErrorState(
     )
 }
 
+/**
+ * Displays an empty state message when no exercises are found.
+ */
 @Composable
 private fun ExploreEmptyState() {
     Box(
@@ -183,6 +206,13 @@ private fun ExploreEmptyState() {
     }
 }
 
+/**
+ * Scrollable list of exercise cards with a custom vertical scrollbar.
+ *
+ * @param exercises List of exercises to display.
+ * @param onExerciseClick Callback invoked when an exercise card is clicked.
+ * @param onAddToTemplate Callback invoked when the "add to template" button is clicked.
+ */
 @Composable
 private fun ExploreExerciseList(
     exercises: List<Exercise>,

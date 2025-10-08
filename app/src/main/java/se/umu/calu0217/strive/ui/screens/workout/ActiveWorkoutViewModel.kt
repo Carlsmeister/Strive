@@ -13,6 +13,22 @@ import se.umu.calu0217.strive.domain.repository.ExerciseRepository
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import javax.inject.Inject
 
+/**
+ * UI state for active workout session.
+ * @property isLoading Indicates if workout data is being loaded.
+ * @property error Error message to display, if any.
+ * @property session The current workout session data.
+ * @property template The workout template being followed.
+ * @property exercises List of exercises in the workout.
+ * @property availableExercises All available exercises for adding to workout.
+ * @property currentExerciseIndex Index of the currently active exercise.
+ * @property currentSetIndex Index of the currently active set.
+ * @property completedSets Map tracking completed sets (exerciseId_setIndex -> completed).
+ * @property isRestMode Whether the user is currently in rest mode.
+ * @property restTimeRemaining Seconds remaining in the rest timer.
+ * @property isPaused Whether the workout is paused.
+ * @author Carl Lundholm
+ */
 data class ActiveWorkoutUiState(
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -28,6 +44,14 @@ data class ActiveWorkoutUiState(
     val isPaused: Boolean = false
 )
 
+/**
+ * Handles state for active training/workout sessions.
+ * Manages exercise progression, set completion, rest timers, and workout finalization.
+ * @param workoutRepository Repository for workout data operations.
+ * @param exerciseRepository Repository for exercise data operations.
+ * @param savedStateHandle Handles navigation arguments including sessionId.
+ * @author Carl Lundholm
+ */
 @HiltViewModel
 class ActiveWorkoutViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
@@ -53,6 +77,11 @@ class ActiveWorkoutViewModel @Inject constructor(
         loadWorkoutSession()
     }
 
+    /**
+     * Loads the workout session and its associated template and exercises from the database.
+     * Updates UI state with loaded data or error messages.
+     * @author Carl Lundholm
+     */
     private fun loadWorkoutSession() {
         viewModelScope.launch {
             try {
@@ -105,6 +134,13 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Marks a set as completed and starts rest timer if needed.
+     * @param exerciseId ID of the exercise being performed.
+     * @param setIndex Index of the set being completed (0-based).
+     * @param repsDone Number of repetitions completed in this set.
+     * @author Carl Lundholm
+     */
     fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int) {
         viewModelScope.launch {
             try {
@@ -146,6 +182,11 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Starts a countdown rest timer.
+     * @param restSeconds Duration of rest in seconds.
+     * @author Carl Lundholm
+     */
     private fun startRestTimer(restSeconds: Int) {
         // Cancel any existing rest timer to ensure only one is active
         restTimerJob?.cancel()
@@ -161,6 +202,10 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Skips the current rest period and allows immediate continuation.
+     * @author Carl Lundholm
+     */
     fun skipRest() {
         // Cancel the current timer and clear rest state
         restTimerJob?.cancel()
@@ -168,14 +213,30 @@ class ActiveWorkoutViewModel @Inject constructor(
         _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
     }
 
+    /**
+     * Pauses the current workout session.
+     * @author Carl Lundholm
+     */
     fun pauseWorkout() {
         _uiState.update { it.copy(isPaused = true) }
     }
 
+    /**
+     * Resumes a paused workout session.
+     * @author Carl Lundholm
+     */
     fun resumeWorkout() {
         _uiState.update { it.copy(isPaused = false) }
     }
 
+    /**
+     * Adds a new exercise to the active workout session.
+     * @param exerciseId ID of the exercise to add.
+     * @param sets Number of sets for the exercise.
+     * @param reps Number of reps per set.
+     * @param restSec Rest time between sets in seconds.
+     * @author Carl Lundholm
+     */
     fun addExercise(exerciseId: Long, sets: Int, reps: Int, restSec: Int) {
         viewModelScope.launch {
             val current = _uiState.value
@@ -198,7 +259,12 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
-    // Reorder exercises within the active workout session (local only, not persisted)
+    /**
+     * Reorders exercises within the active workout session (local only, not persisted).
+     * @param fromIndex Current index of the exercise to move.
+     * @param toIndex Target index to move the exercise to.
+     * @author Carl Lundholm
+     */
     fun moveExercise(fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
             val current = _uiState.value
@@ -219,15 +285,31 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Moves an exercise up in the order (decreases index by 1).
+     * @param index Current index of the exercise.
+     * @author Carl Lundholm
+     */
     fun moveExerciseUp(index: Int) {
         if (index > 0) moveExercise(index, index - 1)
     }
 
+    /**
+     * Moves an exercise down in the order (increases index by 1).
+     * @param index Current index of the exercise.
+     * @author Carl Lundholm
+     */
     fun moveExerciseDown(index: Int) {
         val size = _uiState.value.template?.exercises?.size ?: return
         if (index < size - 1) moveExercise(index, index + 1)
     }
 
+    /**
+     * Finishes the workout with a manually specified calorie count.
+     * @param kcalBurned Total calories burned during the workout.
+     * @param onWorkoutFinished Callback invoked when workout is successfully finished.
+     * @author Carl Lundholm
+     */
     fun finishWorkout(kcalBurned: Int, onWorkoutFinished: () -> Unit) {
         viewModelScope.launch {
             try {
@@ -239,6 +321,12 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Finishes the workout with automatically calculated calories based on workout duration.
+     * Uses MET value for moderate intensity strength training (6.0) and assumes 70kg body weight.
+     * @param onWorkoutFinished Callback invoked when workout is successfully finished.
+     * @author Carl Lundholm
+     */
     fun finishWorkoutAuto(onWorkoutFinished: () -> Unit) {
         viewModelScope.launch {
             try {
@@ -259,6 +347,10 @@ class ActiveWorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Clears the current error message from the UI state.
+     * @author Carl Lundholm
+     */
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }

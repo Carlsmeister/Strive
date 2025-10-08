@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,13 @@ import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.ui.components.AddExerciseDialog
 import se.umu.calu0217.strive.ui.components.LoadingIndicator
 
+/**
+ * Screen for an active workout session in progress.
+ * Displays current exercise, set tracking, rest timer, and workout progress.
+ *
+ * @param onNavigateBack Callback to navigate back when the workout is finished or cancelled.
+ * @param viewModel The view model managing the active workout state (injected via Hilt).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActiveWorkoutScreen(
@@ -24,8 +32,8 @@ fun ActiveWorkoutScreen(
     viewModel: ActiveWorkoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showAddDialog by remember { mutableStateOf(false) }
-    var showCongratsDialog by remember { mutableStateOf(false) }
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    var showCongratsDialog by rememberSaveable { mutableStateOf(false) }
 
     if (uiState.isLoading) {
         LoadingIndicator()

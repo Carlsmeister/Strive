@@ -47,6 +47,13 @@ private object ProfilePrefsKeys {
     val FAT = stringPreferencesKey("fat_pct")
 }
 
+/**
+ * User profile and settings screen.
+ * Allows users to configure personal information, fitness goals, and app preferences.
+ * Displays weekly workout statistics and provides data management options.
+ *
+ * @param onNavigateBack Callback to navigate back to the previous screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(

@@ -20,6 +20,14 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementation of ExerciseRepository using Room database and REST API.
+ * Manages exercise data with local caching and API synchronization.
+ * @param exerciseDao DAO for local exercise database operations.
+ * @param apiService API service for fetching exercise data.
+ * @param context Application context for accessing resources.
+ * @author Carl Lundholm
+ */
 @Singleton
 class ExerciseRepositoryImpl @Inject constructor(
     private val exerciseDao: ExerciseDao,
@@ -247,6 +255,3 @@ private data class SeedExercise(
 
 // Custom exception for internal data errors
 private class DataException(message: String) : Exception(message)
-
-
-

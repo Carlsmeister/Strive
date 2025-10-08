@@ -8,6 +8,11 @@ import android.content.Context
 import se.umu.calu0217.strive.data.local.dao.*
 import se.umu.calu0217.strive.data.local.entities.*
 
+/**
+ * Main Room database for the Strive fitness app.
+ * Contains all entities for exercises, workouts, templates, and run tracking.
+ * @author Carl Lundholm
+ */
 @Database(
     entities = [
         ExerciseEntity::class,

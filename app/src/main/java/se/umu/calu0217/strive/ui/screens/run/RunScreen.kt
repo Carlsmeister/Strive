@@ -3,7 +3,6 @@ package se.umu.calu0217.strive.ui.screens.run
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +12,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.core.utils.PermissionUtils
 import android.content.Context
+import androidx.compose.runtime.saveable.rememberSaveable
 
+/**
+ * Screen for GPS-tracked running/cycling/walking activities.
+ * Displays a map with the current route, real-time stats, and activity controls.
+ *
+ * @param viewModel The view model managing run session and GPS tracking (injected via Hilt).
+ */
 @Composable
 fun RunScreen(
     viewModel: RunViewModel = hiltViewModel()
@@ -39,7 +45,7 @@ fun RunScreen(
     InitialLocationEffect(viewModel = viewModel)
 
     val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
-    var hasCentered by remember { mutableStateOf(false) }
+    var hasCentered by rememberSaveable { mutableStateOf(false) }
 
     // Center camera on first valid location only
     LaunchedEffect(uiState.currentLatitude, uiState.currentLongitude) {

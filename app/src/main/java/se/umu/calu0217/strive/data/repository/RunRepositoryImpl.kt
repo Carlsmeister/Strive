@@ -11,6 +11,13 @@ import se.umu.calu0217.strive.domain.repository.RunRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementation of RunRepository using Room database.
+ * Manages run/cycling/walking sessions and GPS tracking data.
+ * @param runSessionDao DAO for run session operations.
+ * @param runPointDao DAO for GPS point operations.
+ * @author Carl Lundholm
+ */
 @Singleton
 class RunRepositoryImpl @Inject constructor(
     private val runSessionDao: RunSessionDao,
