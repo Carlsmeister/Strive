@@ -31,6 +31,7 @@ import se.umu.calu0217.strive.core.utils.PreferencesUtils.setAutoStartGpsEnabled
 import se.umu.calu0217.strive.core.utils.PreferencesUtils.isAutoStartGpsEnabled
 import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
+import androidx.activity.compose.BackHandler
 
 // DataStore for profile settings
 private val Context.profileDataStore by preferencesDataStore(name = "profile_prefs")
@@ -64,6 +65,10 @@ fun ProfileScreen(
 
     var userWeight by rememberSaveable { mutableStateOf("70.0") }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = onNavigateBack != null) {
+        onNavigateBack?.invoke()
+    }
 
     // Macros inputs
     var age by rememberSaveable { mutableStateOf("25") }

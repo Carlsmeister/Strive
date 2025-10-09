@@ -361,7 +361,7 @@ fun DropdownActivity(current: ActivityLevel, onChange: (ActivityLevel) -> Unit, 
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            ActivityLevel.values().forEach { level ->
+            ActivityLevel.entries.forEach { level ->
                 DropdownMenuItem(text = { Text(level.label) }, onClick = {
                     onChange(level)
                     expanded = false
@@ -384,7 +384,7 @@ fun DropdownGoal(current: Goal, onChange: (Goal) -> Unit, modifier: Modifier = M
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            Goal.values().forEach { g ->
+            Goal.entries.forEach { g ->
                 DropdownMenuItem(text = { Text(g.label) }, onClick = {
                     onChange(g)
                     expanded = false

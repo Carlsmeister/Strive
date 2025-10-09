@@ -1,5 +1,6 @@
 package se.umu.calu0217.strive.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import se.umu.calu0217.strive.ui.theme.EnergeticOrange
 import se.umu.calu0217.strive.ui.theme.White
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.BackHandler
 
 /**
  * Main application composable for the Strive fitness app.
@@ -73,6 +76,7 @@ import se.umu.calu0217.strive.ui.theme.White
 fun StriveApp() {
     val navController = rememberNavController()
     var showStartDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val items = listOf(
         BottomDestination("explore", stringResource(R.string.nav_explore), Icons.Outlined.FitnessCenter),
@@ -80,6 +84,15 @@ fun StriveApp() {
         BottomDestination("run", stringResource(R.string.run), Icons.AutoMirrored.Outlined.DirectionsRun),
         BottomDestination("history", stringResource(R.string.nav_history), Icons.Outlined.History)
     )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomNavRoutes = items.map { it.route }
+    BackHandler(enabled = currentRoute in bottomNavRoutes) {
+        // Exit the app when on a bottom nav screen
+        (context as? ComponentActivity)?.finish()
+    }
 
     Scaffold(
         topBar = {

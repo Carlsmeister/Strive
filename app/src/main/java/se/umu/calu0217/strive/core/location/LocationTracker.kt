@@ -6,6 +6,7 @@ import android.location.Location
 import android.os.Looper
 import com.google.android.gms.location.*
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -20,6 +21,7 @@ import javax.inject.Singleton
  * @author Carl Lundholm
  */
 @Singleton
+@OptIn(ExperimentalCoroutinesApi::class)
 class LocationTracker @Inject constructor(
     @ApplicationContext private val context: Context
 ) {

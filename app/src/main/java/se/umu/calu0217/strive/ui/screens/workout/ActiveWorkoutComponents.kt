@@ -93,16 +93,19 @@ fun WorkoutHeader(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = onPauseToggle,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = UiConstants.SMALL_PADDING)
+                    contentPadding = PaddingValues(
+                        horizontal = UiConstants.MEDIUM_PADDING,
+                        vertical = UiConstants.SMALL_PADDING
+                    )
                 ) {
                     if (isPaused) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null)
                         Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
-                        Text("Resume")
+                        Text(stringResource(R.string.resume))
                     } else {
                         Icon(Icons.Filled.Pause, contentDescription = null)
                         Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
-                        Text("Pause")
+                        Text(stringResource(R.string.pause))
                     }
                 }
             }
@@ -220,7 +223,7 @@ fun SplitActionFab(
         Row(
             modifier = Modifier
                 .height(56.dp)
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = UiConstants.MEDIUM_PADDING),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
@@ -233,7 +236,7 @@ fun SplitActionFab(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.Check, contentDescription = null)
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
                         Text(stringResource(R.string.complete_set))
                     }
                 }
@@ -251,8 +254,8 @@ fun SplitActionFab(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.Close, contentDescription = null)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Stop")
+                        Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
+                        Text(stringResource(R.string.stop))
                     }
                 }
             }
@@ -315,7 +318,7 @@ fun ExerciseCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(UiConstants.MEDIUM_PADDING))
 
             // Sets
             Row(
@@ -364,7 +367,7 @@ fun ExerciseCard(
             title = { Text(stringResource(R.string.set_number, setIndex + 1) + " - ${exercise.name}") },
             text = {
                 Column {
-                    Text("How many reps did you complete?")
+                    Text(stringResource(R.string.reps_question))
                     Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                     OutlinedTextField(
                         value = repsInput,

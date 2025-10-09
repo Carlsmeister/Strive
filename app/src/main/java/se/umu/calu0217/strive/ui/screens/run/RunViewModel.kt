@@ -277,14 +277,6 @@ class RunViewModel @Inject constructor(
     }
 
     /**
-     * Clears the current error message from the UI state.
-     * @author Carl Lundholm
-     */
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
-    }
-
-    /**
      * Shows an error message when location permissions are denied.
      * @author Carl Lundholm
      */

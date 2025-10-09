@@ -3,10 +3,10 @@ package se.umu.calu0217.strive.ui.screens.run
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DirectionsBike
+import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
+import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.DirectionsBike
-import androidx.compose.material.icons.outlined.DirectionsRun
-import androidx.compose.material.icons.outlined.DirectionsWalk
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.ui.components.StatItem
 
@@ -28,7 +29,7 @@ fun MapsApiKeyMissingNotice() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(UiConstants.STANDARD_PADDING),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -36,7 +37,7 @@ fun MapsApiKeyMissingNotice() {
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                 Text(
                     text = stringResource(R.string.maps_api_key_missing),
                     style = MaterialTheme.typography.bodyMedium,
@@ -72,7 +73,7 @@ fun RunningStatsPanel(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 8.dp),
+                .padding(vertical = UiConstants.SMALL_PADDING),
         ) {
             // Time (largest)
             StatItem(
@@ -118,7 +119,12 @@ fun ReadyToRunPanel(gpsStatus: GpsStatus) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 46.dp, bottom = 26.dp, start = 16.dp, end = 16.dp),
+                    .padding(
+                        top = 46.dp,
+                        bottom = 26.dp,
+                        start = UiConstants.STANDARD_PADDING,
+                        end = UiConstants.STANDARD_PADDING
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -127,7 +133,7 @@ fun ReadyToRunPanel(gpsStatus: GpsStatus) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                 Text(
                     text = stringResource(R.string.choose_activity_hint),
                     style = MaterialTheme.typography.bodyLarge,
@@ -163,14 +169,14 @@ fun ReadyToRunPanel(gpsStatus: GpsStatus) {
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(8.dp)
+                    .padding(UiConstants.SMALL_PADDING)
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = UiConstants.SMALL_PADDING, vertical = UiConstants.EXTRA_SMALL_PADDING),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(badgeIcon, contentDescription = null, tint = badgeContentColor)
-                    Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(UiConstants.HALF_SMALL_PADDING))
                     Text(badgeText, style = MaterialTheme.typography.labelMedium, color = badgeContentColor)
                 }
             }
@@ -206,7 +212,7 @@ fun ActivitySelectorDropdown(
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            ActivityType.values().forEach { type ->
+            ActivityType.entries.forEach { type ->
                 DropdownMenuItem(
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -243,9 +249,9 @@ fun FloatingRunControls(
         shape = RoundedCornerShape(24.dp)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = UiConstants.MEDIUM_PADDING, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(UiConstants.SMALL_PADDING)
         ) {
             if (!isRunning) {
                 Text(
@@ -260,9 +266,18 @@ fun FloatingRunControls(
                     borderColor = fg
                 )
                 FilledIconButton(
-                    onClick = onStartRun
+                    onClick = onStartRun,
+                    enabled = gpsReady
                 ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "Start")
+                    if (gpsReady) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = "Start")
+                    } else {
+                        CircularProgressIndicator(
+                            strokeWidth = 2.dp,
+                            color = fg,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             } else {
                 Text(
@@ -286,9 +301,9 @@ private fun ActivityType.label(): String = when (this) {
 
 @Composable
 private fun activityIcon(activity: ActivityType) = when (activity) {
-    ActivityType.RUNNING -> Icons.Outlined.DirectionsRun
-    ActivityType.CYCLING -> Icons.Outlined.DirectionsBike
-    ActivityType.WALKING -> Icons.Outlined.DirectionsWalk
+    ActivityType.RUNNING -> Icons.AutoMirrored.Outlined.DirectionsRun
+    ActivityType.CYCLING -> Icons.AutoMirrored.Outlined.DirectionsBike
+    ActivityType.WALKING -> Icons.AutoMirrored.Outlined.DirectionsWalk
 }
 
 @Composable
@@ -301,24 +316,24 @@ fun RunSummaryDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Run Complete!") },
+        title = { Text(stringResource(R.string.run_complete_title)) },
         text = {
             Column {
-                Text("Great job! Here's your summary:")
+                Text(stringResource(R.string.great_job_summary))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Distance: ${FitnessUtils.formatDistance(distance)}")
-                Text("Time: ${FitnessUtils.formatTime(elapsedTime)}")
-                Text("Pace: ${FitnessUtils.formatPace(pace)}")
+                Text(stringResource(R.string.distance_value, FitnessUtils.formatDistance(distance)))
+                Text(stringResource(R.string.time_value, FitnessUtils.formatTime(elapsedTime)))
+                Text(stringResource(R.string.pace_value, FitnessUtils.formatPace(pace)))
             }
         },
         confirmButton = {
             TextButton(onClick = onViewDetails) {
-                Text("View Details")
+                Text(stringResource(R.string.view_details))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         }
     )

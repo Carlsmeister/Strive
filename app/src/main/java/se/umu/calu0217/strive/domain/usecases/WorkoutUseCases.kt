@@ -2,7 +2,6 @@ package se.umu.calu0217.strive.domain.usecases
 
 import kotlinx.coroutines.flow.Flow
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
-import se.umu.calu0217.strive.domain.models.WorkoutSession
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import javax.inject.Inject
 

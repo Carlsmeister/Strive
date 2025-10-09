@@ -305,23 +305,6 @@ class ActiveWorkoutViewModel @Inject constructor(
     }
 
     /**
-     * Finishes the workout with a manually specified calorie count.
-     * @param kcalBurned Total calories burned during the workout.
-     * @param onWorkoutFinished Callback invoked when workout is successfully finished.
-     * @author Carl Lundholm
-     */
-    fun finishWorkout(kcalBurned: Int, onWorkoutFinished: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                workoutRepository.finishWorkout(sessionId, kcalBurned)
-                onWorkoutFinished()
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
-            }
-        }
-    }
-
-    /**
      * Finishes the workout with automatically calculated calories based on workout duration.
      * Uses MET value for moderate intensity strength training (6.0) and assumes 70kg body weight.
      * @param onWorkoutFinished Callback invoked when workout is successfully finished.
@@ -345,13 +328,5 @@ class ActiveWorkoutViewModel @Inject constructor(
                 _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
             }
         }
-    }
-
-    /**
-     * Clears the current error message from the UI state.
-     * @author Carl Lundholm
-     */
-    fun clearError() {
-        _uiState.update { it.copy(error = null) }
     }
 }

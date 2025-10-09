@@ -1,5 +1,6 @@
 package se.umu.calu0217.strive.data.repository
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -23,6 +24,7 @@ import javax.inject.Singleton
  * @param workoutSetDao DAO for workout set operations.
  * @author Carl Lundholm
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class WorkoutRepositoryImpl @Inject constructor(
     private val workoutTemplateDao: WorkoutTemplateDao,

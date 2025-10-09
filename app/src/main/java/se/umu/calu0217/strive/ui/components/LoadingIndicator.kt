@@ -13,8 +13,8 @@ import se.umu.calu0217.strive.core.constants.UiConstants
  */
 @Composable
 fun LoadingIndicator(
-    message: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    message: String? = null
 ) {
     Box(
         modifier = modifier.fillMaxSize(),

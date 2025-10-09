@@ -7,6 +7,9 @@
     <string name="nav_history">History</string>
     <string name="nav_profile">Profile</string>
 
+    <string name="search_exercises_hint">Search exercises…</string>
+
+
     <!-- Workout Screen -->
     <string name="quick_start">Quick Start</string>
     <string name="start_new_workout">Start New Workout</string>
@@ -35,6 +38,10 @@
     <string name="move_down">Move down</string>
     <string name="remove">Remove</string>
     <string name="reorder_hint">Use the arrows on each exercise to reorder</string>
+    <string name="close">Close</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="reps_question">How many reps did you complete?</string>
 
     <!-- Exercise Settings -->
     <string name="sets">Sets</string>
@@ -113,6 +120,9 @@
     <string name="gps_ready">GPS Ready</string>
     <string name="gps_searching">Searching for GPS...</string>
     <string name="gps_error">GPS Error</string>
+    <string name="run_complete_title">Run Complete!</string>
+    <string name="great_job_summary">Great job! Here\'s your summary:</string>
+    <string name="view_details">View Details</string>
 
     <!-- History -->
     <string name="activity_history">Activity History</string>
@@ -125,6 +135,14 @@
     <string name="error_prefix">Error: %1$s</string>
     <string name="force_refresh">Force Refresh</string>
     <string name="loading">Loading…</string>
+
+    <!-- Back Navigation Confirmations -->
+    <string name="exit_workout_title">Exit Workout?</string>
+    <string name="exit_workout_message">Are you sure you want to exit the workout? Your progress will be saved.</string>
+    <string name="stop_run_title">Stop Run?</string>
+    <string name="stop_run_message">Are you sure you want to stop the run? Your progress will be saved.</string>
+    <string name="exit">Exit</string>
+    <string name="stop">Stop</string>
 
     <!-- Activity Types -->
     <string name="activity_sedentary">Sedentary (little/no exercise)</string>

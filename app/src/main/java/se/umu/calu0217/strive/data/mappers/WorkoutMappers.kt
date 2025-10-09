@@ -65,18 +65,3 @@ fun TemplateExerciseEntity.toDomainModel(): TemplateExercise =
         position = position
     )
 
-/**
- * Converts a TemplateExercise domain model to a database entity.
- * @param templateId ID of the parent template.
- * @return TemplateExerciseEntity for database storage.
- * @author Carl Lundholm
- */
-fun TemplateExercise.toEntity(templateId: Long): TemplateExerciseEntity =
-    TemplateExerciseEntity(
-        templateId = templateId,
-        exerciseId = exerciseId,
-        sets = sets,
-        reps = reps,
-        restSec = restSec,
-        position = position
-    )

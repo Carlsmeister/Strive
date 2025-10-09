@@ -38,7 +38,7 @@ fun ExerciseDto.toEntity(): ExerciseEntity {
         name = this.name,
         bodyParts = listOf(this.bodyPart, this.target) + this.secondaryMuscles.takeIf { it.isNotEmpty() }.orEmpty(),
         equipment = this.equipment,
-        instructions = if (this.instructions.isNotEmpty()) this.instructions else listOf("No instructions provided."),
+        instructions = this.instructions.ifEmpty { listOf("No instructions provided.") },
         imageUrl = imageUrl
     )
 }

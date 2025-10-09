@@ -240,9 +240,9 @@ private fun WorkoutDialogs(
 
     // Add Exercise Dialog
     if (uiState.showEditDialog && uiState.editingTemplate != null) {
-        val template = uiState.editingTemplate!!
+        val template = uiState.editingTemplate
         AddExerciseDialog(
-            title = "Add Exercise to \"${template.name}\" workout",
+            title = stringResource(R.string.add_exercise_to_template, template.name),
             availableExercises = uiState.availableExercises,
             onDismiss = { viewModel.hideEditTemplateDialog() },
             onAdd = { exercise, sets, reps, rest ->
@@ -254,7 +254,7 @@ private fun WorkoutDialogs(
     // Template Editor Dialog
     if (uiState.showEditorDialog && uiState.editorTemplate != null) {
         TemplateEditorDialog(
-            template = uiState.editorTemplate!!,
+            template = uiState.editorTemplate,
             availableExercises = uiState.availableExercises,
             onDismiss = { viewModel.hideTemplateEditor() },
             onSave = { updatedTemplate ->
@@ -378,12 +378,12 @@ private fun TemplateEditorDialog(
         onDismissRequest = onDismiss,
         title = {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Edit Template", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.edit_template), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
                 TextButton(onClick = { showAddExerciseDialog = true }) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Add Exercise")
+                    Text(stringResource(R.string.add_exercise))
                 }
             }
         },
@@ -392,13 +392,13 @@ private fun TemplateEditorDialog(
                 OutlinedTextField(
                     value = nameText,
                     onValueChange = { nameText = it },
-                    label = { Text("Template name") },
+                    label = { Text(stringResource(R.string.template_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 if (items.isEmpty()) {
-                    Text("No exercises in this template yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.no_exercises_in_template), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 } else {
                     LazyColumn(modifier = Modifier.heightIn(max = 320.dp)) {
                         itemsIndexed(items) { index, te ->
@@ -416,7 +416,7 @@ private fun TemplateEditorDialog(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(onClick = { items.removeAt(index) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Remove")
+                                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.remove))
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -439,7 +439,7 @@ private fun TemplateEditorDialog(
                                                 val newVal = filtered.toIntOrNull() ?: te.sets
                                                 items[index] = items[index].copy(sets = newVal)
                                             },
-                                            label = { Text("Sets") },
+                                            label = { Text(stringResource(R.string.sets)) },
                                             singleLine = true,
                                             modifier = Modifier.width(70.dp)
                                         )
@@ -453,7 +453,7 @@ private fun TemplateEditorDialog(
                                                 val newVal = filtered.toIntOrNull() ?: te.reps
                                                 items[index] = items[index].copy(reps = newVal)
                                             },
-                                            label = { Text("Reps") },
+                                            label = { Text(stringResource(R.string.reps)) },
                                             singleLine = true,
                                             modifier = Modifier.width(70.dp)
                                         )
@@ -467,7 +467,7 @@ private fun TemplateEditorDialog(
                                                 val newVal = filtered.toIntOrNull() ?: te.restSec
                                                 items[index] = items[index].copy(restSec = newVal)
                                             },
-                                            label = { Text("Rest", maxLines = 1) },
+                                            label = { Text(stringResource(R.string.rest), maxLines = 1) },
                                             singleLine = true,
                                             modifier = Modifier.width(90.dp)
                                         )
@@ -487,7 +487,7 @@ private fun TemplateEditorDialog(
                                         ) {
                                             Icon(
                                                 Icons.Filled.ArrowUpward,
-                                                contentDescription = "Move up",
+                                                contentDescription = stringResource(R.string.move_up),
                                                 tint = EnergeticOrange
                                             )
                                         }
@@ -502,7 +502,7 @@ private fun TemplateEditorDialog(
                                         ) {
                                             Icon(
                                                 Icons.Filled.ArrowDownward,
-                                                contentDescription = "Move down",
+                                                contentDescription = stringResource(R.string.move_down),
                                                 tint = EnergeticOrange
                                             )
                                         }
@@ -513,7 +513,7 @@ private fun TemplateEditorDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Use the arrows on each exercise to reorder", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.reorder_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         },
@@ -525,17 +525,17 @@ private fun TemplateEditorDialog(
                 )
                 onSave(updated)
             }) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         }
     )
 
     if (showAddExerciseDialog) {
         AddExerciseDialog(
-            title = "Add Exercise",
+            title = stringResource(R.string.add_exercise),
             availableExercises = availableExercises,
             onDismiss = { showAddExerciseDialog = false },
             onAdd = { exercise, sets, reps, rest ->

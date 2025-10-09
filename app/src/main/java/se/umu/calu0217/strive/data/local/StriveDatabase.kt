@@ -1,10 +1,8 @@
 package se.umu.calu0217.strive.data.local
 
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import android.content.Context
 import se.umu.calu0217.strive.data.local.dao.*
 import se.umu.calu0217.strive.data.local.entities.*
 

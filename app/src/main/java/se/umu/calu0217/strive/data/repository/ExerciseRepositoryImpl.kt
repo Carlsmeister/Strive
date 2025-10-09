@@ -16,7 +16,6 @@ import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.repository.ExerciseRepository
 import se.umu.calu0217.strive.data.mappers.toDomainModel
 import se.umu.calu0217.strive.data.mappers.toEntity
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 

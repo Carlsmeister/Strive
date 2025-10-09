@@ -136,7 +136,7 @@ private fun ExploreSearchBar(
     TextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text("Search exercises...") },
+        placeholder = { Text(stringResource(R.string.search_exercises_hint)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true

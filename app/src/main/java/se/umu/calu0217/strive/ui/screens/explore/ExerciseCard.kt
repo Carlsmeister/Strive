@@ -54,7 +54,7 @@ fun ExerciseCard(
                                 android.util.Log.d("ExerciseImage", "Loaded image for '${exercise.name}' -> $imageUrl")
                             },
                             onError = { _, result ->
-                                android.util.Log.d("ExerciseImage", "Failed image for '${exercise.name}' -> $imageUrl cause=${result.throwable?.localizedMessage}")
+                                android.util.Log.d("ExerciseImage", "Failed image for '${exercise.name}' -> $imageUrl cause=${result.throwable.localizedMessage}")
                             }
                         )
                         .build(),
