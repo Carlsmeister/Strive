@@ -19,6 +19,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import se.umu.calu0217.strive.domain.models.Exercise
 
+/**
+ * Card component displaying exercise information with image, name, equipment, and body parts.
+ * Provides click actions to view details or add the exercise to a workout template.
+ *
+ * @param exercise The exercise data to display.
+ * @param onClick Callback invoked when the card is clicked to view exercise details.
+ * @param onAddToTemplate Callback invoked when the "add to template" button is clicked.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseCard(
@@ -46,7 +54,7 @@ fun ExerciseCard(
                                 android.util.Log.d("ExerciseImage", "Loaded image for '${exercise.name}' -> $imageUrl")
                             },
                             onError = { _, result ->
-                                android.util.Log.d("ExerciseImage", "Failed image for '${exercise.name}' -> $imageUrl cause=${result.throwable?.localizedMessage}")
+                                android.util.Log.d("ExerciseImage", "Failed image for '${exercise.name}' -> $imageUrl cause=${result.throwable.localizedMessage}")
                             }
                         )
                         .build(),

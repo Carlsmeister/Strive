@@ -13,6 +13,17 @@ import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.domain.usecases.*
 import javax.inject.Inject
 
+/**
+ * Manages running/cycling/walking activity tracking with GPS.
+ * Handles location tracking, distance calculation, pace monitoring, and calorie estimation.
+ * @param locationTracker Service for GPS location updates.
+ * @param startRunUseCase Use case for starting a new run session.
+ * @param getActiveRunSessionUseCase Use case for retrieving active run session.
+ * @param addRunPointUseCase Use case for adding GPS points to a run.
+ * @param updateRunSessionUseCase Use case for updating run session data.
+ * @param finishRunUseCase Use case for completing a run session.
+ * @author Carl Lundholm
+ */
 @HiltViewModel
 class RunViewModel @Inject constructor(
     private val locationTracker: LocationTracker,
@@ -36,6 +47,10 @@ class RunViewModel @Inject constructor(
         checkForActiveRun()
     }
 
+    /**
+     * Starts a timer that updates elapsed time and pace every second.
+     * @author Carl Lundholm
+     */
     private fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
@@ -52,6 +67,11 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Creates a flow that emits at regular intervals.
+     * @param periodMs Period between emissions in milliseconds.
+     * @author Carl Lundholm
+     */
     private fun tickerFlow(periodMs: Long) = flow {
         while (kotlinx.coroutines.currentCoroutineContext().isActive) {
             emit(Unit)
@@ -59,11 +79,19 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Stops the active timer.
+     * @author Carl Lundholm
+     */
     private fun stopTimer() {
         timerJob?.cancel()
         timerJob = null
     }
 
+    /**
+     * Checks for an active run session and resumes it if found.
+     * @author Carl Lundholm
+     */
     private fun checkForActiveRun() {
         viewModelScope.launch {
             val activeSession = getActiveRunSessionUseCase()
@@ -83,6 +111,11 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Starts a new run/cycling/walking session.
+     * Initializes tracking, starts timer, and begins GPS location updates.
+     * @author Carl Lundholm
+     */
     fun startRun() {
         viewModelScope.launch {
             try {
@@ -110,6 +143,11 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Stops the active run session and calculates final statistics.
+     * @param userWeight User's weight in kg for calorie calculation (default 70kg).
+     * @author Carl Lundholm
+     */
     fun stopRun(userWeight: Double = 70.0) {
         viewModelScope.launch {
             try {
@@ -139,6 +177,13 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Calculates MET value based on activity type and pace.
+     * @param activity Type of activity (running, walking, or cycling).
+     * @param paceMinPerKm Current pace in minutes per kilometer.
+     * @return MET (Metabolic Equivalent of Task) value for calorie calculation.
+     * @author Carl Lundholm
+     */
     private fun getMetForActivity(activity: ActivityType, paceMinPerKm: Double): Double {
         // Convert pace (min/km) to speed (km/h)
         val speedKmh = if (paceMinPerKm > 0) 60.0 / paceMinPerKm else 0.0
@@ -160,6 +205,10 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Starts GPS location tracking and updates distance/pace in real-time.
+     * @author Carl Lundholm
+     */
     private fun startLocationTracking() {
         viewModelScope.launch {
             locationTracker.getLocationUpdates()
@@ -210,18 +259,27 @@ class RunViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sets the activity type (running, cycling, or walking).
+     * @param activity The activity type to set.
+     * @author Carl Lundholm
+     */
     fun setActivity(activity: ActivityType) {
         _uiState.value = _uiState.value.copy(selectedActivity = activity)
     }
 
+    /**
+     * Dismisses the run summary dialog.
+     * @author Carl Lundholm
+     */
     fun dismissSummary() {
         _uiState.value = _uiState.value.copy(showSummary = false)
     }
 
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
-    }
-
+    /**
+     * Shows an error message when location permissions are denied.
+     * @author Carl Lundholm
+     */
     fun showPermissionError() {
         _uiState.value = _uiState.value.copy(
             error = "Location permissions are required to track your run. Please grant permissions in Settings.",
@@ -229,14 +287,26 @@ class RunViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Sets GPS status to ready.
+     * @author Carl Lundholm
+     */
     fun setGpsReady() {
         _uiState.value = _uiState.value.copy(gpsStatus = GpsStatus.READY)
     }
 
+    /**
+     * Sets GPS status to searching.
+     * @author Carl Lundholm
+     */
     fun setGpsNotReady() {
         _uiState.value = _uiState.value.copy(gpsStatus = GpsStatus.SEARCHING)
     }
 
+    /**
+     * Refreshes the current GPS location.
+     * @author Carl Lundholm
+     */
     fun refreshCurrentLocation() {
         viewModelScope.launch {
             try {
@@ -255,7 +325,20 @@ class RunViewModel @Inject constructor(
     }
 }
 
-// Data class for RunViewModel state
+/**
+ * UI state for run/cycling/walking tracking.
+ * @property isRunning Whether a session is currently active.
+ * @property distance Distance covered in meters.
+ * @property elapsedTime Time elapsed in seconds.
+ * @property pace Current pace in minutes per kilometer.
+ * @property selectedActivity Type of activity being tracked.
+ * @property gpsStatus Current GPS signal status.
+ * @property showSummary Whether to show the session summary.
+ * @property error Error message to display, if any.
+ * @property currentLatitude Current GPS latitude.
+ * @property currentLongitude Current GPS longitude.
+ * @author Carl Lundholm
+ */
 data class RunUiState(
     val isRunning: Boolean = false,
     val distance: Double = 0.0, // in meters
@@ -269,4 +352,8 @@ data class RunUiState(
     val currentLongitude: Double? = null
 )
 
+/**
+ * Types of activities that can be tracked.
+ * @author Carl Lundholm
+ */
 enum class ActivityType { RUNNING, CYCLING, WALKING }

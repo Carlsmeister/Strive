@@ -4,13 +4,17 @@ import se.umu.calu0217.strive.core.constants.UiConstants
 
 /**
  * Input validation utilities for user inputs.
+ * Validates workout parameters, user metrics, and template names.
  * Returns error message string if invalid, null if valid.
+ * @author Carl Lundholm
  */
 object InputValidator {
     
     /**
      * Validates weight input.
-     * @return Error message if invalid, null if valid
+     * @param input Weight string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateWeight(input: String): String? {
         if (input.isBlank()) return "Weight cannot be empty"
@@ -26,7 +30,9 @@ object InputValidator {
 
     /**
      * Validates height input.
-     * @return Error message if invalid, null if valid
+     * @param input Height string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateHeight(input: String): String? {
         if (input.isBlank()) return "Height cannot be empty"
@@ -41,8 +47,10 @@ object InputValidator {
     }
 
     /**
-     * Validates sets input.
-     * @return Error message if invalid, null if valid
+     * Validates sets input for workout exercises.
+     * @param input Number of sets string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateSets(input: String): String? {
         val sets = input.toIntOrNull()
@@ -55,8 +63,10 @@ object InputValidator {
     }
     
     /**
-     * Validates reps input.
-     * @return Error message if invalid, null if valid
+     * Validates reps input for workout exercises.
+     * @param input Number of reps string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateReps(input: String): String? {
         val reps = input.toIntOrNull()
@@ -69,8 +79,10 @@ object InputValidator {
     }
     
     /**
-     * Validates rest time input.
-     * @return Error message if invalid, null if valid
+     * Validates rest time input for workout exercises.
+     * @param input Rest time in seconds string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateRestTime(input: String): String? {
         val rest = input.toIntOrNull()
@@ -83,8 +95,11 @@ object InputValidator {
     }
     
     /**
-     * Validates template name.
-     * @return Error message if invalid, null if valid
+     * Validates template name input.
+     * Ensures name is between 2 and 50 characters.
+     * @param input Template name string to validate.
+     * @return Error message if invalid, null if valid.
+     * @author Carl Lundholm
      */
     fun validateTemplateName(input: String): String? {
         val trimmed = input.trim()

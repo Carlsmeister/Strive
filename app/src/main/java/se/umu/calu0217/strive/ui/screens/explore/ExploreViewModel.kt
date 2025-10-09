@@ -16,6 +16,17 @@ import se.umu.calu0217.strive.domain.usecases.SearchExercisesUseCase
 import se.umu.calu0217.strive.domain.usecases.SeedExercisesUseCase
 import javax.inject.Inject
 
+/**
+ * Manages exercise exploration and discovery.
+ * Provides search, filtering, and exercise database management functionality.
+ * @param getExercisesUseCase Use case for retrieving all exercises.
+ * @param searchExercisesUseCase Use case for searching exercises.
+ * @param seedExercisesUseCase Use case for initializing exercise database.
+ * @param backfillMissingExerciseImagesUseCase Use case for fetching missing exercise images.
+ * @param forceRefreshExercisesUseCase Use case for refreshing exercise data from API.
+ * @param workoutRepository Repository for workout template operations.
+ * @author Carl Lundholm
+ */
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
@@ -72,6 +83,13 @@ class ExploreViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    /**
+     * Checks if an exercise matches the selected filters.
+     * @param exercise The exercise to check.
+     * @param filters Set of filter strings to match against.
+     * @return True if the exercise matches any of the filters.
+     * @author Carl Lundholm
+     */
     private fun matchesFilters(exercise: Exercise, filters: Set<String>): Boolean {
         if (filters.isEmpty()) return true
         val parts = exercise.bodyParts.map { it.lowercase() }
@@ -82,10 +100,10 @@ class ExploreViewModel @Inject constructor(
         return parts.any { part -> allowedTokens.any { token -> part.contains(token) } }
     }
 
-    init {
-        initializeData()
-    }
-
+    /**
+     * Initializes the exercise database by seeding and backfilling images.
+     * @author Carl Lundholm
+     */
     private fun initializeData() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
@@ -104,10 +122,20 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates the search query for filtering exercises.
+     * @param query The search query string.
+     * @author Carl Lundholm
+     */
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
+    /**
+     * Toggles a body part filter on/off.
+     * @param filter The filter to toggle (e.g., "legs", "arms", "chest").
+     * @author Carl Lundholm
+     */
     fun toggleFilter(filter: String) {
         val currentFilters = _selectedFilters.value.toMutableSet()
         if (currentFilters.contains(filter)) {
@@ -118,15 +146,27 @@ class ExploreViewModel @Inject constructor(
         _selectedFilters.value = currentFilters
     }
 
+    /**
+     * Clears the current error message from the UI state.
+     * @author Carl Lundholm
+     */
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
 
+    /**
+     * Retries loading exercises after a failure.
+     * @author Carl Lundholm
+     */
     fun retryLoadingExercises() {
         _uiState.value = _uiState.value.copy(error = null)
         initializeData()
     }
 
+    /**
+     * Forces a refresh of exercise data from the API.
+     * @author Carl Lundholm
+     */
     fun forceRefreshExercises() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -143,7 +183,10 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
-    // Template-related methods
+    /**
+     * Loads all workout templates for the add-to-template feature.
+     * @author Carl Lundholm
+     */
     fun loadTemplates() {
         viewModelScope.launch {
             try {
@@ -157,6 +200,15 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Adds an exercise to an existing template.
+     * @param exerciseId ID of the exercise to add.
+     * @param templateId ID of the template to add the exercise to.
+     * @param sets Number of sets.
+     * @param reps Number of repetitions per set.
+     * @param restSec Rest time between sets in seconds.
+     * @author Carl Lundholm
+     */
     fun addExerciseToTemplate(
         exerciseId: Long,
         templateId: Long,
@@ -191,6 +243,12 @@ class ExploreViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Creates a new template with an exercise as the first exercise.
+     * @param templateName Name for the new template.
+     * @param firstExerciseId ID of the first exercise to add.
+     * @author Carl Lundholm
+     */
     fun createNewTemplate(templateName: String, firstExerciseId: Long) {
         viewModelScope.launch {
             try {
@@ -224,6 +282,12 @@ class ExploreViewModel @Inject constructor(
     }
 }
 
+/**
+ * UI state for the explore screen.
+ * @property isLoading Indicates if data is being loaded.
+ * @property error Error message to display, if any.
+ * @author Carl Lundholm
+ */
 data class ExploreUiState(
     val isLoading: Boolean = false,
     val error: String? = null

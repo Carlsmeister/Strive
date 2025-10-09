@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.Color
 private val DarkColorScheme = darkColorScheme(
     primary = EnergeticOrange,
     secondary = EnergeticRed,
-    tertiary = NeonGreen,
     background = Black,
     surface = DarkGray,
     onPrimary = Color.Black,
@@ -23,7 +22,6 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = EnergeticOrange,
     secondary = EnergeticRed,
-    tertiary = NeonGreen,
     background = Color(0xFFF9F9F9),
     surface = Color(0xFFFFFFFF),
     onPrimary = Color.Black,

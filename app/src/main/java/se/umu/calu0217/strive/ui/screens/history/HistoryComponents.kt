@@ -2,7 +2,7 @@ package se.umu.calu0217.strive.ui.screens.history
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,9 +14,13 @@ import se.umu.calu0217.strive.core.utils.DateTimeUtils
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.domain.models.RunSession
 import se.umu.calu0217.strive.domain.models.WorkoutSession
-import java.text.SimpleDateFormat
-import java.util.*
 
+/**
+ * Displays a card with weekly workout and run statistics.
+ * Shows total activities, minutes exercised, and distance covered.
+ *
+ * @param weeklyStats The weekly statistics data to display.
+ */
 @Composable
 fun WeeklyStatsCard(weeklyStats: WeeklyStats) {
     Card(
@@ -179,7 +183,7 @@ fun RunSessionCard(
                 }
 
                 Icon(
-                    Icons.Default.DirectionsRun,
+                    Icons.AutoMirrored.Filled.DirectionsRun,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -221,4 +225,3 @@ fun EmptyStateMessage(
         }
     }
 }
-

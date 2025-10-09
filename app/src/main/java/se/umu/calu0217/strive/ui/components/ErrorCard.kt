@@ -9,6 +9,15 @@ import androidx.compose.ui.res.stringResource
 import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.constants.UiConstants
 
+/**
+ * Displays an error card with contextual error messages and action buttons.
+ * The card adapts its title based on the type of error (internet, timeout, or generic).
+ *
+ * @param error The error message to display to the user.
+ * @param onDismiss Callback invoked when the user dismisses the error card.
+ * @param onRetry Callback invoked when the user clicks the "Try Again" button.
+ * @param onForceRefresh Callback invoked when the user clicks the "Force Refresh" button.
+ */
 @Composable
 fun ErrorCard(
     error: String,

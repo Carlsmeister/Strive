@@ -23,6 +23,13 @@ import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.ui.screens.explore.ExploreViewModel
 
+/**
+ * Displays a dialog with detailed information about an exercise.
+ * Shows exercise image, equipment needed, body parts targeted, and step-by-step instructions.
+ *
+ * @param exercise The exercise to display details for.
+ * @param onDismiss Callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun ExerciseDetailDialog(
     exercise: Exercise,
@@ -109,6 +116,18 @@ fun ExerciseDetailDialog(
     )
 }
 
+/**
+ * Displays a dialog for adding an exercise to an existing workout template or creating a new one.
+ * Allows users to configure sets, reps, and rest time for the exercise.
+ *
+ * @param exercise The exercise to add to a template.
+ * @param onDismiss Callback invoked when the dialog is dismissed.
+ * @param onAddToTemplate Callback invoked when adding the exercise to a selected template.
+ *        Parameters: templateId, sets, reps, restSeconds.
+ * @param onCreateNewTemplate Callback invoked when creating a new template.
+ *        Parameter: templateName.
+ * @param viewModel The view model for managing templates (injected via Hilt).
+ */
 @Composable
 fun AddToTemplateDialog(
     exercise: Exercise,

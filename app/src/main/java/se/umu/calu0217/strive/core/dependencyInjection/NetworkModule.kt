@@ -1,4 +1,4 @@
-package se.umu.calu0217.strive.core.di
+package se.umu.calu0217.strive.core.dependencyInjection
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -14,10 +14,22 @@ import se.umu.calu0217.strive.BuildConfig
 import se.umu.calu0217.strive.data.remote.ExerciseApiService
 import javax.inject.Singleton
 
+/**
+ * Hilt Dependency Injection module for network components.
+ * Provides singleton instances of Retrofit, OkHttpClient, and API services.
+ * Configures API authentication and JSON serialization.
+ * @author Carl Lundholm
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    /**
+     * Provides JSON serializer configuration.
+     * Ignores unknown keys and coerces input values for flexible API responses.
+     * @return Configured Json instance.
+     * @author Carl Lundholm
+     */
     @Provides
     @Singleton
     fun provideJson(): Json = Json {
@@ -25,6 +37,13 @@ object NetworkModule {
         coerceInputValues = true
     }
 
+    /**
+     * Provides OkHttpClient with logging and API key authentication.
+     * Adds RapidAPI headers for ExerciseDB API access.
+     * Enables HTTP logging in debug builds.
+     * @return Configured OkHttpClient instance.
+     * @author Carl Lundholm
+     */
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
@@ -42,6 +61,14 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provides Retrofit instance for API communication.
+     * Configured for ExerciseDB API with JSON serialization.
+     * @param okHttpClient The HTTP client with authentication.
+     * @param json The JSON serializer configuration.
+     * @return Configured Retrofit instance.
+     * @author Carl Lundholm
+     */
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
@@ -52,6 +79,12 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provides ExerciseApiService for exercise data API calls.
+     * @param retrofit The configured Retrofit instance.
+     * @return ExerciseApiService implementation.
+     * @author Carl Lundholm
+     */
     @Provides
     @Singleton
     fun provideExerciseApiService(retrofit: Retrofit): ExerciseApiService {

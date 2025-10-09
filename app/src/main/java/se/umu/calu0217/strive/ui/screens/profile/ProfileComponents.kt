@@ -34,6 +34,12 @@ import kotlin.math.roundToInt
  * Promote individual components to ui/components/ when they become shared across features.
  */
 
+/**
+ * Displays a weekly workout frequency chart showing activity counts per day.
+ * Renders a bar chart with day labels (M, T, W, T, F, S, S).
+ *
+ * @param workoutDayCounts List of day labels with their corresponding workout counts.
+ */
 @Composable
 fun WeeklyWorkoutsDashboard(workoutDayCounts: List<DayLabelCount>) {
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -355,7 +361,7 @@ fun DropdownActivity(current: ActivityLevel, onChange: (ActivityLevel) -> Unit, 
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            ActivityLevel.values().forEach { level ->
+            ActivityLevel.entries.forEach { level ->
                 DropdownMenuItem(text = { Text(level.label) }, onClick = {
                     onChange(level)
                     expanded = false
@@ -378,7 +384,7 @@ fun DropdownGoal(current: Goal, onChange: (Goal) -> Unit, modifier: Modifier = M
             modifier = Modifier.menuAnchor().fillMaxWidth()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            Goal.values().forEach { g ->
+            Goal.entries.forEach { g ->
                 DropdownMenuItem(text = { Text(g.label) }, onClick = {
                     onChange(g)
                     expanded = false

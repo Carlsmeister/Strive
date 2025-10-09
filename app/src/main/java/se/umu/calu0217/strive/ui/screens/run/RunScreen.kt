@@ -1,27 +1,41 @@
 package se.umu.calu0217.strive.ui.screens.run
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.utils.PermissionUtils
 import android.content.Context
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.unit.dp
+import se.umu.calu0217.strive.core.constants.UiConstants
+import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 
+/**
+ * Screen for GPS-tracked running/cycling/walking activities.
+ * Displays a map with the current route, real-time stats, and activity controls.
+ *
+ * @param viewModel The view model managing run session and GPS tracking (injected via Hilt).
+ */
 @Composable
 fun RunScreen(
     viewModel: RunViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -29,19 +43,21 @@ fun RunScreen(
         if (allGranted) {
             viewModel.startRun()
         } else {
-            // Handle permission denied
             viewModel.showPermissionError()
         }
     }
 
-    // Effects extracted for clarity
     PermissionStatusEffect(viewModel = viewModel, context = context)
     InitialLocationEffect(viewModel = viewModel)
 
     val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
-    var hasCentered by remember { mutableStateOf(false) }
+    var showStopRunConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
-    // Center camera on first valid location only
+    BackHandler(enabled = uiState.isRunning) {
+        showStopRunConfirmDialog = true
+    }
+    var hasCentered by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(uiState.currentLatitude, uiState.currentLongitude) {
         val lat = uiState.currentLatitude
         val lng = uiState.currentLongitude
@@ -68,15 +84,13 @@ fun RunScreen(
             currentLng = uiState.currentLongitude
         )
 
-        // Foreground UI overlay
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(UiConstants.STANDARD_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // KPI Panel with large numbers
             if (uiState.isRunning) {
                 RunningStatsPanel(
                     distance = uiState.distance,
@@ -87,18 +101,12 @@ fun RunScreen(
                 ReadyToRunPanel(gpsStatus = uiState.gpsStatus)
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-
             Spacer(modifier = Modifier.weight(1f))
-
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
         FloatingRunControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = 24.dp),
+                .padding(horizontal = UiConstants.STANDARD_PADDING, vertical = UiConstants.LARGE_PADDING),
             isRunning = uiState.isRunning,
             selectedActivity = uiState.selectedActivity,
             onActivitySelected = viewModel::setActivity,
@@ -113,16 +121,24 @@ fun RunScreen(
             onStopRun = { viewModel.stopRun() },
             gpsReady = uiState.gpsStatus == GpsStatus.READY
         )
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 100.dp)
+        )
     }
 
-    // Error handling
     uiState.error?.let { error ->
         LaunchedEffect(error) {
-            // Show snackbar or handle error
+            snackbarHostState.showSnackbar(
+                message = error,
+                duration = SnackbarDuration.Short
+            )
         }
     }
 
-    // Show summary dialog after run completion
     if (uiState.showSummary) {
         RunSummaryDialog(
             distance = uiState.distance,
@@ -132,17 +148,21 @@ fun RunScreen(
             onViewDetails = {}
         )
     }
+
+    if (showStopRunConfirmDialog) {
+        ConfirmationDialog(
+            title = stringResource(R.string.stop_run_title),
+            message = stringResource(R.string.stop_run_message),
+            confirmText = stringResource(R.string.stop),
+            dismissText = stringResource(R.string.cancel),
+            onDismiss = { showStopRunConfirmDialog = false },
+            onConfirm = {
+                showStopRunConfirmDialog = false
+                viewModel.stopRun()
+            }
+        )
+    }
 }
-
-
-
-
-
-
-
-
-
-
 
 @Composable
 private fun RunMapContainer(
@@ -153,7 +173,6 @@ private fun RunMapContainer(
     currentLat: Double?,
     currentLng: Double?
 ) {
-    // Only render the map if a valid Google Maps API key is configured
     val mapsConfigured = remember { isMapsApiKeyConfigured(context) }
     if (mapsConfigured) {
         MapContent(
@@ -168,7 +187,6 @@ private fun RunMapContainer(
     }
 }
 
-// Small effect helpers to keep RunScreen readable
 @Composable
 private fun PermissionStatusEffect(viewModel: RunViewModel, context: Context) {
     LaunchedEffect(Unit) {
@@ -188,7 +206,6 @@ private fun InitialLocationEffect(viewModel: RunViewModel) {
     }
 }
 
-// Add enum definitions at the end of the file
 enum class GpsStatus {
     SEARCHING,
     READY,

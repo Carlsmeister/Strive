@@ -14,6 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+/**
+ * Screen displaying workout and run history with weekly statistics.
+ * Provides tabs to switch between workout sessions and run sessions.
+ *
+ * @param viewModel The view model managing history data (injected via Hilt).
+ */
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel()

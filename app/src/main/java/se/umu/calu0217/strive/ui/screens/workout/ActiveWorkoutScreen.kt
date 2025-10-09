@@ -1,5 +1,6 @@
 package se.umu.calu0217.strive.ui.screens.workout
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -7,16 +8,26 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.ui.components.AddExerciseDialog
 import se.umu.calu0217.strive.ui.components.LoadingIndicator
+import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 
+/**
+ * Screen for an active workout session in progress.
+ * Displays current exercise, set tracking, rest timer, and workout progress.
+ *
+ * @param onNavigateBack Callback to navigate back when the workout is finished or cancelled.
+ * @param viewModel The view model managing the active workout state (injected via Hilt).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActiveWorkoutScreen(
@@ -24,8 +35,13 @@ fun ActiveWorkoutScreen(
     viewModel: ActiveWorkoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showAddDialog by remember { mutableStateOf(false) }
-    var showCongratsDialog by remember { mutableStateOf(false) }
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    var showCongratsDialog by rememberSaveable { mutableStateOf(false) }
+    var showExitConfirmDialog by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler {
+        showExitConfirmDialog = true
+    }
 
     if (uiState.isLoading) {
         LoadingIndicator()
@@ -62,7 +78,7 @@ fun ActiveWorkoutScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(UiConstants.STANDARD_PADDING)
         ) {
             // Header with workout info
             run {
@@ -78,7 +94,7 @@ fun ActiveWorkoutScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
             // Rest timer overlay
             if (uiState.isRestMode) {
@@ -86,7 +102,7 @@ fun ActiveWorkoutScreen(
                     timeRemaining = uiState.restTimeRemaining,
                     onSkipRest = viewModel::skipRest
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
             }
 
             // Add exercise + controls row
@@ -98,10 +114,10 @@ fun ActiveWorkoutScreen(
                 FilledTonalButton(
                     onClick = { showAddDialog = true },
                     modifier = Modifier.height(36.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = UiConstants.MEDIUM_PADDING, vertical = UiConstants.SMALL_PADDING)
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = null)
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
                     Text(stringResource(R.string.add_exercise))
                 }
 
@@ -110,19 +126,19 @@ fun ActiveWorkoutScreen(
 
                 // Right-aligned controls group removed; merged into bottom split FAB
             }
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(UiConstants.MEDIUM_PADDING))
 
             if (template.exercises.isEmpty()) {
                 Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = stringResource(R.string.no_exercises_added),
                             style = MaterialTheme.typography.bodyLarge
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                         Button(onClick = { showAddDialog = true }) {
                             Icon(Icons.Filled.Add, contentDescription = null)
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
                             Text(stringResource(R.string.add_your_first_exercise))
                         }
                     }
@@ -130,7 +146,7 @@ fun ActiveWorkoutScreen(
             } else {
                 // Exercise list
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(UiConstants.MEDIUM_PADDING),
                     contentPadding = PaddingValues(bottom = 70.dp)
                 ) {
                     itemsIndexed(template.exercises) { index, templateExercise ->
@@ -167,7 +183,7 @@ fun ActiveWorkoutScreen(
             completeEnabled = completeEnabled,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(UiConstants.STANDARD_PADDING)
         )
 
     }
@@ -193,6 +209,21 @@ fun ActiveWorkoutScreen(
                     showCongratsDialog = false
                     viewModel.finishWorkoutAuto(onNavigateBack)
                 }) { Text("Continue") }
+            }
+        )
+    }
+
+    // Exit confirmation dialog
+    if (showExitConfirmDialog) {
+        ConfirmationDialog(
+            title = stringResource(R.string.exit_workout_title),
+            message = stringResource(R.string.exit_workout_message),
+            confirmText = stringResource(R.string.exit),
+            dismissText = stringResource(R.string.cancel),
+            onDismiss = { showExitConfirmDialog = false },
+            onConfirm = {
+                showExitConfirmDialog = false
+                viewModel.finishWorkoutAuto(onNavigateBack)
             }
         )
     }

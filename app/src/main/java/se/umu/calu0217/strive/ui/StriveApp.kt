@@ -1,5 +1,6 @@
 package se.umu.calu0217.strive.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
 import androidx.compose.foundation.layout.Row
@@ -51,12 +52,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import se.umu.calu0217.strive.ui.theme.EnergeticOrange
 import se.umu.calu0217.strive.ui.theme.White
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.BackHandler
 
+/**
+ * Main application composable for the Strive fitness app.
+ *
+ * Sets up the navigation structure with a bottom navigation bar, top app bar with logo,
+ * and a central floating action button for quick activity start.
+ *
+ * The app includes the following main screens:
+ * - Explore: Browse and search exercises
+ * - Workout: Manage workout templates and start gym sessions
+ * - Run: GPS-tracked running/cycling/walking activities
+ * - History: View past workout and run sessions
+ * - Profile: User settings and preferences
+ *
+ * Navigation is handled with Jetpack Compose Navigation, supporting deep linking
+ * to active workout sessions and maintaining navigation state across configuration changes.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StriveApp() {
     val navController = rememberNavController()
     var showStartDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val items = listOf(
         BottomDestination("explore", stringResource(R.string.nav_explore), Icons.Outlined.FitnessCenter),
@@ -64,6 +84,15 @@ fun StriveApp() {
         BottomDestination("run", stringResource(R.string.run), Icons.AutoMirrored.Outlined.DirectionsRun),
         BottomDestination("history", stringResource(R.string.nav_history), Icons.Outlined.History)
     )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomNavRoutes = items.map { it.route }
+    BackHandler(enabled = currentRoute in bottomNavRoutes) {
+        // Exit the app when on a bottom nav screen
+        (context as? ComponentActivity)?.finish()
+    }
 
     Scaffold(
         topBar = {
@@ -274,4 +303,11 @@ fun StriveApp() {
     }
 }
 
+/**
+ * Represents a bottom navigation bar destination.
+ *
+ * @property route The navigation route identifier used for navigation.
+ * @property label The display label shown in the bottom navigation bar.
+ * @property icon The icon displayed for this destination in the bottom navigation bar.
+ */
 data class BottomDestination(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)

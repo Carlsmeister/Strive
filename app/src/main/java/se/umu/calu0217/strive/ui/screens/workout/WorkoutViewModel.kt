@@ -16,6 +16,15 @@ import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import se.umu.calu0217.strive.domain.repository.ExerciseRepository
 import javax.inject.Inject
 
+/**
+ * Manages workout templates and session initiation.
+ * Handles creating, editing, and deleting workout templates, as well as starting workout sessions.
+ * @param getWorkoutTemplatesUseCase Use case for retrieving workout templates.
+ * @param createWorkoutTemplateUseCase Use case for creating new workout templates.
+ * @param workoutRepository Repository for workout data operations.
+ * @param exerciseRepository Repository for exercise data operations.
+ * @author Carl Lundholm
+ */
 @HiltViewModel
 class WorkoutViewModel @Inject constructor(
     private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
@@ -41,6 +50,10 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Loads all workout templates from the repository.
+     * @author Carl Lundholm
+     */
     private fun loadTemplates() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
@@ -61,6 +74,11 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Starts a quick workout session without a predefined template.
+     * @param onNavigateToActiveWorkout Callback with the created session ID for navigation.
+     * @author Carl Lundholm
+     */
     fun startQuickWorkout(onNavigateToActiveWorkout: (Long) -> Unit) {
         viewModelScope.launch {
             try {
@@ -75,6 +93,12 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Starts a workout session from an existing template.
+     * @param templateId ID of the template to use for the workout.
+     * @param onNavigateToActiveWorkout Callback with the created session ID for navigation.
+     * @author Carl Lundholm
+     */
     fun startWorkoutFromTemplate(templateId: Long, onNavigateToActiveWorkout: (Long) -> Unit) {
         viewModelScope.launch {
             try {
@@ -88,14 +112,27 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Shows the dialog for creating a new workout template.
+     * @author Carl Lundholm
+     */
     fun showCreateTemplateDialog() {
         _uiState.value = _uiState.value.copy(showCreateDialog = true)
     }
 
+    /**
+     * Hides the template creation dialog.
+     * @author Carl Lundholm
+     */
     fun hideCreateTemplateDialog() {
         _uiState.value = _uiState.value.copy(showCreateDialog = false)
     }
 
+    /**
+     * Creates a new workout template with the specified name.
+     * @param templateName Name for the new workout template.
+     * @author Carl Lundholm
+     */
     fun createTemplate(templateName: String) {
         viewModelScope.launch {
             try {
@@ -114,6 +151,11 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Opens the editor for modifying an existing template.
+     * @param template The template to edit.
+     * @author Carl Lundholm
+     */
     fun editTemplate(template: WorkoutTemplate) {
         // Open full editor for this template (load with exercises)
         viewModelScope.launch {
@@ -131,6 +173,11 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Opens the dialog to add exercises to a template.
+     * @param template The template to add exercises to.
+     * @author Carl Lundholm
+     */
     fun openAddExercisesDialog(template: WorkoutTemplate) {
         _uiState.value = _uiState.value.copy(
             editingTemplate = template,
@@ -138,6 +185,10 @@ class WorkoutViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Hides the edit template dialog.
+     * @author Carl Lundholm
+     */
     fun hideEditTemplateDialog() {
         _uiState.value = _uiState.value.copy(
             showEditDialog = false,
@@ -145,6 +196,10 @@ class WorkoutViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Hides the full template editor.
+     * @author Carl Lundholm
+     */
     fun hideTemplateEditor() {
         _uiState.value = _uiState.value.copy(
             showEditorDialog = false,
@@ -152,6 +207,11 @@ class WorkoutViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Saves changes to an edited template.
+     * @param updated The updated template to save.
+     * @author Carl Lundholm
+     */
     fun saveEditedTemplate(updated: WorkoutTemplate) {
         viewModelScope.launch {
             try {
@@ -168,6 +228,14 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Adds an exercise to a template.
+     * @param exerciseId ID of the exercise to add.
+     * @param sets Number of sets for the exercise.
+     * @param reps Number of repetitions per set.
+     * @param restSec Rest time between sets in seconds.
+     * @author Carl Lundholm
+     */
     fun addExerciseToTemplate(exerciseId: Long, sets: Int, reps: Int, restSec: Int) {
         viewModelScope.launch {
             try {
@@ -193,6 +261,11 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Deletes a workout template.
+     * @param template The template to delete.
+     * @author Carl Lundholm
+     */
     fun deleteTemplate(template: WorkoutTemplate) {
         viewModelScope.launch {
             try {
@@ -206,6 +279,19 @@ class WorkoutViewModel @Inject constructor(
     }
 }
 
+/**
+ * UI state for the workout screen.
+ * @property templates List of all workout templates.
+ * @property isLoading Indicates if templates are being loaded.
+ * @property error Error message to display, if any.
+ * @property showCreateDialog Whether to show the create template dialog.
+ * @property availableExercises List of all available exercises.
+ * @property showEditDialog Whether to show the add exercise dialog.
+ * @property editingTemplate The template currently being edited for adding exercises.
+ * @property showEditorDialog Whether to show the full template editor.
+ * @property editorTemplate The template currently being edited in full editor.
+ * @author Carl Lundholm
+ */
 data class WorkoutUiState(
     val templates: List<WorkoutTemplate> = emptyList(),
     val isLoading: Boolean = false,

@@ -8,8 +8,12 @@ import se.umu.calu0217.strive.domain.models.WorkoutSession
 import se.umu.calu0217.strive.domain.models.WorkoutSet
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
 
-// Centralized mappers for Workout-related models
-
+/**
+ * Converts a WorkoutTemplateEntity from the database to a domain model.
+ * @param exercises List of template exercises to include.
+ * @return WorkoutTemplate domain model.
+ * @author Carl Lundholm
+ */
 fun WorkoutTemplateEntity.toDomainModel(exercises: List<TemplateExercise>): WorkoutTemplate =
     WorkoutTemplate(
         id = id,
@@ -18,6 +22,12 @@ fun WorkoutTemplateEntity.toDomainModel(exercises: List<TemplateExercise>): Work
         exercises = exercises
     )
 
+/**
+ * Converts a WorkoutTemplate domain model to a database entity.
+ * Note: This does not include exercise mappings.
+ * @return WorkoutTemplateEntity for database storage.
+ * @author Carl Lundholm
+ */
 fun WorkoutTemplate.toEntity(): WorkoutTemplateEntity =
     WorkoutTemplateEntity(
         id = id,
@@ -25,6 +35,12 @@ fun WorkoutTemplate.toEntity(): WorkoutTemplateEntity =
         createdAt = createdAt
     )
 
+/**
+ * Converts a WorkoutSessionEntity from the database to a domain model.
+ * @param completedSets List of completed sets to include.
+ * @return WorkoutSession domain model.
+ * @author Carl Lundholm
+ */
 fun WorkoutSessionEntity.toDomainModel(completedSets: List<WorkoutSet>): WorkoutSession =
     WorkoutSession(
         id = id,
@@ -35,7 +51,11 @@ fun WorkoutSessionEntity.toDomainModel(completedSets: List<WorkoutSet>): Workout
         completedSets = completedSets
     )
 
-// TemplateExercise mappings to consolidate repeated conversions in repositories
+/**
+ * Converts a TemplateExerciseEntity from the database to a domain model.
+ * @return TemplateExercise domain model.
+ * @author Carl Lundholm
+ */
 fun TemplateExerciseEntity.toDomainModel(): TemplateExercise =
     TemplateExercise(
         exerciseId = exerciseId,
@@ -45,12 +65,3 @@ fun TemplateExerciseEntity.toDomainModel(): TemplateExercise =
         position = position
     )
 
-fun TemplateExercise.toEntity(templateId: Long): TemplateExerciseEntity =
-    TemplateExerciseEntity(
-        templateId = templateId,
-        exerciseId = exerciseId,
-        sets = sets,
-        reps = reps,
-        restSec = restSec,
-        position = position
-    )

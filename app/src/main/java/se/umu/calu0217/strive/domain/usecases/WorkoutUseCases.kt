@@ -2,10 +2,14 @@ package se.umu.calu0217.strive.domain.usecases
 
 import kotlinx.coroutines.flow.Flow
 import se.umu.calu0217.strive.domain.models.WorkoutTemplate
-import se.umu.calu0217.strive.domain.models.WorkoutSession
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import javax.inject.Inject
 
+/**
+ * Retrieves all workout templates.
+ * Returns a reactive flow that emits updated templates when data changes.
+ * @author Carl Lundholm
+ */
 class GetWorkoutTemplatesUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) {
@@ -14,6 +18,11 @@ class GetWorkoutTemplatesUseCase @Inject constructor(
     }
 }
 
+/**
+ * Creates a new workout template.
+ * @return The ID of the newly created template.
+ * @author Carl Lundholm
+ */
 class CreateWorkoutTemplateUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) {
@@ -22,6 +31,12 @@ class CreateWorkoutTemplateUseCase @Inject constructor(
     }
 }
 
+/**
+ * Starts a new workout session from a template.
+ * Creates a session record and prepares for exercise tracking.
+ * @return The ID of the newly created workout session.
+ * @author Carl Lundholm
+ */
 class StartWorkoutUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) {
@@ -30,6 +45,11 @@ class StartWorkoutUseCase @Inject constructor(
     }
 }
 
+/**
+ * Records a completed set in a workout session.
+ * Updates the session with actual performance data.
+ * @author Carl Lundholm
+ */
 class CompleteSetUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) {
@@ -44,6 +64,11 @@ class CompleteSetUseCase @Inject constructor(
     }
 }
 
+/**
+ * Finishes a workout session.
+ * Marks the session as complete and records final statistics.
+ * @author Carl Lundholm
+ */
 class FinishWorkoutUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) {

@@ -17,6 +17,11 @@ import se.umu.calu0217.strive.ui.theme.StriveTheme
 import se.umu.calu0217.strive.ui.StriveApp
 import javax.inject.Inject
 
+/**
+ * Main activity for the Strive fitness app.
+ * Handles GPS initialization, location permissions, and edge-to-edge UI setup.
+ * @author Carl Lundholm
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
