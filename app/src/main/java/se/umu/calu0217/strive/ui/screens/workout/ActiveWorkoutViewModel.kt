@@ -38,7 +38,7 @@ data class ActiveWorkoutUiState(
     val availableExercises: List<Exercise> = emptyList(),
     val currentExerciseIndex: Int = 0,
     val currentSetIndex: Int = 0,
-    val completedSets: Map<String, Boolean> = emptyMap(), // exerciseId_setIndex -> completed
+    val completedSets: Map<String, Boolean> = emptyMap(),
     val isRestMode: Boolean = false,
     val restTimeRemaining: Int = 0,
     val isPaused: Boolean = false
@@ -64,11 +64,9 @@ class ActiveWorkoutViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ActiveWorkoutUiState())
     val uiState = _uiState.asStateFlow()
 
-    // Maintain a single rest timer job to avoid concurrent timers
     private var restTimerJob: Job? = null
 
     init {
-        // Load all available exercises for selection UI
         viewModelScope.launch {
             exerciseRepository.getAllExercises().collect { list ->
                 _uiState.update { it.copy(availableExercises = list) }
@@ -92,7 +90,6 @@ class ActiveWorkoutViewModel @Inject constructor(
                 }
 
                 val template = if (session.templateId == 0L) {
-                    // Quick workout session with no predefined template
                     WorkoutTemplate(
                         id = 0L,
                         name = "Quick Workout",
@@ -108,7 +105,6 @@ class ActiveWorkoutViewModel @Inject constructor(
                     t
                 }
 
-                // Load exercise details
                 val exercises = template.exercises.mapNotNull { templateExercise ->
                     exerciseRepository.getExerciseById(templateExercise.exerciseId)
                 }
@@ -144,7 +140,6 @@ class ActiveWorkoutViewModel @Inject constructor(
     fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int) {
         viewModelScope.launch {
             try {
-                // Prevent completing a new set while resting
                 if (_uiState.value.isRestMode) {
                     return@launch
                 }
@@ -158,20 +153,18 @@ class ActiveWorkoutViewModel @Inject constructor(
                     exerciseId = exerciseId,
                     setIndex = setIndex,
                     repsDone = repsDone,
-                    restSecActual = templateExercise.restSec // Will be updated when rest is complete
+                    restSecActual = templateExercise.restSec
                 )
 
-                // Update UI state
                 val setKey = "${exerciseId}_${setIndex}"
                 _uiState.update { state ->
                     state.copy(
                         completedSets = state.completedSets + (setKey to true),
-                        isRestMode = setIndex < templateExercise.sets - 1, // Rest if not the last set
+                        isRestMode = setIndex < templateExercise.sets - 1,
                         restTimeRemaining = if (setIndex < templateExercise.sets - 1) templateExercise.restSec else 0
                     )
                 }
 
-                // Start rest timer if needed (overwrites any previous)
                 if (setIndex < templateExercise.sets - 1) {
                     startRestTimer(templateExercise.restSec)
                 }
@@ -188,10 +181,8 @@ class ActiveWorkoutViewModel @Inject constructor(
      * @author Carl Lundholm
      */
     private fun startRestTimer(restSeconds: Int) {
-        // Cancel any existing rest timer to ensure only one is active
         restTimerJob?.cancel()
         restTimerJob = viewModelScope.launch {
-            // Initialize rest state
             _uiState.update { it.copy(isRestMode = true, restTimeRemaining = restSeconds) }
             for (i in restSeconds downTo 1) {
                 _uiState.update { it.copy(restTimeRemaining = i) }
@@ -207,7 +198,6 @@ class ActiveWorkoutViewModel @Inject constructor(
      * @author Carl Lundholm
      */
     fun skipRest() {
-        // Cancel the current timer and clear rest state
         restTimerJob?.cancel()
         restTimerJob = null
         _uiState.update { it.copy(isRestMode = false, restTimeRemaining = 0) }
@@ -319,7 +309,7 @@ class ActiveWorkoutViewModel @Inject constructor(
                 val elapsedMs = (now - start).coerceAtLeast(0L)
                 val timeHours = elapsedMs / 3_600_000.0
                 val defaultWeightKg = 70.0
-                val strengthTrainingMet = 6.0 // Moderate intensity strength training
+                val strengthTrainingMet = 6.0
                 val kcal = FitnessUtils.calculateCalories(strengthTrainingMet, defaultWeightKg, timeHours)
                     .coerceAtLeast(if (elapsedMs > 0) 1 else 0)
                 workoutRepository.finishWorkout(sessionId, kcal)

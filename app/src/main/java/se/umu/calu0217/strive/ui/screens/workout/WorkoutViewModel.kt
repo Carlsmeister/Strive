@@ -38,14 +38,12 @@ class WorkoutViewModel @Inject constructor(
 
     init {
         loadTemplates()
-        // Load available exercises for the add-exercise dialog
         viewModelScope.launch {
             try {
                 exerciseRepository.getAllExercises().collect { list ->
                     _uiState.value = _uiState.value.copy(availableExercises = list)
                 }
             } catch (_: Exception) {
-                // Ignore; UI will handle empty state
             }
         }
     }
@@ -82,7 +80,6 @@ class WorkoutViewModel @Inject constructor(
     fun startQuickWorkout(onNavigateToActiveWorkout: (Long) -> Unit) {
         viewModelScope.launch {
             try {
-                // Use the existing startWorkout method with templateId 0 for quick workout
                 val sessionId = workoutRepository.startWorkout(0L)
                 onNavigateToActiveWorkout(sessionId)
             } catch (e: Exception) {
@@ -157,7 +154,6 @@ class WorkoutViewModel @Inject constructor(
      * @author Carl Lundholm
      */
     fun editTemplate(template: WorkoutTemplate) {
-        // Open full editor for this template (load with exercises)
         viewModelScope.launch {
             try {
                 val full = workoutRepository.getTemplateById(template.id) ?: template
@@ -240,7 +236,6 @@ class WorkoutViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val template = _uiState.value.editingTemplate ?: return@launch
-                // Fetch full template with exercises to compute position
                 val full = workoutRepository.getTemplateById(template.id) ?: template
                 val nextPosition = (full.exercises.maxOfOrNull { it.position } ?: -1) + 1
                 val te = TemplateExercise(
@@ -251,7 +246,6 @@ class WorkoutViewModel @Inject constructor(
                     position = nextPosition
                 )
                 workoutRepository.addExerciseToTemplate(template.id, te)
-                // Close dialog after adding one exercise
                 _uiState.value = _uiState.value.copy(showEditDialog = false, editingTemplate = null)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -298,10 +292,8 @@ data class WorkoutUiState(
     val error: String? = null,
     val showCreateDialog: Boolean = false,
     val availableExercises: List<Exercise> = emptyList(),
-    // Add-exercise dialog state (for adding a new exercise to a template)
     val showEditDialog: Boolean = false,
     val editingTemplate: WorkoutTemplate? = null,
-    // Full template editor state
     val showEditorDialog: Boolean = false,
     val editorTemplate: WorkoutTemplate? = null
 )

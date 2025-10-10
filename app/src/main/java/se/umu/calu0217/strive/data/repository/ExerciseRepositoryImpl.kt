@@ -60,17 +60,14 @@ class ExerciseRepositoryImpl @Inject constructor(
                 return
             }
 
-            // Prefer remote if we have an API key, otherwise fall back to local assets
             val useRemote = BuildConfig.RAPIDAPI_KEY.isNotBlank()
 
             val exerciseEntities: List<ExerciseEntity> = if (useRemote) {
-                // Try to get all exercises by fetching from different body parts to get complete dataset
                 val aggregated = fetchAllBodyPartExercises()
                 val exercises = if (aggregated.isNotEmpty()) {
                     Log.d("ExerciseRepository", "Using aggregated exercises from body parts: ${aggregated.size}")
                     aggregated
                 } else {
-                    // Fallback to direct API call with higher limit
                     Log.d("ExerciseRepository", "Falling back to direct API call")
                     try {
                         apiService.getAllExercises(limit = 1000)
@@ -127,13 +124,11 @@ class ExerciseRepositoryImpl @Inject constructor(
     }
 
     override suspend fun backfillMissingExerciseImages() {
-        // Only attempt if we have an API key
         if (BuildConfig.RAPIDAPI_KEY.isBlank()) return
         val missing = try { exerciseDao.getExercisesMissingImages() } catch (e: Exception) { return }
         if (missing.isEmpty()) return
         val remote = try { apiService.getAllExercises(limit = 200) } catch (e: Exception) { emptyList() }
         if (remote.isEmpty()) return
-        // Map by lowercase name for best-effort match
         val byName = remote.associateBy { it.name.trim().lowercase() }
         var updatedCount = 0
         missing.forEach { entity ->
@@ -148,7 +143,6 @@ class ExerciseRepositoryImpl @Inject constructor(
             }
         }
         Log.d("ExerciseRepository", "Backfill complete. Updated $updatedCount/${missing.size} exercises with image URLs")
-        // If we failed to update any AND all existing are missing images or dataset is tiny (likely local seed), attempt a full remote refresh/replace
         if (updatedCount == 0) {
             val total = try { exerciseDao.countExercises() } catch (_: Exception) { 0 }
             if (total > 0 && (missing.size == total || total <= 10)) {
@@ -187,15 +181,13 @@ class ExerciseRepositoryImpl @Inject constructor(
             val collected = mutableMapOf<String, ExerciseDto>()
             for (part in parts) {
                 try {
-                    // Increase limit per body part to get more exercises
                     val partExercises = apiService.getExercisesByBodyPart(part, limit = 1000)
                     partExercises.forEach { dto -> collected[dto.id] = dto }
                     Log.d("ExerciseRepository", "Fetched ${partExercises.size} exercises for $part (total: ${collected.size})")
                 } catch (e: Exception) {
                     Log.d("ExerciseRepository", "Failed bodyPart $part: ${e.localizedMessage}")
                 }
-                // Don't limit the total - get as many as possible
-                if (collected.size > 2000) break // Only break if we get a huge amount
+                if (collected.size > 2000) break
             }
             Log.d("ExerciseRepository", "Aggregated exercises across body parts size=${collected.size}")
             collected.values.toList()
@@ -205,7 +197,6 @@ class ExerciseRepositoryImpl @Inject constructor(
         }
     }
 
-    // Add method to force refresh exercises
     override suspend fun forceRefreshExercises() {
         if (BuildConfig.RAPIDAPI_KEY.isBlank()) {
             Log.d("ExerciseRepository", "No API key available for refresh")
@@ -214,16 +205,13 @@ class ExerciseRepositoryImpl @Inject constructor(
 
         try {
             Log.d("ExerciseRepository", "Force refreshing exercises from API...")
-            // Clear existing exercises
             exerciseDao.deleteAllExercises()
 
-            // Fetch fresh data
             val aggregated = fetchAllBodyPartExercises()
             val exercises = if (aggregated.isNotEmpty()) {
                 Log.d("ExerciseRepository", "Using aggregated exercises from body parts: ${aggregated.size}")
                 aggregated
             } else {
-                // Fallback to direct API call with higher limit
                 Log.d("ExerciseRepository", "Falling back to direct API call")
                 apiService.getAllExercises(limit = 1000)
             }
@@ -252,5 +240,4 @@ private data class SeedExercise(
     val imageUrl: String? = null
 )
 
-// Custom exception for internal data errors
 private class DataException(message: String) : Exception(message)

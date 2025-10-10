@@ -110,7 +110,7 @@ fun RunScreen(
                     .padding(UiConstants.STANDARD_PADDING)
                     .then(
                         if (isLandscape) {
-                            Modifier.fillMaxWidth(0.3f) // Take up half the width in landscape
+                            Modifier.fillMaxWidth(0.3f)
                         } else {
                             Modifier.fillMaxWidth()
                         }

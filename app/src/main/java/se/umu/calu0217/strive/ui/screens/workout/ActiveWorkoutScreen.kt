@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.constants.UiConstants
+import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.ui.components.AddExerciseDialog
 import se.umu.calu0217.strive.ui.components.LoadingIndicator
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
@@ -82,7 +83,6 @@ fun ActiveWorkoutScreen(
                 .fillMaxSize()
                 .padding(UiConstants.STANDARD_PADDING)
         ) {
-            // Header with workout info
             run {
                 val totalSets = template.exercises.sumOf { it.sets }
                 val doneSets = uiState.completedSets.size
@@ -98,7 +98,6 @@ fun ActiveWorkoutScreen(
 
             Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
-            // Rest timer overlay
             if (uiState.isRestMode) {
                 RestTimerCard(
                     timeRemaining = uiState.restTimeRemaining,
@@ -107,7 +106,6 @@ fun ActiveWorkoutScreen(
                 Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
             }
 
-            // Add exercise + controls row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -115,7 +113,6 @@ fun ActiveWorkoutScreen(
             ) {
                 val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
 
-                // Add exercise (compact) aligned to start (left)
                 FilledTonalButton(
                     onClick = { showAddDialog = true },
                     modifier = Modifier.height(36.dp),
@@ -126,12 +123,10 @@ fun ActiveWorkoutScreen(
                     Text(stringResource(R.string.add_exercise))
                 }
 
-                // Push controls to the far right
                 Spacer(modifier = Modifier.weight(1f))
 
                 if (isLandscape) {
 
-                    // In landscape mode, show Complete/Stop buttons here
                     val completeEnabled = template.exercises.any { te ->
                         (0 until te.sets).all { setIndex ->
                             uiState.completedSets.containsKey("${te.exerciseId}_$setIndex")
@@ -187,7 +182,6 @@ fun ActiveWorkoutScreen(
                     }
                 }
             } else {
-                // Exercise list
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(UiConstants.MEDIUM_PADDING),
                     contentPadding = PaddingValues(bottom = 70.dp)
@@ -214,8 +208,7 @@ fun ActiveWorkoutScreen(
             }
         }
 
-        // Bottom-center split Complete|Stop button (FAB-like) - only show in portrait
-        val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
+        val isLandscape = isLandscape()
         if (!isLandscape) {
             val completeEnabled = template.exercises.any { te ->
                 (0 until te.sets).all { setIndex ->
@@ -259,7 +252,6 @@ fun ActiveWorkoutScreen(
         )
     }
 
-    // Exit confirmation dialog
     if (showExitConfirmDialog) {
         ConfirmationDialog(
             title = stringResource(R.string.exit_workout_title),

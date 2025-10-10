@@ -1,5 +1,4 @@
 package se.umu.calu0217.strive.data.repository
-
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -34,7 +33,6 @@ class WorkoutRepositoryImpl @Inject constructor(
 ) : WorkoutRepository {
 
     override fun getAllTemplates(): Flow<List<WorkoutTemplate>> {
-        // Make this reactive to changes in template_exercises as well as workout_templates
         return workoutTemplateDao.getAllTemplates().flatMapLatest { templates ->
             if (templates.isEmpty()) {
                 flowOf(emptyList())
@@ -56,7 +54,6 @@ class WorkoutRepositoryImpl @Inject constructor(
 
     override suspend fun getTemplateById(id: Long): WorkoutTemplate? {
         val template = workoutTemplateDao.getTemplateById(id) ?: return null
-        // Collect the template exercises once for this template
         val exerciseEntities = templateExerciseDao.getTemplateExercises(id).first()
         val exercises = exerciseEntities.map { e -> e.toDomainModel() }
         return template.toDomainModel(exercises)
@@ -70,7 +67,6 @@ class WorkoutRepositoryImpl @Inject constructor(
         )
         val templateId = workoutTemplateDao.insertTemplate(templateEntity)
 
-        // Insert template exercises
         val templateExercises = template.exercises.map { exercise ->
             TemplateExerciseEntity(
                 templateId = templateId,
@@ -94,7 +90,6 @@ class WorkoutRepositoryImpl @Inject constructor(
         )
         workoutTemplateDao.updateTemplate(templateEntity)
 
-        // Update template exercises
         templateExerciseDao.deleteTemplateExercises(template.id)
         val templateExercises = template.exercises.map { exercise ->
             TemplateExerciseEntity(
@@ -145,9 +140,9 @@ class WorkoutRepositoryImpl @Inject constructor(
             sessionId = sessionId,
             exerciseId = exerciseId,
             setIndex = setIndex,
-            repsPlanned = 0, // Will be filled from template
+            repsPlanned = 0,
             repsDone = repsDone,
-            restSecPlanned = 0, // Will be filled from template
+            restSecPlanned = 0,
             restSecActual = restSecActual
         )
         workoutSetDao.insertSet(workoutSet)
@@ -172,5 +167,12 @@ class WorkoutRepositoryImpl @Inject constructor(
 
     override suspend fun getWorkoutSessionById(id: Long): WorkoutSession? {
         return workoutSessionDao.getSessionById(id)?.toDomainModel(emptyList())
+    }
+
+    override suspend fun deleteAllWorkoutData() {
+        workoutSetDao.deleteAllSets()
+        workoutSessionDao.deleteAllSessions()
+        templateExerciseDao.deleteAllTemplateExercises()
+        workoutTemplateDao.deleteAllTemplates()
     }
 }

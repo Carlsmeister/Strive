@@ -60,7 +60,6 @@ fun WorkoutScreen(
             .padding(AdaptiveSpacing.standard),
         verticalArrangement = Arrangement.spacedBy(AdaptiveSpacing.standard)
     ) {
-        // Quick Start Section
         item {
             QuickStartCard(onStartWorkout = {
                 viewModel.startQuickWorkout { sessionId ->
@@ -69,12 +68,10 @@ fun WorkoutScreen(
             })
         }
 
-        // Templates Section Header
         item {
             TemplatesHeader(onCreateTemplate = { viewModel.showCreateTemplateDialog() })
         }
 
-        // Templates List or Empty/Loading state
         when {
             uiState.isLoading -> {
                 item {
@@ -129,7 +126,6 @@ private fun QuickStartCard(onStartWorkout: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(AdaptiveSpacing.standard)) {
             if (isLandscape) {
-                // Landscape: Title and button on the same row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,7 +165,6 @@ private fun QuickStartCard(onStartWorkout: () -> Unit) {
                     modifier = Modifier.padding(top = AdaptiveSpacing.small)
                 )
             } else {
-                // Portrait: Vertical layout
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = if (isCompact) 8.dp else 12.dp)
@@ -266,7 +261,6 @@ private fun WorkoutDialogs(
     uiState: WorkoutUiState,
     viewModel: WorkoutViewModel
 ) {
-    // Create Template Dialog
     if (uiState.showCreateDialog) {
         TextInputDialog(
             title = stringResource(R.string.create_template),
@@ -281,7 +275,6 @@ private fun WorkoutDialogs(
         )
     }
 
-    // Add Exercise Dialog
     if (uiState.showEditDialog && uiState.editingTemplate != null) {
         val template = uiState.editingTemplate
         AddExerciseDialog(
@@ -294,7 +287,6 @@ private fun WorkoutDialogs(
         )
     }
 
-    // Template Editor Dialog
     if (uiState.showEditorDialog && uiState.editorTemplate != null) {
         TemplateEditorDialog(
             template = uiState.editorTemplate,
@@ -472,7 +464,6 @@ private fun TemplateEditorDialog(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.weight(1f)
                                     ) {
-                                        // Sets
                                         var setsStr by remember(te, index) { mutableStateOf(te.sets.toString()) }
                                         OutlinedTextField(
                                             value = setsStr,
@@ -486,7 +477,6 @@ private fun TemplateEditorDialog(
                                             singleLine = true,
                                             modifier = Modifier.width(70.dp)
                                         )
-                                        // Reps
                                         var repsStr by remember(te, index) { mutableStateOf(te.reps.toString()) }
                                         OutlinedTextField(
                                             value = repsStr,
@@ -500,7 +490,6 @@ private fun TemplateEditorDialog(
                                             singleLine = true,
                                             modifier = Modifier.width(70.dp)
                                         )
-                                        // Rest
                                         var restStr by remember(te, index) { mutableStateOf(te.restSec.toString()) }
                                         OutlinedTextField(
                                             value = restStr,
@@ -515,7 +504,6 @@ private fun TemplateEditorDialog(
                                             modifier = Modifier.width(90.dp)
                                         )
                                     }
-                                    // Side up/down arrows
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {

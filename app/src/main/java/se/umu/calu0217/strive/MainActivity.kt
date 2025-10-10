@@ -34,13 +34,11 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
         )
 
-        // Register a permission launcher for startup permissions
         val permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             val allGranted = permissions.values.all { it }
             if (allGranted) {
-                // Warm up GPS once permissions are granted
                 lifecycleScope.launch {
                     try {
                         locationTracker.getLocationUpdates().first()
@@ -50,24 +48,19 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            // If denied, proceed normally; UI will handle further prompts
         }
 
-        // Auto-start a short GPS warm-up, requesting permission if needed
         if (PreferencesUtils.isAutoStartGpsEnabled(this)) {
             if (PermissionUtils.hasLocationPermissions(this)) {
                 lifecycleScope.launch {
                     try {
-                        // Start updates and take the first location to warm up the provider
                         locationTracker.getLocationUpdates().first()
                     } catch (_: Exception) {
-                        // Ignore errors here; Run screen will handle UI/permissions
                     } finally {
                         locationTracker.stopLocationUpdates()
                     }
                 }
             } else {
-                // Ask for location permission on first launch if user opted-in to auto-start GPS
                 permissionLauncher.launch(PermissionUtils.LOCATION_PERMISSIONS)
             }
         }

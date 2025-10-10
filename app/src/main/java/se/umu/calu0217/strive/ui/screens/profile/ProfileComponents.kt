@@ -92,7 +92,6 @@ data class DayLabelCount(val day: String, val date: String, val count: Int)
 fun last7DaysData(workouts: List<se.umu.calu0217.strive.domain.models.WorkoutSession>): List<DayLabelCount> {
     val cal = Calendar.getInstance()
     cal.firstDayOfWeek = Calendar.MONDAY
-    // Move to start of current week (Monday) at 00:00
     cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0)
     cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
     val weekStart = cal.timeInMillis
@@ -212,8 +211,6 @@ fun DailyMacrosCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             if (isLandscape) {
-                // Landscape: 3-column compact layout
-                // Row 1: Weight, Height, Age
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = weightText,
@@ -253,7 +250,6 @@ fun DailyMacrosCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Row 2: Sex, Activity, Goal
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                         SegmentedButtonsSex(current = sex, onChange = onSexChange)
@@ -270,7 +266,6 @@ fun DailyMacrosCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Row 3: Protein%, Carbs%, Fat%
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = proteinPct,
@@ -298,8 +293,6 @@ fun DailyMacrosCard(
                     )
                 }
             } else {
-                // Portrait: 2-column original layout
-                // Row 1: Weight, Height
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = weightText,
@@ -331,7 +324,6 @@ fun DailyMacrosCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Row 2: Age, Sex
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = age,
@@ -346,7 +338,6 @@ fun DailyMacrosCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Row 3: Activity, Goal
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                     DropdownActivity(activity, onActivityChange, modifier = Modifier.weight(1f))
                     DropdownGoal(goal, onGoalChange, modifier = Modifier.weight(1f))
@@ -354,7 +345,6 @@ fun DailyMacrosCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Row 4: Macro percentages
                 Text(stringResource(R.string.macro_split), style = MaterialTheme.typography.titleSmall)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
@@ -394,14 +384,13 @@ fun DailyMacrosCard(
             val ageVal = age.toIntOrNull() ?: 0
             val heightVal = heightCm.toIntOrNull() ?: 0
             val weightKg = weightText.toDoubleOrNull() ?: 0.0
-            val bmr = mifflinStJeor(sex, weightKg, heightVal, ageVal)
+            val bmr = calorieEquation(sex, weightKg, heightVal, ageVal)
             val tdee = (bmr * activity.factor + goal.adjustment).coerceAtLeast(0.0)
 
             val proteinG = ((tdee * (pctP / 100.0)) / 4.0)
             val carbsG = ((tdee * (pctC / 100.0)) / 4.0)
             val fatG = ((tdee * (pctF / 100.0)) / 9.0)
 
-            // Results
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 ResultChip(title = stringResource(R.string.calories), value = stringResource(R.string.kcal_value, tdee.roundToInt()))
                 ResultChip(title = stringResource(R.string.protein), value = stringResource(R.string.grams_value, proteinG.roundToInt()))
@@ -485,7 +474,8 @@ fun DropdownGoal(current: Goal, onChange: (Goal) -> Unit, modifier: Modifier = M
     }
 }
 
-fun mifflinStJeor(sex: Sex, weightKg: Double, heightCm: Int, age: Int): Double {
+fun calorieEquation(sex: Sex, weightKg: Double, heightCm: Int, age: Int): Double {
+    //Mifflin-St Jeor Equation
     // male: 10*W + 6.25*H - 5*A + 5
     // female: 10*W + 6.25*H - 5*A - 161
     val base = 10.0 * weightKg + 6.25 * heightCm + (-5.0 * age)

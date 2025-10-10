@@ -59,6 +59,12 @@ interface WorkoutSessionDao {
      */
     @Delete
     suspend fun deleteSession(session: WorkoutSessionEntity)
+
+    /**
+     * Deletes all workout sessions from the database.
+     */
+    @Query("DELETE FROM workout_sessions")
+    suspend fun deleteAllSessions()
 }
 
 /**
@@ -74,6 +80,12 @@ interface WorkoutSetDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSet(workoutSet: WorkoutSetEntity)
+
+    /**
+     * Deletes all workout sets from the database.
+     */
+    @Query("DELETE FROM workout_sets")
+    suspend fun deleteAllSets()
 }
 
 /**
@@ -131,6 +143,12 @@ interface RunSessionDao {
      */
     @Delete
     suspend fun deleteRunSession(runSession: RunSessionEntity)
+
+    /**
+     * Deletes all run sessions from the database.
+     */
+    @Query("DELETE FROM run_sessions")
+    suspend fun deleteAllRunSessions()
 }
 
 /**
@@ -147,4 +165,10 @@ interface RunPointDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRunPoint(runPoint: RunPointEntity)
+
+    /**
+     * Deletes all run points from the database.
+     */
+    @Query("DELETE FROM run_points")
+    suspend fun deleteAllRunPoints()
 }

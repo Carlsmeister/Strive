@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.constants.UiConstants
@@ -33,7 +32,6 @@ import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 import androidx.activity.compose.BackHandler
 
-// DataStore for profile settings
 private val Context.profileDataStore by preferencesDataStore(name = "profile_prefs")
 
 private object ProfilePrefsKeys {
@@ -70,7 +68,6 @@ fun ProfileScreen(
         onNavigateBack?.invoke()
     }
 
-    // Macros inputs
     var age by rememberSaveable { mutableStateOf("25") }
     var heightCm by rememberSaveable { mutableStateOf("175") }
     var sex by rememberSaveable { mutableStateOf(Sex.Male) }
@@ -80,7 +77,6 @@ fun ProfileScreen(
     var carbsPct by rememberSaveable { mutableStateOf("40") }
     var fatPct by rememberSaveable { mutableStateOf("20") }
 
-    // Load saved preferences once on composition
     LaunchedEffect(Unit) {
         val prefs = context.profileDataStore.data.first()
         prefs[ProfilePrefsKeys.WEIGHT]?.let { userWeight = it }
@@ -105,6 +101,7 @@ fun ProfileScreen(
     }
 
     val historyViewModel: HistoryViewModel = hiltViewModel()
+    val profileViewModel: ProfileViewModel = hiltViewModel()
     val workoutSessions by historyViewModel.workoutSessions.collectAsState(initial = emptyList())
 
     Column(
@@ -116,7 +113,6 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(UiConstants.STANDARD_PADDING)
         ) {
-            // Header row with profile icon, text, and back button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -139,7 +135,6 @@ fun ProfileScreen(
                     )
                 }
 
-                // Back button on the far right
                 onNavigateBack?.let { backCallback ->
                     IconButton(onClick = backCallback) {
                         Icon(
@@ -152,12 +147,10 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
-            // Dashboard: workouts per day, last 7 days
             WeeklyWorkoutsDashboard(workoutDayCounts = last7DaysData(workoutSessions))
 
             Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
-            // User Settings Section
             Text(
                 text = stringResource(R.string.settings),
                 style = MaterialTheme.typography.titleLarge,
@@ -165,7 +158,6 @@ fun ProfileScreen(
                 modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
             )
 
-            // Daily Macros Card
             DailyMacrosCard(
                 weightText = userWeight,
                 onWeightChange = {
@@ -265,7 +257,6 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
 
-            // Bottom row: About and Danger Zone side by side
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(UiConstants.STANDARD_PADDING)
@@ -279,7 +270,6 @@ fun ProfileScreen(
         }
     }
 
-    // Delete Confirmation Dialog
     if (showDeleteDialog) {
         ConfirmationDialog(
             title = stringResource(R.string.clear_all_title),
@@ -288,10 +278,8 @@ fun ProfileScreen(
             dismissText = stringResource(R.string.cancel),
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
-                scope.launch {
-                    // Clear all workout data by deleting the database
-                    showDeleteDialog = false
-                }
+                profileViewModel.deleteAllData()
+                showDeleteDialog = false
             }
         )
     }

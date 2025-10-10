@@ -48,15 +48,12 @@ fun ExploreScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Local UI state for dialogs
         var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
         var exerciseToAddToTemplate by remember { mutableStateOf<Exercise?>(null) }
 
         val isLandscape = isLandscape()
 
-        // Search Bar and Filter Chips - layout depends on orientation
         if (isLandscape) {
-            // Landscape: Search bar and filters on the same row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -75,7 +72,6 @@ fun ExploreScreen(
                 )
             }
         } else {
-            // Portrait: Search bar and filters stacked vertically
             ExploreSearchBar(
                 value = searchQuery,
                 onValueChange = viewModel::updateSearchQuery
@@ -91,7 +87,6 @@ fun ExploreScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Content
         when {
             uiState.isLoading -> {
                 LoadingIndicator()
@@ -116,7 +111,6 @@ fun ExploreScreen(
             }
         }
 
-        // Exercise Detail Dialog
         if (selectedExercise != null) {
             ExerciseDetailDialog(
                 exercise = selectedExercise!!,
@@ -124,7 +118,6 @@ fun ExploreScreen(
             )
         }
 
-        // Add to Template Dialog
         if (exerciseToAddToTemplate != null) {
             AddToTemplateDialog(
                 exercise = exerciseToAddToTemplate!!,
@@ -269,7 +262,6 @@ private fun ExploreExerciseList(
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (gridColumns == 1) {
-            // Single column for portrait on normal phones
             LazyColumn(
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -284,7 +276,6 @@ private fun ExploreExerciseList(
                 }
             }
         } else {
-            // Grid layout for landscape or larger screens
             LazyColumn(
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -304,7 +295,6 @@ private fun ExploreExerciseList(
                                 )
                             }
                         }
-                        // Fill empty spaces in last row
                         repeat(gridColumns - rowExercises.size) {
                             Spacer(modifier = Modifier.weight(1f))
                         }

@@ -32,14 +32,12 @@ fun AddExerciseDialog(
     var repsInput by remember { mutableStateOf("10") }
     var restInput by remember { mutableStateOf("60") }
 
-    // Validation errors
     var setsError by remember { mutableStateOf<String?>(null) }
     var repsError by remember { mutableStateOf<String?>(null) }
     var restError by remember { mutableStateOf<String?>(null) }
 
     val filtered = remember(query, availableExercises) {
         if (query.isBlank()) {
-            // Always limit results to avoid rendering thousands of items
             availableExercises.take(UiConstants.MAX_INITIAL_RESULTS)
         } else {
             availableExercises.filter { exercise ->

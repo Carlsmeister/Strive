@@ -4,9 +4,5 @@
         <!-- Include user data for cloud backup -->
         <include domain="database" path="."/>
         <include domain="sharedpref" path="."/>
-
-        <!-- Exclude sensitive data from cloud backup -->
-        <exclude domain="sharedpref" path="device.xml"/>
-        <exclude domain="database" path="session_temp.db"/>
     </cloud-backup>
 </data-extraction-rules>

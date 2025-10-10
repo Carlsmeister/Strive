@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions for GPS tracking -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Internet permission for exercise API and maps -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -21,12 +19,10 @@
         android:usesCleartextTraffic="false"
         tools:targetApi="31">
 
-        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-        <!-- Main Activity - Only exported component (launcher) -->
         <activity
             android:name="se.umu.calu0217.strive.MainActivity"
             android:exported="true"

@@ -64,7 +64,6 @@ fun WorkoutHeader(
         )
     ) {
         if (isLandscape) {
-            // Landscape: More compact horizontal layout
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -112,7 +111,6 @@ fun WorkoutHeader(
                 }
             }
         } else {
-            // Portrait: Original vertical layout
             Column(
                 modifier = Modifier.padding(AdaptiveSpacing.standard)
             ) {
@@ -395,7 +393,6 @@ fun ExerciseCard(
 
             Spacer(modifier = Modifier.height(UiConstants.MEDIUM_PADDING))
 
-            // Sets
             Row(
                 horizontalArrangement = Arrangement.spacedBy(UiConstants.SMALL_PADDING)
             ) {
@@ -428,12 +425,10 @@ fun ExerciseCard(
         }
     }
 
-    // Exercise info dialog
     if (showInfoDialog) {
         ExerciseDetailDialog(exercise = exercise, onDismiss = { showInfoDialog = false })
     }
 
-    // Reps input dialog
     showRepsDialog?.let { setIndex ->
         var repsInput by remember { mutableStateOf(templateExercise.reps.toString()) }
 

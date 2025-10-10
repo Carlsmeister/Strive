@@ -40,7 +40,6 @@ fun HistoryScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header
             item {
                 Text(
                     text = "Activity History",
@@ -49,12 +48,10 @@ fun HistoryScreen(
                 )
             }
 
-            // Weekly Stats Card
             item {
                 WeeklyStatsCard(weeklyStats = weeklyStats)
             }
 
-            // Tab Row
             item {
                 TabRow(
                     selectedTabIndex = selectedTab.ordinal
@@ -74,7 +71,6 @@ fun HistoryScreen(
                 }
             }
 
-            // Content based on selected tab
             when (selectedTab) {
                 HistoryTab.WORKOUTS -> {
                     if (workoutSessions.isEmpty()) {

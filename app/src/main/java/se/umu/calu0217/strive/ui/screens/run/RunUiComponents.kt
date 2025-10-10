@@ -87,21 +87,18 @@ fun RunningStatsPanel(
                         horizontal = AdaptiveSpacing.standard
                     ),
             ) {
-                // Time
                 StatItem(
                     label = "TIME",
                     value = FitnessUtils.formatTime(elapsedTime),
                     textSize = minOf(32.sp.value * sizeMultiplier, 40f).sp
                 )
 
-                // Distance
                 StatItem(
                     label = "DISTANCE",
                     value = FitnessUtils.formatDistance(distance),
                     textSize = minOf(28.sp.value * sizeMultiplier, 36f).sp
                 )
 
-                // Pace
                 StatItem(
                     label = "PACE",
                     value = FitnessUtils.formatPace(pace),
@@ -116,7 +113,6 @@ fun RunningStatsPanel(
                     .fillMaxWidth()
                     .padding(vertical = if (isCompact) AdaptiveSpacing.small else AdaptiveSpacing.medium),
             ) {
-                // Time (largest)
                 StatItem(
                     label = "TIME",
                     value = FitnessUtils.formatTime(elapsedTime),
@@ -126,14 +122,12 @@ fun RunningStatsPanel(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(if (isCompact) 16.dp else 32.dp)
                 ) {
-                    // Distance
                     StatItem(
                         label = "DISTANCE",
                         value = FitnessUtils.formatDistance(distance),
                         textSize = minOf(32.sp.value * sizeMultiplier, 40f).sp
                     )
 
-                    // Pace
                     StatItem(
                         label = "PACE",
                         value = FitnessUtils.formatPace(pace),
@@ -159,13 +153,11 @@ fun ReadyToRunPanel(
         colors = CardDefaults.cardColors(containerColor = bg),
     ) {
         if (isLandscape) {
-            // Landscape: GPS badge on top, text below it
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(AdaptiveSpacing.small)
             ) {
-                // GPS status badge
                 val badgeContainerColor = when (gpsStatus) {
                     GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
                     GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
@@ -208,7 +200,6 @@ fun ReadyToRunPanel(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Text content
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -230,7 +221,6 @@ fun ReadyToRunPanel(
                 }
             }
         } else {
-            // Portrait: GPS badge overlaid on top-left
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -265,7 +255,6 @@ fun ReadyToRunPanel(
                     )
                 }
 
-                // GPS status badge at the actual top-left corner of the card
                 val badgeContainerColor = when (gpsStatus) {
                     GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
                     GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer

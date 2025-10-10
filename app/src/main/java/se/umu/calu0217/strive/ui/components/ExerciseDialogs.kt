@@ -48,7 +48,6 @@ fun ExerciseDetailDialog(
                     .heightIn(max = 420.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                // Image preview (if available)
                 exercise.imageUrl?.let { url ->
                     AsyncImage(
                         model = url,
@@ -62,7 +61,6 @@ fun ExerciseDetailDialog(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                // Equipment
                 Text(
                     text = stringResource(R.string.equipment),
                     style = MaterialTheme.typography.titleSmall,
@@ -75,7 +73,7 @@ fun ExerciseDetailDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Body parts
+
                 Text(
                     text = stringResource(R.string.body_parts),
                     style = MaterialTheme.typography.titleSmall,
@@ -144,7 +142,6 @@ fun AddToTemplateDialog(
     var restSec by remember { mutableStateOf("60") }
     var showCreateTemplateDialog by remember { mutableStateOf(false) }
 
-    // Load templates when dialog opens
     LaunchedEffect(Unit) {
         viewModel.loadTemplates()
     }
@@ -160,14 +157,12 @@ fun AddToTemplateDialog(
                     .verticalScroll(rememberScrollState())
             ) {
                 if (templates.isEmpty()) {
-                    // No templates available
                     Text(
                         text = stringResource(R.string.no_templates_found),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
                     )
                 } else {
-                    // Template selection
                     Text(
                         text = stringResource(R.string.select_template),
                         style = MaterialTheme.typography.titleSmall,
@@ -198,7 +193,6 @@ fun AddToTemplateDialog(
                     Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
                 }
 
-                // Exercise parameters
                 Text(
                     text = stringResource(R.string.exercise_settings),
                     style = MaterialTheme.typography.titleSmall,
@@ -206,7 +200,6 @@ fun AddToTemplateDialog(
                     modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
-                // Sets input
                 TextField(
                     value = sets,
                     onValueChange = { sets = it },
@@ -218,7 +211,6 @@ fun AddToTemplateDialog(
                         .padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
-                // Reps input
                 TextField(
                     value = reps,
                     onValueChange = { reps = it },
@@ -230,7 +222,6 @@ fun AddToTemplateDialog(
                         .padding(bottom = UiConstants.SMALL_PADDING)
                 )
 
-                // Rest time input
                 TextField(
                     value = restSec,
                     onValueChange = { restSec = it },
@@ -245,7 +236,6 @@ fun AddToTemplateDialog(
         },
         confirmButton = {
             Row {
-                // Create new template button
                 TextButton(
                     onClick = { showCreateTemplateDialog = true }
                 ) {
@@ -254,7 +244,6 @@ fun AddToTemplateDialog(
 
                 Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
 
-                // Add to selected template button
                 Button(
                     onClick = {
                         val templateId = selectedTemplateId
@@ -279,7 +268,6 @@ fun AddToTemplateDialog(
         }
     )
 
-    // Create new template dialog
     if (showCreateTemplateDialog) {
         TextInputDialog(
             title = stringResource(R.string.create_template),
