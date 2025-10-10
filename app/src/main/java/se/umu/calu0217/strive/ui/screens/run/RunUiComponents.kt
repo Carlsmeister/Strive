@@ -19,6 +19,10 @@ import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.core.utils.FitnessUtils
 import se.umu.calu0217.strive.ui.components.StatItem
+import se.umu.calu0217.strive.core.utils.isLandscape
+import se.umu.calu0217.strive.core.utils.isCompactScreen
+import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
+import se.umu.calu0217.strive.core.utils.getAdaptiveSizeMultiplier
 
 /**
  * Displays a notice when Google Maps API key is missing.
@@ -60,124 +64,237 @@ fun MapsApiKeyMissingNotice() {
 fun RunningStatsPanel(
     distance: Double,
     elapsedTime: Int,
-    pace: Double
+    pace: Double,
+    modifier: Modifier = Modifier
 ) {
     val bg = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f)
+    val isLandscape = isLandscape()
+    val isCompact = isCompactScreen()
+    val sizeMultiplier = getAdaptiveSizeMultiplier()
 
     Card (
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = bg),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = UiConstants.SMALL_PADDING),
-        ) {
-            // Time (largest)
-            StatItem(
-                label = "TIME",
-                value = FitnessUtils.formatTime(elapsedTime),
-                textSize = 48.sp
-            )
-
+        if (isLandscape) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(32.dp)
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(
+                        vertical = if (isCompact) AdaptiveSpacing.small else AdaptiveSpacing.medium,
+                        horizontal = AdaptiveSpacing.standard
+                    ),
             ) {
-                // Distance
+                StatItem(
+                    label = "TIME",
+                    value = FitnessUtils.formatTime(elapsedTime),
+                    textSize = minOf(32.sp.value * sizeMultiplier, 40f).sp
+                )
+
                 StatItem(
                     label = "DISTANCE",
                     value = FitnessUtils.formatDistance(distance),
-                    textSize = 32.sp
+                    textSize = minOf(28.sp.value * sizeMultiplier, 36f).sp
                 )
 
-                // Pace
                 StatItem(
                     label = "PACE",
                     value = FitnessUtils.formatPace(pace),
-                    textSize = 32.sp
+                    textSize = minOf(28.sp.value * sizeMultiplier, 36f).sp
                 )
+            }
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(if (isCompact) 6.dp else 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = if (isCompact) AdaptiveSpacing.small else AdaptiveSpacing.medium),
+            ) {
+                StatItem(
+                    label = "TIME",
+                    value = FitnessUtils.formatTime(elapsedTime),
+                    textSize = minOf(48.sp.value * sizeMultiplier, 56f).sp
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(if (isCompact) 16.dp else 32.dp)
+                ) {
+                    StatItem(
+                        label = "DISTANCE",
+                        value = FitnessUtils.formatDistance(distance),
+                        textSize = minOf(32.sp.value * sizeMultiplier, 40f).sp
+                    )
+
+                    StatItem(
+                        label = "PACE",
+                        value = FitnessUtils.formatPace(pace),
+                        textSize = minOf(32.sp.value * sizeMultiplier, 40f).sp
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun ReadyToRunPanel(gpsStatus: GpsStatus) {
+fun ReadyToRunPanel(
+    gpsStatus: GpsStatus,
+    modifier: Modifier = Modifier
+) {
     val bg = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f)
+    val isCompact = isCompactScreen()
+    val isLandscape = isLandscape()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = bg),
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            // Main content centered horizontally (keeps same inner padding as before)
+        if (isLandscape) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        top = 46.dp,
-                        bottom = 26.dp,
-                        start = UiConstants.STANDARD_PADDING,
-                        end = UiConstants.STANDARD_PADDING
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(AdaptiveSpacing.small)
             ) {
-                Text(
-                    text = stringResource(R.string.ready_to_run),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
-                Text(
-                    text = stringResource(R.string.choose_activity_hint),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                val badgeContainerColor = when (gpsStatus) {
+                    GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
+                    GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
+                    GpsStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
+                }
+                val badgeContentColor = when (gpsStatus) {
+                    GpsStatus.READY -> MaterialTheme.colorScheme.onPrimaryContainer
+                    GpsStatus.SEARCHING -> MaterialTheme.colorScheme.onSecondaryContainer
+                    GpsStatus.ERROR -> MaterialTheme.colorScheme.onErrorContainer
+                }
+                val badgeIcon = when (gpsStatus) {
+                    GpsStatus.READY -> Icons.Filled.GpsFixed
+                    GpsStatus.SEARCHING -> Icons.Filled.GpsNotFixed
+                    GpsStatus.ERROR -> Icons.Filled.GpsOff
+                }
+                val badgeText = when (gpsStatus) {
+                    GpsStatus.READY -> stringResource(R.string.gps_ready)
+                    GpsStatus.SEARCHING -> stringResource(R.string.gps_searching)
+                    GpsStatus.ERROR -> stringResource(R.string.gps_error)
+                }
 
-            // GPS status badge at the actual top-left corner of the card
-            val badgeContainerColor = when (gpsStatus) {
-                GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
-                GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
-                GpsStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
-            }
-            val badgeContentColor = when (gpsStatus) {
-                GpsStatus.READY -> MaterialTheme.colorScheme.onPrimaryContainer
-                GpsStatus.SEARCHING -> MaterialTheme.colorScheme.onSecondaryContainer
-                GpsStatus.ERROR -> MaterialTheme.colorScheme.onErrorContainer
-            }
-            val badgeIcon = when (gpsStatus) {
-                GpsStatus.READY -> Icons.Filled.GpsFixed
-                GpsStatus.SEARCHING -> Icons.Filled.GpsNotFixed
-                GpsStatus.ERROR -> Icons.Filled.GpsOff
-            }
-            val badgeText = when (gpsStatus) {
-                GpsStatus.READY -> stringResource(R.string.gps_ready)
-                GpsStatus.SEARCHING -> stringResource(R.string.gps_searching)
-                GpsStatus.ERROR -> stringResource(R.string.gps_error)
-            }
-
-            Surface(
-                color = badgeContainerColor,
-                contentColor = badgeContentColor,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(UiConstants.SMALL_PADDING)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = UiConstants.SMALL_PADDING, vertical = UiConstants.EXTRA_SMALL_PADDING),
-                    verticalAlignment = Alignment.CenterVertically
+                Surface(
+                    color = badgeContainerColor,
+                    contentColor = badgeContentColor,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.wrapContentSize()
                 ) {
-                    Icon(badgeIcon, contentDescription = null, tint = badgeContentColor)
-                    Spacer(Modifier.width(UiConstants.HALF_SMALL_PADDING))
-                    Text(badgeText, style = MaterialTheme.typography.labelMedium, color = badgeContentColor)
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = AdaptiveSpacing.small,
+                            vertical = AdaptiveSpacing.extraSmall
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(badgeIcon, contentDescription = null, tint = badgeContentColor)
+                        Spacer(Modifier.width(UiConstants.HALF_SMALL_PADDING))
+                        Text(badgeText, style = MaterialTheme.typography.labelMedium, color = badgeContentColor)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AdaptiveSpacing.small),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = stringResource(R.string.ready_to_run),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(R.string.choose_activity_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = if (isCompact) 32.dp else 46.dp,
+                            bottom = if (isCompact) 16.dp else 26.dp,
+                            start = AdaptiveSpacing.standard,
+                            end = AdaptiveSpacing.standard
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.ready_to_run),
+                        style = if (isCompact)
+                            MaterialTheme.typography.titleLarge
+                        else
+                            MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(if (isCompact) 4.dp else AdaptiveSpacing.small))
+                    Text(
+                        text = stringResource(R.string.choose_activity_hint),
+                        style = if (isCompact)
+                            MaterialTheme.typography.bodyMedium
+                        else
+                            MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                val badgeContainerColor = when (gpsStatus) {
+                    GpsStatus.READY -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f)
+                    GpsStatus.SEARCHING -> MaterialTheme.colorScheme.secondaryContainer
+                    GpsStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
+                }
+                val badgeContentColor = when (gpsStatus) {
+                    GpsStatus.READY -> MaterialTheme.colorScheme.onPrimaryContainer
+                    GpsStatus.SEARCHING -> MaterialTheme.colorScheme.onSecondaryContainer
+                    GpsStatus.ERROR -> MaterialTheme.colorScheme.onErrorContainer
+                }
+                val badgeIcon = when (gpsStatus) {
+                    GpsStatus.READY -> Icons.Filled.GpsFixed
+                    GpsStatus.SEARCHING -> Icons.Filled.GpsNotFixed
+                    GpsStatus.ERROR -> Icons.Filled.GpsOff
+                }
+                val badgeText = when (gpsStatus) {
+                    GpsStatus.READY -> stringResource(R.string.gps_ready)
+                    GpsStatus.SEARCHING -> stringResource(R.string.gps_searching)
+                    GpsStatus.ERROR -> stringResource(R.string.gps_error)
+                }
+
+                Surface(
+                    color = badgeContainerColor,
+                    contentColor = badgeContentColor,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(AdaptiveSpacing.small)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = AdaptiveSpacing.small,
+                            vertical = AdaptiveSpacing.extraSmall
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(badgeIcon, contentDescription = null, tint = badgeContentColor)
+                        Spacer(Modifier.width(UiConstants.HALF_SMALL_PADDING))
+                        Text(badgeText, style = MaterialTheme.typography.labelMedium, color = badgeContentColor)
+                    }
                 }
             }
         }
@@ -243,23 +360,33 @@ fun FloatingRunControls(
 ) {
     val bg = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
     val fg = MaterialTheme.colorScheme.onPrimary
+    val isLandscape = isLandscape()
+
     Card(
-        modifier = modifier.padding(bottom = 10.dp, end = 10.dp),
+        modifier = modifier.padding(
+            bottom = if (isLandscape) 6.dp else 10.dp,
+            end = if (isLandscape) 6.dp else 10.dp
+        ),
         colors = CardDefaults.cardColors(containerColor = bg),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(if (isLandscape) 16.dp else 24.dp)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = UiConstants.MEDIUM_PADDING, vertical = 10.dp),
+            modifier = Modifier.padding(
+                horizontal = if (isLandscape) 8.dp else UiConstants.MEDIUM_PADDING,
+                vertical = if (isLandscape) 6.dp else 10.dp
+            ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(UiConstants.SMALL_PADDING)
+            horizontalArrangement = Arrangement.spacedBy(if (isLandscape) 6.dp else UiConstants.SMALL_PADDING)
         ) {
             if (!isRunning) {
-                Text(
-                    text = stringResource(R.string.start),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = fg
-                )
+                if (!isLandscape) {
+                    Text(
+                        text = stringResource(R.string.start),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = fg
+                    )
+                }
                 ActivitySelectorDropdown(
                     selectedActivity = selectedActivity,
                     onActivitySelected = onActivitySelected,
@@ -267,26 +394,39 @@ fun FloatingRunControls(
                 )
                 FilledIconButton(
                     onClick = onStartRun,
-                    enabled = gpsReady
+                    enabled = gpsReady,
+                    modifier = if (isLandscape) Modifier.size(36.dp) else Modifier
                 ) {
                     if (gpsReady) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = "Start")
+                        Icon(
+                            Icons.Filled.PlayArrow,
+                            contentDescription = "Start",
+                            modifier = if (isLandscape) Modifier.size(20.dp) else Modifier
+                        )
                     } else {
                         CircularProgressIndicator(
                             strokeWidth = 2.dp,
                             color = fg,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(if (isLandscape) 20.dp else 24.dp)
                         )
                     }
                 }
             } else {
                 Text(
                     text = selectedActivity.label(),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = if (isLandscape) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
                     color = fg
                 )
-                FilledIconButton(onClick = onStopRun, colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.error)) {
-                    Icon(Icons.Filled.Stop, contentDescription = "Stop")
+                FilledIconButton(
+                    onClick = onStopRun,
+                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = if (isLandscape) Modifier.size(36.dp) else Modifier
+                ) {
+                    Icon(
+                        Icons.Filled.Stop,
+                        contentDescription = "Stop",
+                        modifier = if (isLandscape) Modifier.size(20.dp) else Modifier
+                    )
                 }
             }
         }

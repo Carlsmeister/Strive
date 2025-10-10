@@ -42,7 +42,6 @@ fun ExerciseCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Exercise Image
             exercise.imageUrl?.let { imageUrl ->
                 val context = LocalContext.current
                 AsyncImage(
@@ -67,7 +66,6 @@ fun ExerciseCard(
                     fallback = painterResource(id = android.R.drawable.ic_menu_gallery)
                 )
             } ?: run {
-                // Default fitness icon when no imageUrl is available
                 Box(
                     modifier = Modifier
                         .size(64.dp)
@@ -85,7 +83,6 @@ fun ExerciseCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Exercise Info
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -103,7 +100,6 @@ fun ExerciseCard(
                 )
             }
 
-            // Add icon button
             IconButton(
                 onClick = onAddToTemplate
             ) {

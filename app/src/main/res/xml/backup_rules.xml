@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-   Backup rules for Strive app
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
--->
 <full-backup-content>
     <!-- Include user data for backup -->
     <include domain="database" path="."/>
     <include domain="sharedpref" path="."/>
-
-    <!-- Exclude sensitive data from backup -->
-    <exclude domain="sharedpref" path="device.xml"/>
-    <exclude domain="database" path="session_temp.db"/>
 </full-backup-content>

@@ -154,7 +154,6 @@ class RunViewModel @Inject constructor(
                 val runId = activeRunId ?: return@launch
                 val currentState = _uiState.value
 
-                // Calculate calories based on selected activity, pace and duration
                 val timeHours = currentState.elapsedTime / 3600.0
                 val metValue = getMetForActivity(currentState.selectedActivity, currentState.pace)
                 val calories = FitnessUtils.calculateCalories(metValue, userWeight, timeHours)
@@ -185,7 +184,7 @@ class RunViewModel @Inject constructor(
      * @author Carl Lundholm
      */
     private fun getMetForActivity(activity: ActivityType, paceMinPerKm: Double): Double {
-        // Convert pace (min/km) to speed (km/h)
+
         val speedKmh = if (paceMinPerKm > 0) 60.0 / paceMinPerKm else 0.0
         return when (activity) {
             ActivityType.RUNNING -> FitnessUtils.getMetFromPace(paceMinPerKm)
@@ -226,10 +225,8 @@ class RunViewModel @Inject constructor(
                     )
 
                     activeRunId?.let { runId ->
-                        // Add run point
                         addRunPointUseCase(runId, location.latitude, location.longitude)
 
-                        // Calculate distance if we have a previous location
                         lastLocation?.let { (prevLat, prevLng) ->
                             val segmentDistance = FitnessUtils.calculateDistance(
                                 prevLat, prevLng, location.latitude, location.longitude
@@ -239,20 +236,16 @@ class RunViewModel @Inject constructor(
 
                         lastLocation = location.latitude to location.longitude
 
-                        // Update elapsed time
                         val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000).toInt()
 
-                        // Calculate pace
                         val pace = FitnessUtils.calculatePace(totalDistance, elapsedSeconds)
 
-                        // Update UI state
                         _uiState.value = _uiState.value.copy(
                             distance = totalDistance,
                             elapsedTime = elapsedSeconds,
                             pace = pace
                         )
 
-                        // Update database
                         updateRunSessionUseCase(runId, totalDistance, elapsedSeconds, pace)
                     }
                 }
@@ -319,7 +312,6 @@ class RunViewModel @Inject constructor(
                     )
                 }
             } catch (_: Exception) {
-                // ignore, leave state as is
             }
         }
     }

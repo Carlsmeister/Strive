@@ -39,7 +39,6 @@ fun VerticalScrollbar(
         val visibleItems = layoutInfo.visibleItemsInfo
 
         if (totalItems == 0 || visibleItems.isEmpty() || height <= 0f) {
-            // Nothing to draw
             return@Canvas
         }
 
@@ -52,7 +51,6 @@ fun VerticalScrollbar(
         val maxScrollPx = (totalContentHeightPx - height).coerceAtLeast(1f)
         val thumbTopPx = (scrollPx / maxScrollPx) * (height - thumbHeightPx)
 
-        // Draw track
         drawRoundRect(
             color = trackColor,
             topLeft = Offset(0f, 0f),
@@ -60,7 +58,6 @@ fun VerticalScrollbar(
             cornerRadius = CornerRadius(width / 2f, width / 2f)
         )
 
-        // Draw thumb
         drawRoundRect(
             color = thumbColor,
             topLeft = Offset(0f, thumbTopPx.coerceIn(0f, height - thumbHeightPx)),

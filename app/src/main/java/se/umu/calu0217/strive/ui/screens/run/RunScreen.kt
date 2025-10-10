@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
 import se.umu.calu0217.strive.core.constants.UiConstants
+import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 
 /**
@@ -84,25 +85,40 @@ fun RunScreen(
             currentLng = uiState.currentLongitude
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(UiConstants.STANDARD_PADDING),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        val isLandscape = isLandscape()
 
-            if (uiState.isRunning) {
-                RunningStatsPanel(
-                    distance = uiState.distance,
-                    elapsedTime = uiState.elapsedTime,
-                    pace = uiState.pace
-                )
-            } else {
-                ReadyToRunPanel(gpsStatus = uiState.gpsStatus)
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
+        if (uiState.isRunning) {
+            RunningStatsPanel(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(UiConstants.STANDARD_PADDING)
+                    .then(
+                        if (isLandscape) {
+                            Modifier.wrapContentSize()
+                        } else {
+                            Modifier.fillMaxWidth()
+                        }
+                    ),
+                distance = uiState.distance,
+                elapsedTime = uiState.elapsedTime,
+                pace = uiState.pace
+            )
+        } else {
+            ReadyToRunPanel(
+                modifier = Modifier
+                    .align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter)
+                    .padding(UiConstants.STANDARD_PADDING)
+                    .then(
+                        if (isLandscape) {
+                            Modifier.fillMaxWidth(0.3f)
+                        } else {
+                            Modifier.fillMaxWidth()
+                        }
+                    ),
+                gpsStatus = uiState.gpsStatus
+            )
         }
+
         FloatingRunControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

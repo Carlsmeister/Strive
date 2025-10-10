@@ -30,14 +30,13 @@ class LocationTracker @Inject constructor(
 
     private val locationRequest = LocationRequest.Builder(
         Priority.PRIORITY_HIGH_ACCURACY,
-        2000L // 2 seconds interval
+        2000L
     ).apply {
-        setMinUpdateDistanceMeters(5f) // 5 meters minimum distance
+        setMinUpdateDistanceMeters(5f)
         setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
         setWaitForAccurateLocation(false)
     }.build()
 
-    // Keep reference to remove later
     @Volatile
     private var activeCallback: LocationCallback? = null
 
@@ -60,7 +59,6 @@ class LocationTracker @Inject constructor(
         }
         activeCallback = callback
         try {
-            // Enforce a single active subscription
             stopLocationUpdates()
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
@@ -68,7 +66,6 @@ class LocationTracker @Inject constructor(
                 Looper.getMainLooper()
             )
         } catch (e: SecurityException) {
-            // Permissions missing or revoked
             close(e)
             return@callbackFlow
         } catch (e: Exception) {

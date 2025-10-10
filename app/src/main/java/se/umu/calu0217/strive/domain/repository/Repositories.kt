@@ -150,6 +150,12 @@ interface WorkoutRepository {
      * @author Carl Lundholm
      */
     suspend fun getWorkoutSessionById(id: Long): WorkoutSession?
+
+    /**
+     * Deletes all workout data including templates, sessions, and sets.
+     * @author Carl Lundholm
+     */
+    suspend fun deleteAllWorkoutData()
 }
 
 /**
@@ -205,4 +211,10 @@ interface RunRepository {
      * @author Carl Lundholm
      */
     fun getAllRunSessions(): Flow<List<RunSession>>
+
+    /**
+     * Deletes all run data including sessions and GPS points.
+     * @author Carl Lundholm
+     */
+    suspend fun deleteAllRunData()
 }

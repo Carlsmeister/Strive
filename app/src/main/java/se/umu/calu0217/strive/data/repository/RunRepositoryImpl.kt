@@ -41,7 +41,6 @@ class RunRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addRunPoint(runId: Long, lat: Double, lng: Double) {
-        // Basic validation for coordinates
         if (lat.isNaN() || lng.isNaN()) return
         if (lat !in -90.0..90.0 || lng !in -180.0..180.0) return
         val runPoint = RunPointEntity(
@@ -85,9 +84,13 @@ class RunRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteAllRunData() {
+        runPointDao.deleteAllRunPoints()
+        runSessionDao.deleteAllRunSessions()
+    }
+
 }
 
-// Extension function for entity to domain model conversion
 private fun RunSessionEntity.toDomainModel(points: List<se.umu.calu0217.strive.domain.models.RunPoint>): RunSession {
     return RunSession(
         id = id,

@@ -34,7 +34,6 @@ sealed class AppError {
 fun Throwable.toAppError(): AppError {
     return when (this) {
         is java.io.IOException -> {
-            // Check for timeout specifically
             if (this is java.net.SocketTimeoutException) {
                 AppError.TimeoutError()
             } else {

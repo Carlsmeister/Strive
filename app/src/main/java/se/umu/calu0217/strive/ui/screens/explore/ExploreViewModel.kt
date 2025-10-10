@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import se.umu.calu0217.strive.core.error.toAppError
 import se.umu.calu0217.strive.domain.models.Exercise
+import se.umu.calu0217.strive.domain.models.TemplateExercise
 import se.umu.calu0217.strive.domain.usecases.BackfillMissingExerciseImagesUseCase
 import se.umu.calu0217.strive.domain.usecases.ForceRefreshExercisesUseCase
 import se.umu.calu0217.strive.domain.usecases.GetExercisesUseCase
@@ -47,7 +48,6 @@ class ExploreViewModel @Inject constructor(
     private val _selectedFilters = MutableStateFlow<Set<String>>(emptySet())
     val selectedFilters: StateFlow<Set<String>> = _selectedFilters.asStateFlow()
 
-    // Added templates state
     private val _templates = MutableStateFlow<List<se.umu.calu0217.strive.domain.models.WorkoutTemplate>>(emptyList())
     val templates: StateFlow<List<se.umu.calu0217.strive.domain.models.WorkoutTemplate>> = _templates.asStateFlow()
 
@@ -69,7 +69,6 @@ class ExploreViewModel @Inject constructor(
                 val filtered = if (filters.isEmpty()) list
                 else list.filter { exercise -> matchesFilters(exercise, filters) }
 
-                // Optimize: compute trim().lowercase() only once per item
                 filtered
                     .map { it to it.name.trim().lowercase() }
                     .distinctBy { it.second }
@@ -82,6 +81,10 @@ class ExploreViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    init {
+        initializeData()
+    }
 
     /**
      * Checks if an exercise matches the selected filters.
@@ -109,7 +112,6 @@ class ExploreViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
                 seedExercisesUseCase()
-                // Attempt backfill for images if any are missing
                 backfillMissingExerciseImagesUseCase()
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
@@ -218,12 +220,10 @@ class ExploreViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                // Get the current template to find the next position
                 val template = workoutRepository.getTemplateById(templateId)
                 val nextPosition = (template?.exercises?.maxOfOrNull { it.position } ?: -1) + 1
 
-                // Create the template exercise
-                val templateExercise = se.umu.calu0217.strive.domain.models.TemplateExercise(
+                val templateExercise = TemplateExercise(
                     exerciseId = exerciseId,
                     sets = sets,
                     reps = reps,
@@ -231,10 +231,8 @@ class ExploreViewModel @Inject constructor(
                     position = nextPosition
                 )
 
-                // Add exercise to template through repository
                 workoutRepository.addExerciseToTemplate(templateId, templateExercise)
 
-                // Refresh templates
                 loadTemplates()
             } catch (e: Exception) {
                 val appError = e.toAppError()
@@ -252,7 +250,6 @@ class ExploreViewModel @Inject constructor(
     fun createNewTemplate(templateName: String, firstExerciseId: Long) {
         viewModelScope.launch {
             try {
-                // Create new template
                 val newTemplate = se.umu.calu0217.strive.domain.models.WorkoutTemplate(
                     name = templateName,
                     createdAt = System.currentTimeMillis()
@@ -260,8 +257,7 @@ class ExploreViewModel @Inject constructor(
 
                 val templateId = workoutRepository.insertTemplate(newTemplate)
 
-                // Add the first exercise to the new template
-                val templateExercise = se.umu.calu0217.strive.domain.models.TemplateExercise(
+                val templateExercise = TemplateExercise(
                     exerciseId = firstExerciseId,
                     sets = 3,
                     reps = 12,
@@ -271,7 +267,6 @@ class ExploreViewModel @Inject constructor(
 
                 workoutRepository.addExerciseToTemplate(templateId, templateExercise)
 
-                // Refresh templates
                 loadTemplates()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

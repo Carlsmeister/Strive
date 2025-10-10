@@ -129,6 +129,12 @@ interface WorkoutTemplateDao {
      */
     @Delete
     suspend fun deleteTemplate(template: WorkoutTemplateEntity)
+
+    /**
+     * Deletes all workout templates from the database.
+     */
+    @Query("DELETE FROM workout_templates")
+    suspend fun deleteAllTemplates()
 }
 
 /**
@@ -169,4 +175,10 @@ interface TemplateExerciseDao {
      */
     @Query("DELETE FROM template_exercises WHERE templateId = :templateId")
     suspend fun deleteTemplateExercises(templateId: Long)
+
+    /**
+     * Deletes all template exercises from the database.
+     */
+    @Query("DELETE FROM template_exercises")
+    suspend fun deleteAllTemplateExercises()
 }

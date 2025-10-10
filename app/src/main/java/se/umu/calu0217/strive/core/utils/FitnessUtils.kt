@@ -19,7 +19,7 @@ object FitnessUtils {
      * @author Carl Lundholm
      */
     fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
-        val earthRadius = 6371000.0 // Earth radius in meters
+        val earthRadius = 6371000.0
 
         val dLat = Math.toRadians(lat2 - lat1)
         val dLng = Math.toRadians(lng2 - lng1)
