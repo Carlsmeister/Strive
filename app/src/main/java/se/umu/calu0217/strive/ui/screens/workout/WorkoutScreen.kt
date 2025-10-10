@@ -34,6 +34,10 @@ import se.umu.calu0217.strive.ui.components.TextInputDialog
 import se.umu.calu0217.strive.ui.components.LoadingIndicator
 import se.umu.calu0217.strive.ui.theme.EnergeticOrange
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.utils.isLandscape
+import se.umu.calu0217.strive.core.utils.isCompactScreen
+import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
+import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
 
 /**
  * Main workout screen for managing workout templates and starting workout sessions.
@@ -50,42 +54,53 @@ fun WorkoutScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(UiConstants.STANDARD_PADDING)
+            .padding(AdaptiveSpacing.standard),
+        verticalArrangement = Arrangement.spacedBy(AdaptiveSpacing.standard)
     ) {
         // Quick Start Section
-        QuickStartCard(onStartWorkout = {
-            viewModel.startQuickWorkout { sessionId ->
-                onNavigateToActiveWorkout(sessionId)
-            }
-        })
-
-        Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
+        item {
+            QuickStartCard(onStartWorkout = {
+                viewModel.startQuickWorkout { sessionId ->
+                    onNavigateToActiveWorkout(sessionId)
+                }
+            })
+        }
 
         // Templates Section Header
-        TemplatesHeader(onCreateTemplate = { viewModel.showCreateTemplateDialog() })
+        item {
+            TemplatesHeader(onCreateTemplate = { viewModel.showCreateTemplateDialog() })
+        }
 
-        Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
-
-        // Templates List
-        if (uiState.isLoading) {
-            LoadingIndicator()
-        } else if (uiState.templates.isEmpty()) {
-            EmptyTemplatesCard()
-        } else {
-            TemplatesList(
-                templates = uiState.templates,
-                onStartWorkout = { template ->
-                    viewModel.startWorkoutFromTemplate(template.id) { sessionId ->
-                        onNavigateToActiveWorkout(sessionId)
-                    }
-                },
-                onEditTemplate = { viewModel.editTemplate(it) },
-                onAddExercises = { viewModel.openAddExercisesDialog(it) },
-                onDeleteTemplate = { viewModel.deleteTemplate(it) }
-            )
+        // Templates List or Empty/Loading state
+        when {
+            uiState.isLoading -> {
+                item {
+                    LoadingIndicator()
+                }
+            }
+            uiState.templates.isEmpty() -> {
+                item {
+                    EmptyTemplatesCard()
+                }
+            }
+            else -> {
+                items(uiState.templates) { template ->
+                    TemplateCard(
+                        template = template,
+                        onStartWorkout = {
+                            viewModel.startWorkoutFromTemplate(template.id) { sessionId ->
+                                onNavigateToActiveWorkout(sessionId)
+                            }
+                        },
+                        onEditTemplate = { viewModel.editTemplate(template) },
+                        onAddExercises = { viewModel.openAddExercisesDialog(template) },
+                        onDeleteTemplate = { viewModel.deleteTemplate(template) }
+                    )
+                }
+            }
         }
     }
 
@@ -103,44 +118,93 @@ fun WorkoutScreen(
  */
 @Composable
 private fun QuickStartCard(onStartWorkout: () -> Unit) {
+    val isCompact = isCompactScreen()
+    val isLandscape = isLandscape()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 12.dp)
-            ) {
-                Icon(
-                    Icons.Default.FitnessCenter,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(UiConstants.SMALL_ICON_SIZE)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.padding(AdaptiveSpacing.standard)) {
+            if (isLandscape) {
+                // Landscape: Title and button on the same row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            Icons.Default.FitnessCenter,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(AdaptiveIconSize.small)
+                        )
+                        Spacer(modifier = Modifier.width(AdaptiveSpacing.medium))
+                        Text(
+                            text = stringResource(R.string.quick_start),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    Button(
+                        onClick = onStartWorkout,
+                        modifier = Modifier.padding(start = AdaptiveSpacing.medium)
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = null)
+                        Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
+                        Text(stringResource(R.string.start_new_workout))
+                    }
+                }
                 Text(
-                    text = stringResource(R.string.quick_start),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    text = stringResource(R.string.start_new_workout_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(top = AdaptiveSpacing.small)
                 )
-            }
-            Text(
-                text = stringResource(R.string.start_new_workout_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
-            )
-            Button(
-                onClick = onStartWorkout,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = null)
-                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
-                Text(stringResource(R.string.start_new_workout))
+            } else {
+                // Portrait: Vertical layout
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = if (isCompact) 8.dp else 12.dp)
+                ) {
+                    Icon(
+                        Icons.Default.FitnessCenter,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(AdaptiveIconSize.small)
+                    )
+                    Spacer(modifier = Modifier.width(AdaptiveSpacing.medium))
+                    Text(
+                        text = stringResource(R.string.quick_start),
+                        style = if (isCompact)
+                            MaterialTheme.typography.titleMedium
+                        else
+                            MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.start_new_workout_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(bottom = AdaptiveSpacing.standard)
+                )
+                Button(
+                    onClick = onStartWorkout,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                    Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
+                    Text(stringResource(R.string.start_new_workout))
+                }
             }
         }
     }
@@ -192,27 +256,6 @@ private fun EmptyTemplatesCard() {
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun TemplatesList(
-    templates: List<WorkoutTemplate>,
-    onStartWorkout: (WorkoutTemplate) -> Unit,
-    onEditTemplate: (WorkoutTemplate) -> Unit,
-    onAddExercises: (WorkoutTemplate) -> Unit,
-    onDeleteTemplate: (WorkoutTemplate) -> Unit
-) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(templates) { template ->
-            TemplateCard(
-                template = template,
-                onStartWorkout = { onStartWorkout(template) },
-                onEditTemplate = { onEditTemplate(template) },
-                onAddExercises = { onAddExercises(template) },
-                onDeleteTemplate = { onDeleteTemplate(template) }
             )
         }
     }

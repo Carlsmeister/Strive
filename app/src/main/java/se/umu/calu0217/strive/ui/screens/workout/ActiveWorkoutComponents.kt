@@ -29,6 +29,10 @@ import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.models.TemplateExercise
 import se.umu.calu0217.strive.ui.components.ExerciseDetailDialog
 import java.util.Locale
+import se.umu.calu0217.strive.core.utils.isLandscape
+import se.umu.calu0217.strive.core.utils.isCompactScreen
+import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
+import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
 
 /**
  * Header card displaying workout session information.
@@ -50,62 +54,116 @@ fun WorkoutHeader(
     totalSets: Int,
     onPauseToggle: () -> Unit
 ) {
+    val isCompact = isCompactScreen()
+    val isLandscape = isLandscape()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Column(
-            modifier = Modifier.padding(UiConstants.STANDARD_PADDING)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = templateName,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
-                Text(
-                    text = stringResource(R.string.sets_progress, doneSets, totalSets),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            Text(
-                text = stringResource(R.string.started_at, formatTimeOfDay(startTime)),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-
+        if (isLandscape) {
+            // Landscape: More compact horizontal layout
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = UiConstants.SMALL_PADDING),
+                    .padding(AdaptiveSpacing.medium),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ElapsedTimeClock(startTime = startTime, isPaused = isPaused)
-                Spacer(modifier = Modifier.weight(1f))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = templateName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 1
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AdaptiveSpacing.medium),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.sets_progress, doneSets, totalSets),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        ElapsedTimeClock(startTime = startTime, isPaused = isPaused, compact = true)
+                    }
+                }
                 Button(
                     onClick = onPauseToggle,
                     contentPadding = PaddingValues(
-                        horizontal = UiConstants.MEDIUM_PADDING,
-                        vertical = UiConstants.SMALL_PADDING
-                    )
+                        horizontal = AdaptiveSpacing.medium,
+                        vertical = AdaptiveSpacing.small
+                    ),
+                    modifier = Modifier.height(36.dp)
                 ) {
                     if (isPaused) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                        Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
-                        Text(stringResource(R.string.resume))
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(stringResource(R.string.resume), style = MaterialTheme.typography.bodySmall)
                     } else {
-                        Icon(Icons.Filled.Pause, contentDescription = null)
-                        Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
-                        Text(stringResource(R.string.pause))
+                        Icon(Icons.Filled.Pause, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(stringResource(R.string.pause), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        } else {
+            // Portrait: Original vertical layout
+            Column(
+                modifier = Modifier.padding(AdaptiveSpacing.standard)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = templateName,
+                        style = if (isCompact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
+                    Text(
+                        text = stringResource(R.string.sets_progress, doneSets, totalSets),
+                        style = if (isCompact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.started_at, formatTimeOfDay(startTime)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AdaptiveSpacing.small),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ElapsedTimeClock(startTime = startTime, isPaused = isPaused)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = onPauseToggle,
+                        contentPadding = PaddingValues(
+                            horizontal = AdaptiveSpacing.medium,
+                            vertical = AdaptiveSpacing.small
+                        )
+                    ) {
+                        if (isPaused) {
+                            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                            Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
+                            Text(stringResource(R.string.resume))
+                        } else {
+                            Icon(Icons.Filled.Pause, contentDescription = null)
+                            Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
+                            Text(stringResource(R.string.pause))
+                        }
                     }
                 }
             }
@@ -118,6 +176,9 @@ fun RestTimerCard(
     timeRemaining: Int,
     onSkipRest: () -> Unit
 ) {
+    val isLandscape = isLandscape()
+    val isCompact = isCompactScreen()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -127,7 +188,10 @@ fun RestTimerCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(UiConstants.STANDARD_PADDING),
+                .padding(
+                    vertical = if (isLandscape || isCompact) AdaptiveSpacing.small else AdaptiveSpacing.medium,
+                    horizontal = AdaptiveSpacing.standard
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -137,12 +201,13 @@ fun RestTimerCard(
                 Icon(
                     Icons.Default.Timer,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(if (isLandscape || isCompact) 20.dp else AdaptiveIconSize.small)
                 )
-                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
                 Text(
                     text = stringResource(R.string.rest_time, formatRestTime(timeRemaining)),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = if (isLandscape || isCompact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
@@ -156,7 +221,8 @@ fun RestTimerCard(
 @Composable
 fun ElapsedTimeClock(
     startTime: Long,
-    isPaused: Boolean
+    isPaused: Boolean,
+    compact: Boolean = false
 ) {
     var totalPausedMs by remember { mutableStateOf(0L) }
     var pauseStartedAt by remember { mutableStateOf<Long?>(null) }
@@ -195,12 +261,13 @@ fun ElapsedTimeClock(
         Icon(
             Icons.Default.Timer,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(if (compact) 16.dp else AdaptiveIconSize.small)
         )
-        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+        Spacer(modifier = Modifier.width(if (compact) 4.dp else AdaptiveSpacing.small))
         Text(
-            text = "Elapsed: ${FitnessUtils.formatTime(elapsedSec.toInt())}",
-            style = MaterialTheme.typography.titleMedium,
+            text = if (compact) FitnessUtils.formatTime(elapsedSec.toInt()) else "Elapsed: ${FitnessUtils.formatTime(elapsedSec.toInt())}",
+            style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
@@ -213,6 +280,8 @@ fun SplitActionFab(
     completeEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val isCompact = isCompactScreen()
+
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(28.dp),
@@ -222,8 +291,8 @@ fun SplitActionFab(
     ) {
         Row(
             modifier = Modifier
-                .height(56.dp)
-                .padding(horizontal = UiConstants.MEDIUM_PADDING),
+                .height(if (isCompact) 48.dp else 56.dp)
+                .padding(horizontal = AdaptiveSpacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onPrimary) {
@@ -235,9 +304,12 @@ fun SplitActionFab(
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.Check, contentDescription = null)
+                        Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(if (isCompact) 20.dp else 24.dp))
                         Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
-                        Text(stringResource(R.string.complete_set))
+                        Text(
+                            stringResource(R.string.complete_set),
+                            style = if (isCompact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
                 Box(
@@ -253,9 +325,12 @@ fun SplitActionFab(
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.Close, contentDescription = null)
+                        Icon(Icons.Filled.Close, contentDescription = null, modifier = Modifier.size(if (isCompact) 20.dp else 24.dp))
                         Spacer(modifier = Modifier.width(UiConstants.HALF_SMALL_PADDING))
-                        Text(stringResource(R.string.stop))
+                        Text(
+                            stringResource(R.string.stop),
+                            style = if (isCompact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
             }

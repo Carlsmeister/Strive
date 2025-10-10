@@ -37,7 +37,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import se.umu.calu0217.strive.R
-import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.ui.screens.explore.ExploreScreen
 import se.umu.calu0217.strive.ui.screens.history.HistoryScreen
 import se.umu.calu0217.strive.ui.screens.profile.ProfileScreen
@@ -54,6 +53,10 @@ import se.umu.calu0217.strive.ui.theme.EnergeticOrange
 import se.umu.calu0217.strive.ui.theme.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.activity.compose.BackHandler
+import se.umu.calu0217.strive.core.utils.isLandscape
+import se.umu.calu0217.strive.core.utils.isCompactScreen
+import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
+import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
 
 /**
  * Main application composable for the Strive fitness app.
@@ -77,6 +80,8 @@ fun StriveApp() {
     val navController = rememberNavController()
     var showStartDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val isLandscape = isLandscape()
+    val isCompact = isCompactScreen()
 
     val items = listOf(
         BottomDestination("explore", stringResource(R.string.nav_explore), Icons.Outlined.FitnessCenter),
@@ -98,18 +103,24 @@ fun StriveApp() {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    // Logo with text
+                    // Logo with text - reduced size for more compact navbar
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.app_logo_with_no_bg),
                             contentDescription = stringResource(R.string.app_name),
-                            modifier = Modifier.size(UiConstants.LARGE_ICON_SIZE),
+                            modifier = Modifier.size(
+                                if (isCompact || isLandscape) 28.dp else 36.dp  // Reduced from 32dp/48dp
+                            ),
                         )
                         Text(
                             "TRIVE",
                             fontWeight = FontWeight.Bold,
+                            style = if (isCompact || isLandscape)
+                                MaterialTheme.typography.titleMedium
+                            else
+                                MaterialTheme.typography.titleLarge
                         )
                     }
                 },
@@ -124,7 +135,8 @@ fun StriveApp() {
                     ) {
                         Icon(
                             Icons.Outlined.Person,
-                            contentDescription = stringResource(R.string.nav_profile)
+                            contentDescription = stringResource(R.string.nav_profile),
+                            modifier = Modifier.size(if (isCompact || isLandscape) 20.dp else 22.dp)  // Reduced from 24dp
                         )
                     }
                 }
@@ -132,16 +144,29 @@ fun StriveApp() {
         },
         bottomBar = {
             Box {
-                NavigationBar {
+                NavigationBar(
+                    modifier = Modifier.height(if (isCompact || isLandscape) 64.dp else 80.dp)
+                ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
 
                     // Left side items (first two)
                     items.take(2).forEach { dest ->
                         NavigationBarItem(
-                            modifier = Modifier.offset(y = (15).dp),
-                            icon = { Icon(dest.icon, contentDescription = dest.label) },
-                            label = { Text(dest.label) },
+                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                            icon = {
+                                Icon(
+                                    dest.icon,
+                                    contentDescription = dest.label,
+                                    modifier = Modifier.size(if (isCompact || isLandscape) 20.dp else AdaptiveIconSize.small)
+                                )
+                            },
+                            label = {
+                                Text(
+                                    dest.label,
+                                    style = if (isCompact || isLandscape) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+                                )
+                            },
                             selected = currentDestination?.hierarchy?.any { it.route == dest.route } == true,
                             onClick = {
                                 navController.navigate(dest.route) {
@@ -155,8 +180,8 @@ fun StriveApp() {
 
                     // Center placeholder to reserve space for the FAB
                     NavigationBarItem(
-                        modifier = Modifier.offset(y = (15).dp),
-                        icon = { Spacer(modifier = Modifier.size(UiConstants.SMALL_ICON_SIZE)) },
+                        modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                        icon = { Spacer(modifier = Modifier.size(if (isCompact || isLandscape) 20.dp else AdaptiveIconSize.small)) },
                         label = { Text("") },
                         selected = false,
                         onClick = { },
@@ -166,9 +191,20 @@ fun StriveApp() {
                     // Right side items (last two)
                     items.takeLast(2).forEach { dest ->
                         NavigationBarItem(
-                            modifier = Modifier.offset(y = (15).dp),
-                            icon = { Icon(dest.icon, contentDescription = dest.label) },
-                            label = { Text(dest.label) },
+                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                            icon = {
+                                Icon(
+                                    dest.icon,
+                                    contentDescription = dest.label,
+                                    modifier = Modifier.size(if (isCompact || isLandscape) 20.dp else AdaptiveIconSize.small)
+                                )
+                            },
+                            label = {
+                                Text(
+                                    dest.label,
+                                    style = if (isCompact || isLandscape) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
+                                )
+                            },
                             selected = currentDestination?.hierarchy?.any { it.route == dest.route } == true,
                             onClick = {
                                 navController.navigate(dest.route) {
@@ -188,9 +224,14 @@ fun StriveApp() {
                     shape = CircleShape,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .offset(y = (-15).dp)
+                        .offset(y = if (isCompact || isLandscape) 0.dp else (-5).dp)
+                        .size(if (isCompact || isLandscape) 48.dp else 56.dp)
                 ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start))
+                    Icon(
+                        Icons.Filled.PlayArrow,
+                        contentDescription = stringResource(R.string.start),
+                        modifier = Modifier.size(if (isCompact || isLandscape) 24.dp else 32.dp)
+                    )
                 }
 
                 if (showStartDialog) {
@@ -203,7 +244,7 @@ fun StriveApp() {
                                 Image(
                                     painter = painterResource(id = R.drawable.app_logo_with_no_bg),
                                     contentDescription = stringResource(R.string.app_name),
-                                    modifier = Modifier.size(UiConstants.LARGE_ICON_SIZE),
+                                    modifier = Modifier.size(AdaptiveIconSize.large),
                                 )
                                 Text(
                                     "TRIVE",
@@ -223,7 +264,7 @@ fun StriveApp() {
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center
                                 )
-                                Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
+                                Spacer(modifier = Modifier.height(AdaptiveSpacing.standard))
                                 Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceEvenly) {
                                     Button(onClick = {
                                         showStartDialog = false
@@ -234,10 +275,10 @@ fun StriveApp() {
                                         }
                                     }) {
                                         Icon(Icons.Outlined.FitnessCenter, contentDescription = null)
-                                        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                                        Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
                                         Text(stringResource(R.string.gym))
                                     }
-                                    Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
+                                    Spacer(modifier = Modifier.height(AdaptiveSpacing.small))
                                     OutlinedButton(onClick = {
                                         showStartDialog = false
                                         navController.navigate("run") {
@@ -247,24 +288,27 @@ fun StriveApp() {
                                         }
                                     }) {
                                         Icon(Icons.AutoMirrored.Outlined.DirectionsRun, contentDescription = null)
-                                        Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                                        Spacer(modifier = Modifier.width(AdaptiveSpacing.small))
                                         Text(stringResource(R.string.run))
                                     }
                                 }
-
                             }
                         },
                         confirmButton = {},
-                        dismissButton = {}
+                        dismissButton = {
+                            TextButton(onClick = { showStartDialog = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        }
                     )
                 }
             }
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = "explore",
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(paddingValues)
         ) {
             composable("explore") {
                 ExploreScreen()

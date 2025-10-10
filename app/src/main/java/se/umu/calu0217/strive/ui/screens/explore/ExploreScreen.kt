@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -16,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.core.utils.getGridColumns
+import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.ui.components.AddToTemplateDialog
 import se.umu.calu0217.strive.ui.components.ErrorCard
@@ -49,19 +52,42 @@ fun ExploreScreen(
         var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
         var exerciseToAddToTemplate by remember { mutableStateOf<Exercise?>(null) }
 
-        // Search Bar
-        ExploreSearchBar(
-            value = searchQuery,
-            onValueChange = viewModel::updateSearchQuery
-        )
+        val isLandscape = isLandscape()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Search Bar and Filter Chips - layout depends on orientation
+        if (isLandscape) {
+            // Landscape: Search bar and filters on the same row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ExploreSearchBar(
+                    value = searchQuery,
+                    onValueChange = viewModel::updateSearchQuery,
+                    modifier = Modifier.weight(1f)
+                )
 
-        // Filter Chips
-        ExploreFiltersRow(
-            selectedFilters = selectedFilters,
-            onToggle = viewModel::toggleFilter
-        )
+                ExploreFiltersRow(
+                    selectedFilters = selectedFilters,
+                    onToggle = viewModel::toggleFilter,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        } else {
+            // Portrait: Search bar and filters stacked vertically
+            ExploreSearchBar(
+                value = searchQuery,
+                onValueChange = viewModel::updateSearchQuery
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ExploreFiltersRow(
+                selectedFilters = selectedFilters,
+                onToggle = viewModel::toggleFilter
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -131,15 +157,17 @@ fun ExploreScreen(
 @Composable
 private fun ExploreSearchBar(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    TextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = { Text(stringResource(R.string.search_exercises_hint)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+        shape = RoundedCornerShape(16.dp)
     )
 }
 
@@ -153,15 +181,31 @@ private fun ExploreSearchBar(
 @Composable
 private fun ExploreFiltersRow(
     selectedFilters: Set<String>,
-    onToggle: (String) -> Unit
+    onToggle: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    val isLandscape = isLandscape()
+
+    LazyRow(
+        modifier = if (isLandscape) {
+            modifier.height(56.dp)
+        } else {
+            modifier
+        },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         val filters = listOf("chest", "back", "legs", "shoulders", "arms", "core")
         items(filters) { filter ->
             FilterChip(
                 selected = selectedFilters.contains(filter),
                 onClick = { onToggle(filter) },
-                label = { Text(filter.replaceFirstChar { it.uppercase() }) }
+                label = { Text(filter.replaceFirstChar { it.uppercase() }) },
+                modifier = if (isLandscape) {
+                    Modifier.height(48.dp)
+                } else {
+                    Modifier
+                }
             )
         }
     }
@@ -208,6 +252,7 @@ private fun ExploreEmptyState() {
 
 /**
  * Scrollable list of exercise cards with a custom vertical scrollbar.
+ * Uses adaptive grid layout for larger screens and landscape mode.
  *
  * @param exercises List of exercises to display.
  * @param onExerciseClick Callback invoked when an exercise card is clicked.
@@ -220,18 +265,51 @@ private fun ExploreExerciseList(
     onAddToTemplate: (Exercise) -> Unit
 ) {
     val listState = rememberLazyListState()
+    val gridColumns = getGridColumns()
+
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(end = 16.dp)
-        ) {
-            items(exercises) { exercise ->
-                ExerciseCard(
-                    exercise = exercise,
-                    onClick = { onExerciseClick(exercise) },
-                    onAddToTemplate = { onAddToTemplate(exercise) }
-                )
+        if (gridColumns == 1) {
+            // Single column for portrait on normal phones
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(end = 16.dp)
+            ) {
+                items(exercises) { exercise ->
+                    ExerciseCard(
+                        exercise = exercise,
+                        onClick = { onExerciseClick(exercise) },
+                        onAddToTemplate = { onAddToTemplate(exercise) }
+                    )
+                }
+            }
+        } else {
+            // Grid layout for landscape or larger screens
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(end = 16.dp, bottom = 16.dp)
+            ) {
+                items(exercises.chunked(gridColumns)) { rowExercises ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        rowExercises.forEach { exercise ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                ExerciseCard(
+                                    exercise = exercise,
+                                    onClick = { onExerciseClick(exercise) },
+                                    onAddToTemplate = { onAddToTemplate(exercise) }
+                                )
+                            }
+                        }
+                        // Fill empty spaces in last row
+                        repeat(gridColumns - rowExercises.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
             }
         }
         VerticalScrollbar(

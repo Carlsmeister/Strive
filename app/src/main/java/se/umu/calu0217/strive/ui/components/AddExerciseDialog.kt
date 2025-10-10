@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import se.umu.calu0217.strive.R
 import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.core.validation.InputValidator
@@ -57,7 +59,7 @@ fun AddExerciseDialog(
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
-                    label = { Text("Search exercises") },
+                    label = { Text(stringResource(R.string.search_exercises)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -97,7 +99,7 @@ fun AddExerciseDialog(
                             setsInput = it.digits(UiConstants.MAX_SETS_DIGITS)
                             setsError = InputValidator.validateSets(setsInput)
                         },
-                        label = { Text("Sets") },
+                        label = { Text(stringResource(R.string.sets)) },
                         isError = setsError != null,
                         supportingText = setsError?.let { { Text(it) } },
                         singleLine = true,
@@ -109,7 +111,7 @@ fun AddExerciseDialog(
                             repsInput = it.digits(UiConstants.MAX_REPS_DIGITS)
                             repsError = InputValidator.validateReps(repsInput)
                         },
-                        label = { Text("Reps") },
+                        label = { Text(stringResource(R.string.reps)) },
                         isError = repsError != null,
                         supportingText = repsError?.let { { Text(it) } },
                         singleLine = true,
@@ -121,7 +123,7 @@ fun AddExerciseDialog(
                             restInput = it.digits(UiConstants.MAX_REST_DIGITS)
                             restError = InputValidator.validateRestTime(restInput)
                         },
-                        label = { Text("Rest (s)") },
+                        label = { Text(stringResource(R.string.rest_seconds_label)) },
                         isError = restError != null,
                         supportingText = restError?.let { { Text(it) } },
                         singleLine = true,
@@ -141,12 +143,12 @@ fun AddExerciseDialog(
                     onAdd(ex, sets, reps, rest)
                 }
             ) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

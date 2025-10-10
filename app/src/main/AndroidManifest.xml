@@ -31,9 +31,7 @@
             android:name="se.umu.calu0217.strive.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Strive"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

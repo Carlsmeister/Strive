@@ -38,7 +38,7 @@ fun ExerciseDetailDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
         title = { Text(exercise.name) },
         text = {
@@ -151,7 +151,7 @@ fun AddToTemplateDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add ${exercise.name} to Template") },
+        title = { Text(stringResource(R.string.add_to_template_title, exercise.name)) },
         text = {
             Column(
                 modifier = Modifier
@@ -249,7 +249,7 @@ fun AddToTemplateDialog(
                 TextButton(
                     onClick = { showCreateTemplateDialog = true }
                 ) {
-                    Text("New Template")
+                    Text(stringResource(R.string.new_template))
                 }
 
                 Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
@@ -268,7 +268,7 @@ fun AddToTemplateDialog(
                     },
                     enabled = selectedTemplateId != null
                 ) {
-                    Text("Add to Template")
+                    Text(stringResource(R.string.add_to_template))
                 }
             }
         },

@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -108,8 +110,11 @@ fun ActiveWorkoutScreen(
             // Add exercise + controls row
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
+
                 // Add exercise (compact) aligned to start (left)
                 FilledTonalButton(
                     onClick = { showAddDialog = true },
@@ -124,7 +129,45 @@ fun ActiveWorkoutScreen(
                 // Push controls to the far right
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Right-aligned controls group removed; merged into bottom split FAB
+                if (isLandscape) {
+
+                    // In landscape mode, show Complete/Stop buttons here
+                    val completeEnabled = template.exercises.any { te ->
+                        (0 until te.sets).all { setIndex ->
+                            uiState.completedSets.containsKey("${te.exerciseId}_$setIndex")
+                        }
+                    }
+
+                    Button(
+                        onClick = { showCongratsDialog = true },
+                        enabled = completeEnabled,
+                        contentPadding = PaddingValues(
+                            horizontal = UiConstants.MEDIUM_PADDING,
+                            vertical = UiConstants.SMALL_PADDING
+                        ),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(stringResource(R.string.complete_set), style = MaterialTheme.typography.bodySmall)
+                    }
+
+                    Button(
+                        onClick = { viewModel.finishWorkoutAuto(onNavigateBack) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        ),
+                        contentPadding = PaddingValues(
+                            horizontal = UiConstants.MEDIUM_PADDING,
+                            vertical = UiConstants.SMALL_PADDING
+                        ),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Icon(Icons.Filled.Close, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(stringResource(R.string.stop), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(UiConstants.MEDIUM_PADDING))
 
@@ -171,20 +214,23 @@ fun ActiveWorkoutScreen(
             }
         }
 
-        // Bottom-center split Complete|Stop button (FAB-like)
-        val completeEnabled = template.exercises.any { te ->
-            (0 until te.sets).all { setIndex ->
-                uiState.completedSets.containsKey("${te.exerciseId}_$setIndex")
+        // Bottom-center split Complete|Stop button (FAB-like) - only show in portrait
+        val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
+        if (!isLandscape) {
+            val completeEnabled = template.exercises.any { te ->
+                (0 until te.sets).all { setIndex ->
+                    uiState.completedSets.containsKey("${te.exerciseId}_$setIndex")
+                }
             }
+            SplitActionFab(
+                onComplete = { showCongratsDialog = true },
+                onStop = { viewModel.finishWorkoutAuto(onNavigateBack) },
+                completeEnabled = completeEnabled,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(UiConstants.STANDARD_PADDING)
+            )
         }
-        SplitActionFab(
-            onComplete = { showCongratsDialog = true },
-            onStop = { viewModel.finishWorkoutAuto(onNavigateBack) },
-            completeEnabled = completeEnabled,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(UiConstants.STANDARD_PADDING)
-        )
 
     }
 
@@ -202,13 +248,13 @@ fun ActiveWorkoutScreen(
     if (showCongratsDialog) {
         AlertDialog(
             onDismissRequest = { showCongratsDialog = false },
-            title = { Text("Well done!🎉") },
-            text = { Text("One step closer to your goal!🚀") },
+            title = { Text(stringResource(R.string.well_done)) },
+            text = { Text(stringResource(R.string.one_step_closer)) },
             confirmButton = {
                 TextButton(onClick = {
                     showCongratsDialog = false
                     viewModel.finishWorkoutAuto(onNavigateBack)
-                }) { Text("Continue") }
+                }) { Text(stringResource(R.string.continue_text)) }
             }
         )
     }

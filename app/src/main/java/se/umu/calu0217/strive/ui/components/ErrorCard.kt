@@ -59,11 +59,11 @@ fun ErrorCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = onDismiss) {
-                    Text("Dismiss")
+                    Text(stringResource(R.string.dismiss))
                 }
                 Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                 Button(onClick = onRetry) {
-                    Text("Try Again")
+                    Text(stringResource(R.string.try_again))
                 }
                 Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
                 Button(

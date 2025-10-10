@@ -3,6 +3,7 @@ package se.umu.calu0217.strive.ui.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -203,94 +204,184 @@ fun DailyMacrosCard(
 ) {
     var weightError by remember { mutableStateOf<String?>(null) }
     var heightError by remember { mutableStateOf<String?>(null) }
+    val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(UiConstants.STANDARD_PADDING)) {
             Text(stringResource(R.string.daily_macros), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Inputs row 1: Weight, Height
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = weightText,
-                    onValueChange = {
-                        onWeightChange(it)
-                        weightError = validateWeight(it)
-                    },
-                    label = { Text(stringResource(R.string.weight_kg)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true,
-                    isError = weightError != null,
-                    supportingText = weightError?.let { { Text(it) } },
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = heightCm,
-                    onValueChange = {
-                        onHeightChange(it)
-                        heightError = validateHeight(it)
-                    },
-                    label = { Text(stringResource(R.string.height_cm)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    isError = heightError != null,
-                    supportingText = heightError?.let { { Text(it) } },
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            if (isLandscape) {
+                // Landscape: 3-column compact layout
+                // Row 1: Weight, Height, Age
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = weightText,
+                        onValueChange = {
+                            onWeightChange(it)
+                            weightError = validateWeight(it)
+                        },
+                        label = { Text(stringResource(R.string.weight_kg)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        isError = weightError != null,
+                        supportingText = weightError?.let { { Text(it) } },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = heightCm,
+                        onValueChange = {
+                            onHeightChange(it)
+                            heightError = validateHeight(it)
+                        },
+                        label = { Text(stringResource(R.string.height_cm)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        isError = heightError != null,
+                        supportingText = heightError?.let { { Text(it) } },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = age,
+                        onValueChange = onAgeChange,
+                        label = { Text(stringResource(R.string.age_years)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Inputs row 2: Age, Sex
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = age,
-                    onValueChange = onAgeChange,
-                    label = { Text(stringResource(R.string.age_years)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                SegmentedButtonsSex(current = sex, onChange = onSexChange, modifier = Modifier.weight(1f))
-            }
+                // Row 2: Sex, Activity, Goal
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                        SegmentedButtonsSex(current = sex, onChange = onSexChange)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            stringResource(R.string.macro_split),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                    DropdownActivity(activity, onActivityChange, modifier = Modifier.weight(1f))
+                    DropdownGoal(goal, onGoalChange, modifier = Modifier.weight(1f))
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Inputs row 2: Activity, Goal
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                DropdownActivity(activity, onActivityChange, modifier = Modifier.weight(1f))
-                DropdownGoal(goal, onGoalChange, modifier = Modifier.weight(1f))
-            }
+                // Row 3: Protein%, Carbs%, Fat%
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = proteinPct,
+                        onValueChange = onProteinChange,
+                        label = { Text(stringResource(R.string.protein_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = carbsPct,
+                        onValueChange = onCarbsChange,
+                        label = { Text(stringResource(R.string.carbs_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = fatPct,
+                        onValueChange = onFatChange,
+                        label = { Text(stringResource(R.string.fat_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
+                // Portrait: 2-column original layout
+                // Row 1: Weight, Height
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = weightText,
+                        onValueChange = {
+                            onWeightChange(it)
+                            weightError = validateWeight(it)
+                        },
+                        label = { Text(stringResource(R.string.weight_kg)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        isError = weightError != null,
+                        supportingText = weightError?.let { { Text(it) } },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = heightCm,
+                        onValueChange = {
+                            onHeightChange(it)
+                            heightError = validateHeight(it)
+                        },
+                        label = { Text(stringResource(R.string.height_cm)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        isError = heightError != null,
+                        supportingText = heightError?.let { { Text(it) } },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Inputs row 3: Macro percentages
-            Text(stringResource(R.string.macro_split), style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = proteinPct,
-                    onValueChange = onProteinChange,
-                    label = { Text(stringResource(R.string.protein_percent)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = carbsPct,
-                    onValueChange = onCarbsChange,
-                    label = { Text(stringResource(R.string.carbs_percent)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = fatPct,
-                    onValueChange = onFatChange,
-                    label = { Text(stringResource(R.string.fat_percent)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
+                // Row 2: Age, Sex
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = age,
+                        onValueChange = onAgeChange,
+                        label = { Text(stringResource(R.string.age_years)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SegmentedButtonsSex(current = sex, onChange = onSexChange, modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Row 3: Activity, Goal
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    DropdownActivity(activity, onActivityChange, modifier = Modifier.weight(1f))
+                    DropdownGoal(goal, onGoalChange, modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Row 4: Macro percentages
+                Text(stringResource(R.string.macro_split), style = MaterialTheme.typography.titleSmall)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = proteinPct,
+                        onValueChange = onProteinChange,
+                        label = { Text(stringResource(R.string.protein_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = carbsPct,
+                        onValueChange = onCarbsChange,
+                        label = { Text(stringResource(R.string.carbs_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = fatPct,
+                        onValueChange = onFatChange,
+                        label = { Text(stringResource(R.string.fat_percent)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))

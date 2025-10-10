@@ -180,4 +180,16 @@
         <item quantity="one">%1$d rep</item>
         <item quantity="other">%1$d reps</item>
     </plurals>
+
+    <string name="well_done">Well done!🎉</string>
+    <string name="one_step_closer">One step closer to your goal!🚀</string>
+    <string name="continue_text">Continue</string>
+    <string name="workouts_tab">Workouts</string>
+    <string name="runs_tab">Runs</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="try_again">Try Again</string>
+    <string name="add_to_template_title">Add %1$s to Template</string>
+    <string name="new_template">New Template</string>
+    <string name="add_to_template">Add to Template</string>
+    <string name="rest_seconds_label">Rest (s)</string>
 </resources>
