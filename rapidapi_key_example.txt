@@ -1,3 +1,0 @@
-# Add this to your local.properties file (this file is gitignored)
-RAPIDAPI_KEY=d5bb0807a0msh22378de94690f7cp18d5ffjsn4730ee91c01c
-
