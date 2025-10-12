@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import se.umu.calu0217.strive.R
+import se.umu.calu0217.strive.domain.models.Exercise
+import se.umu.calu0217.strive.domain.models.WorkoutSession
 
 /**
  * Screen displaying workout and run history with weekly statistics.
@@ -30,6 +32,17 @@ fun HistoryScreen(
     val workoutSessions by viewModel.workoutSessions.collectAsStateWithLifecycle()
     val runSessions by viewModel.runSessions.collectAsStateWithLifecycle()
     val weeklyStats by viewModel.weeklyStats.collectAsStateWithLifecycle()
+
+    var selectedWorkoutId by remember { mutableStateOf<Long?>(null) }
+    var workoutDetails by remember { mutableStateOf<WorkoutSession?>(null) }
+    var exercisesMap by remember { mutableStateOf<Map<Long, Exercise>>(emptyMap()) }
+
+    LaunchedEffect(selectedWorkoutId) {
+        selectedWorkoutId?.let { id ->
+            workoutDetails = viewModel.getWorkoutSessionWithSets(id)
+            exercisesMap = viewModel.getExercisesMap()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -85,7 +98,7 @@ fun HistoryScreen(
                         items(workoutSessions) { session ->
                             WorkoutSessionCard(
                                 session = session,
-                                onClick = { /* No action defined */ }
+                                onClick = { selectedWorkoutId = session.id }
                             )
                         }
                     }
@@ -110,5 +123,16 @@ fun HistoryScreen(
                 }
             }
         }
+    }
+
+    workoutDetails?.let { session ->
+        WorkoutDetailsDialog(
+            session = session,
+            exercises = exercisesMap,
+            onDismiss = {
+                selectedWorkoutId = null
+                workoutDetails = null
+            }
+        )
     }
 }

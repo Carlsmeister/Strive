@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import se.umu.calu0217.strive.domain.models.RunSession
+import se.umu.calu0217.strive.domain.models.Exercise
 import se.umu.calu0217.strive.domain.models.WorkoutSession
+import se.umu.calu0217.strive.domain.repository.ExerciseRepository
 import se.umu.calu0217.strive.domain.usecases.GetAllRunSessionsUseCase
 import se.umu.calu0217.strive.domain.repository.WorkoutRepository
 import javax.inject.Inject
@@ -16,12 +16,14 @@ import javax.inject.Inject
  * Displays completed sessions and calculates weekly performance metrics.
  * @param getAllRunSessionsUseCase Use case for retrieving all run sessions.
  * @param workoutRepository Repository for workout data operations.
+ * @param exerciseRepository Repository for exercise data operations.
  * @author Carl Lundholm
  */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val getAllRunSessionsUseCase: GetAllRunSessionsUseCase,
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val exerciseRepository: ExerciseRepository
 ) : ViewModel() {
 
     private val _selectedTab = MutableStateFlow(HistoryTab.WORKOUTS)
@@ -91,6 +93,27 @@ class HistoryViewModel @Inject constructor(
         calendar.set(java.util.Calendar.SECOND, 0)
         calendar.set(java.util.Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
+    }
+
+    /**
+     * Retrieves a workout session with all its sets populated.
+     * @param sessionId ID of the session to retrieve.
+     * @return WorkoutSession with completed sets, or null if not found.
+     * @author Carl Lundholm
+     */
+    suspend fun getWorkoutSessionWithSets(sessionId: Long): WorkoutSession? {
+        val session = workoutRepository.getWorkoutSessionById(sessionId) ?: return null
+        val sets = workoutRepository.getSetsForSession(sessionId)
+        return session.copy(completedSets = sets)
+    }
+
+    /**
+     * Retrieves all exercises as a map for quick lookup.
+     * @return Map of exercise ID to Exercise.
+     * @author Carl Lundholm
+     */
+    suspend fun getExercisesMap(): Map<Long, Exercise> {
+        return exerciseRepository.getAllExercises().first().associateBy { it.id }
     }
 }
 
