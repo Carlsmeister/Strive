@@ -8,6 +8,7 @@ package se.umu.calu0217.strive.domain.models
  * @property equipment Equipment required for the exercise.
  * @property instructions Step-by-step instructions for performing the exercise.
  * @property imageUrl URL to the exercise demonstration image.
+ * @property usesWeight Whether this exercise uses external weight (false for bodyweight exercises).
  * @author Carl Lundholm
  */
 data class Exercise(
@@ -16,7 +17,8 @@ data class Exercise(
     val bodyParts: List<String>,
     val equipment: String,
     val instructions: List<String>,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val usesWeight: Boolean = true
 )
 
 /**
@@ -79,6 +81,7 @@ data class WorkoutSession(
  * @property repsDone Actual number of reps completed.
  * @property restSecPlanned Planned rest time from template (seconds).
  * @property restSecActual Actual rest time taken (seconds).
+ * @property weightKg Weight used in kilograms (null for bodyweight exercises).
  * @author Carl Lundholm
  */
 data class WorkoutSet(
@@ -88,7 +91,8 @@ data class WorkoutSet(
     val repsPlanned: Int,
     val repsDone: Int,
     val restSecPlanned: Int,
-    val restSecActual: Int
+    val restSecActual: Int,
+    val weightKg: Double? = null
 )
 
 /**

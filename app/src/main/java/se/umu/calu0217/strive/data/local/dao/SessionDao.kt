@@ -82,6 +82,29 @@ interface WorkoutSetDao {
     suspend fun insertSet(workoutSet: WorkoutSetEntity)
 
     /**
+     * Retrieves the most recent weight used for a specific exercise across all sessions.
+     *
+     * @param exerciseId The ID of the exercise.
+     * @return The most recent weight in kg, or null if no weight was recorded.
+     */
+    @Query("""
+        SELECT weightKg FROM workout_sets 
+        WHERE exerciseId = :exerciseId AND weightKg IS NOT NULL 
+        ORDER BY id DESC 
+        LIMIT 1
+    """)
+    suspend fun getLastWeightForExercise(exerciseId: Long): Double?
+
+    /**
+     * Retrieves all workout sets for a specific session.
+     *
+     * @param sessionId The ID of the workout session.
+     * @return List of workout sets in the session.
+     */
+    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY exerciseId, setIndex")
+    suspend fun getSetsForSession(sessionId: Long): List<WorkoutSetEntity>
+
+    /**
      * Deletes all workout sets from the database.
      */
     @Query("DELETE FROM workout_sets")

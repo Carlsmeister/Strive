@@ -33,6 +33,8 @@ import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.core.utils.isCompactScreen
 import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
 import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 
 /**
  * Header card displaying workout session information.
@@ -346,7 +348,8 @@ fun ExerciseCard(
     canMoveDown: Boolean,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
-    onCompleteSet: (Int, Int) -> Unit
+    onCompleteSet: (Int, Int, Double?) -> Unit,
+    lastWeightForExercise: Double? = null
 ) {
     var showRepsDialog by remember { mutableStateOf<Int?>(null) }
     var showInfoDialog by remember { mutableStateOf(false) }
@@ -431,6 +434,11 @@ fun ExerciseCard(
 
     showRepsDialog?.let { setIndex ->
         var repsInput by remember { mutableStateOf(templateExercise.reps.toString()) }
+        var weightInput by remember {
+            mutableStateOf(
+                lastWeightForExercise?.toString() ?: ""
+            )
+        }
 
         AlertDialog(
             onDismissRequest = { showRepsDialog = null },
@@ -443,8 +451,29 @@ fun ExerciseCard(
                         value = repsInput,
                         onValueChange = { repsInput = it },
                         label = { Text(stringResource(R.string.reps_completed)) },
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
+
+                    if (exercise.usesWeight) {
+                        Spacer(modifier = Modifier.height(UiConstants.MEDIUM_PADDING))
+                        OutlinedTextField(
+                            value = weightInput,
+                            onValueChange = { weightInput = it },
+                            label = { Text("Weight (kg)") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            placeholder = { Text("Enter weight") }
+                        )
+                        if (lastWeightForExercise != null) {
+                            Text(
+                                text = "Last: $lastWeightForExercise kg",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
                 }
             },
             confirmButton = {
@@ -452,7 +481,8 @@ fun ExerciseCard(
                     enabled = !isRestMode,
                     onClick = {
                         val reps = repsInput.toIntOrNull() ?: templateExercise.reps
-                        onCompleteSet(setIndex, reps)
+                        val weight = if (exercise.usesWeight) weightInput.toDoubleOrNull() else null
+                        onCompleteSet(setIndex, reps, weight)
                         showRepsDialog = null
                     }
                 ) {

@@ -124,9 +124,10 @@ interface WorkoutRepository {
      * @param setIndex Index of the set (0-based).
      * @param repsDone Number of reps completed.
      * @param restSecActual Actual rest time taken in seconds.
+     * @param weightKg Weight used in kilograms (optional).
      * @author Carl Lundholm
      */
-    suspend fun completeSet(sessionId: Long, exerciseId: Long, setIndex: Int, repsDone: Int, restSecActual: Int)
+    suspend fun completeSet(sessionId: Long, exerciseId: Long, setIndex: Int, repsDone: Int, restSecActual: Int, weightKg: Double? = null)
 
     /**
      * Finishes a workout session and records calories burned.
@@ -150,6 +151,22 @@ interface WorkoutRepository {
      * @author Carl Lundholm
      */
     suspend fun getWorkoutSessionById(id: Long): WorkoutSession?
+
+    /**
+     * Retrieves the most recent weight used for a specific exercise.
+     * @param exerciseId ID of the exercise.
+     * @return The last weight in kg, or null if none was recorded.
+     * @author Carl Lundholm
+     */
+    suspend fun getLastWeightForExercise(exerciseId: Long): Double?
+
+    /**
+     * Retrieves detailed sets for a workout session.
+     * @param sessionId ID of the workout session.
+     * @return List of workout sets with all details.
+     * @author Carl Lundholm
+     */
+    suspend fun getSetsForSession(sessionId: Long): List<WorkoutSet>
 
     /**
      * Deletes all workout data including templates, sessions, and sets.

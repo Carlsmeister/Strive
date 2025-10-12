@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
  * @property equipment Equipment needed for the exercise.
  * @property instructions Step-by-step instructions for performing the exercise.
  * @property imageUrl URL to the exercise demonstration image.
+ * @property usesWeight True if the exercise involves weights, false for bodyweight exercises.
  * @author Carl Lundholm
  */
 @Entity(tableName = "exercises")
@@ -27,7 +28,8 @@ data class ExerciseEntity(
     val bodyParts: List<String>,
     val equipment: String,
     val instructions: List<String>,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val usesWeight: Boolean = true
 )
 
 /**
@@ -100,6 +102,7 @@ data class WorkoutSessionEntity(
  * @property repsDone Actual number of reps completed.
  * @property restSecPlanned Planned rest time from template (seconds).
  * @property restSecActual Actual rest time taken (seconds).
+ * @property weightKg Weight used in kilograms (null for bodyweight exercises).
  * @author Carl Lundholm
  */
 @Entity(tableName = "workout_sets")
@@ -112,7 +115,8 @@ data class WorkoutSetEntity(
     val repsPlanned: Int,
     val repsDone: Int,
     val restSecPlanned: Int,
-    val restSecActual: Int
+    val restSecActual: Int,
+    val weightKg: Double? = null
 )
 
 /**
