@@ -451,8 +451,7 @@ fun RunSummaryDialog(
     distance: Double,
     elapsedTime: Int,
     pace: Double,
-    onDismiss: () -> Unit,
-    onViewDetails: () -> Unit
+    onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -467,11 +466,6 @@ fun RunSummaryDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onViewDetails) {
-                Text(stringResource(R.string.view_details))
-            }
-        },
-        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.close))
             }

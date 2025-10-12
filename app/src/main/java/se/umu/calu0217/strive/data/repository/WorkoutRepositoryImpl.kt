@@ -135,7 +135,7 @@ class WorkoutRepositoryImpl @Inject constructor(
         return workoutSessionDao.getActiveSession()?.toDomainModel(emptyList())
     }
 
-    override suspend fun completeSet(sessionId: Long, exerciseId: Long, setIndex: Int, repsDone: Int, restSecActual: Int) {
+    override suspend fun completeSet(sessionId: Long, exerciseId: Long, setIndex: Int, repsDone: Int, restSecActual: Int, weightKg: Double?) {
         val workoutSet = WorkoutSetEntity(
             sessionId = sessionId,
             exerciseId = exerciseId,
@@ -143,7 +143,8 @@ class WorkoutRepositoryImpl @Inject constructor(
             repsPlanned = 0,
             repsDone = repsDone,
             restSecPlanned = 0,
-            restSecActual = restSecActual
+            restSecActual = restSecActual,
+            weightKg = weightKg
         )
         workoutSetDao.insertSet(workoutSet)
     }
@@ -174,5 +175,13 @@ class WorkoutRepositoryImpl @Inject constructor(
         workoutSessionDao.deleteAllSessions()
         templateExerciseDao.deleteAllTemplateExercises()
         workoutTemplateDao.deleteAllTemplates()
+    }
+
+    override suspend fun getLastWeightForExercise(exerciseId: Long): Double? {
+        return workoutSetDao.getLastWeightForExercise(exerciseId)
+    }
+
+    override suspend fun getSetsForSession(sessionId: Long): List<WorkoutSet> {
+        return workoutSetDao.getSetsForSession(sessionId).map { it.toDomainModel() }
     }
 }

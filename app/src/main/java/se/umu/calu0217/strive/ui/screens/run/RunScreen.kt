@@ -161,7 +161,6 @@ fun RunScreen(
             elapsedTime = uiState.elapsedTime,
             pace = uiState.pace,
             onDismiss = viewModel::dismissSummary,
-            onViewDetails = {}
         )
     }
 

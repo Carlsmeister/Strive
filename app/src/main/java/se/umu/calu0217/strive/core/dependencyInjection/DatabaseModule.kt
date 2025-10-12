@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import se.umu.calu0217.strive.data.local.StriveDatabase
 import se.umu.calu0217.strive.data.local.dao.*
+import se.umu.calu0217.strive.data.local.migrations.MIGRATION_3_4
 import javax.inject.Singleton
 
 /**
@@ -35,6 +36,7 @@ object DatabaseModule {
             StriveDatabase::class.java,
             StriveDatabase.DATABASE_NAME
         )
+            .addMigrations(MIGRATION_3_4)
             .fallbackToDestructiveMigration()
             .build()
     }

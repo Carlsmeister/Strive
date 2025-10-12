@@ -2,6 +2,7 @@ package se.umu.calu0217.strive.data.mappers
 
 import se.umu.calu0217.strive.data.local.entities.TemplateExerciseEntity
 import se.umu.calu0217.strive.data.local.entities.WorkoutSessionEntity
+import se.umu.calu0217.strive.data.local.entities.WorkoutSetEntity
 import se.umu.calu0217.strive.data.local.entities.WorkoutTemplateEntity
 import se.umu.calu0217.strive.domain.models.TemplateExercise
 import se.umu.calu0217.strive.domain.models.WorkoutSession
@@ -65,3 +66,19 @@ fun TemplateExerciseEntity.toDomainModel(): TemplateExercise =
         position = position
     )
 
+/**
+ * Converts a WorkoutSetEntity from the database to a domain model.
+ * @return WorkoutSet domain model.
+ * @author Carl Lundholm
+ */
+fun WorkoutSetEntity.toDomainModel(): WorkoutSet =
+    WorkoutSet(
+        sessionId = sessionId,
+        exerciseId = exerciseId,
+        setIndex = setIndex,
+        repsPlanned = repsPlanned,
+        repsDone = repsDone,
+        restSecPlanned = restSecPlanned,
+        restSecActual = restSecActual,
+        weightKg = weightKg
+    )

@@ -21,7 +21,7 @@ import se.umu.calu0217.strive.data.local.entities.*
         RunSessionEntity::class,
         RunPointEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)

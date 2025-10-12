@@ -111,7 +111,7 @@ fun ActiveWorkoutScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val isLandscape = se.umu.calu0217.strive.core.utils.isLandscape()
+                val isLandscape = isLandscape()
 
                 FilledTonalButton(
                     onClick = { showAddDialog = true },
@@ -189,6 +189,14 @@ fun ActiveWorkoutScreen(
                     itemsIndexed(template.exercises) { index, templateExercise ->
                         val exercise = uiState.exercises.find { it.id == templateExercise.exerciseId }
                         if (exercise != null) {
+                            var lastWeight by remember { mutableStateOf<Double?>(null) }
+
+                            LaunchedEffect(exercise.id) {
+                                if (exercise.usesWeight) {
+                                    lastWeight = viewModel.getLastWeightForExercise(exercise.id)
+                                }
+                            }
+
                             ExerciseCard(
                                 exercise = exercise,
                                 templateExercise = templateExercise,
@@ -198,9 +206,10 @@ fun ActiveWorkoutScreen(
                                 canMoveDown = index < template.exercises.size - 1,
                                 onMoveUp = { viewModel.moveExerciseUp(index) },
                                 onMoveDown = { viewModel.moveExerciseDown(index) },
-                                onCompleteSet = { setIndex, reps ->
-                                    viewModel.completeSet(exercise.id, setIndex, reps)
-                                }
+                                onCompleteSet = { setIndex, reps, weightKg ->
+                                    viewModel.completeSet(exercise.id, setIndex, reps, weightKg)
+                                },
+                                lastWeightForExercise = lastWeight
                             )
                         }
                     }

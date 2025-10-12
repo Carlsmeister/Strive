@@ -16,7 +16,8 @@ fun ExerciseEntity.toDomainModel(): Exercise {
         bodyParts = bodyParts,
         equipment = equipment,
         instructions = instructions,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        usesWeight = usesWeight
     )
 }
 
@@ -33,12 +34,18 @@ fun ExerciseDto.toEntity(): ExerciseEntity {
         this.images.isNotEmpty() -> this.images.first()
         else -> null
     }
+
+    val usesWeight = equipment.lowercase().let { equip ->
+        equip !in listOf("body weight", "bodyweight", "body only", "none", "assisted")
+    }
+
     return ExerciseEntity(
         id = this.id.hashCode().toLong(),
         name = this.name,
         bodyParts = listOf(this.bodyPart, this.target) + this.secondaryMuscles.takeIf { it.isNotEmpty() }.orEmpty(),
         equipment = this.equipment,
         instructions = this.instructions.ifEmpty { listOf("No instructions provided.") },
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        usesWeight = usesWeight
     )
 }

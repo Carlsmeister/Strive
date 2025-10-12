@@ -135,9 +135,10 @@ class ActiveWorkoutViewModel @Inject constructor(
      * @param exerciseId ID of the exercise being performed.
      * @param setIndex Index of the set being completed (0-based).
      * @param repsDone Number of repetitions completed in this set.
+     * @param weightKg Weight used in kilograms (optional).
      * @author Carl Lundholm
      */
-    fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int) {
+    fun completeSet(exerciseId: Long, setIndex: Int, repsDone: Int, weightKg: Double? = null) {
         viewModelScope.launch {
             try {
                 if (_uiState.value.isRestMode) {
@@ -153,7 +154,8 @@ class ActiveWorkoutViewModel @Inject constructor(
                     exerciseId = exerciseId,
                     setIndex = setIndex,
                     repsDone = repsDone,
-                    restSecActual = templateExercise.restSec
+                    restSecActual = templateExercise.restSec,
+                    weightKg = weightKg
                 )
 
                 val setKey = "${exerciseId}_${setIndex}"
@@ -318,5 +320,15 @@ class ActiveWorkoutViewModel @Inject constructor(
                 _uiState.update { it.copy(error = "Failed to finish workout: ${e.message}") }
             }
         }
+    }
+
+    /**
+     * Retrieves the last weight used for a specific exercise.
+     * @param exerciseId ID of the exercise.
+     * @return The last weight in kg, or null if none was recorded.
+     * @author Carl Lundholm
+     */
+    suspend fun getLastWeightForExercise(exerciseId: Long): Double? {
+        return workoutRepository.getLastWeightForExercise(exerciseId)
     }
 }
