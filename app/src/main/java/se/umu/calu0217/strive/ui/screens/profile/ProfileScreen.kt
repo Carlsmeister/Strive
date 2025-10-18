@@ -62,7 +62,7 @@ fun ProfileScreen(
     val scope = rememberCoroutineScope()
 
     var userWeight by rememberSaveable { mutableStateOf("70.0") }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = onNavigateBack != null) {
         onNavigateBack?.invoke()

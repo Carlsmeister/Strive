@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -396,8 +398,8 @@ private fun TemplateEditorDialog(
     onDismiss: () -> Unit,
     onSave: (WorkoutTemplate) -> Unit
 ) {
-    var nameText by remember(template.id) { mutableStateOf(template.name) }
-    val items = remember(template.id) {
+    var nameText by rememberSaveable { mutableStateOf(template.name) }
+    val items = rememberSaveable(saver = templateExerciseListSaver()) {
         mutableStateListOf<TemplateExercise>().apply {
             addAll(template.exercises.sortedBy { it.position })
         }
@@ -407,7 +409,7 @@ private fun TemplateEditorDialog(
         return availableExercises.firstOrNull { it.id == exId }?.name ?: "Exercise #$exId"
     }
 
-    var showAddExerciseDialog by remember { mutableStateOf(false) }
+    var showAddExerciseDialog by rememberSaveable { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -582,3 +584,27 @@ private fun TemplateEditorDialog(
         )
     }
 }
+
+/**
+ * Saver for TemplateExercise list to preserve across configuration changes
+ */
+private fun templateExerciseListSaver() = listSaver<MutableList<TemplateExercise>, List<Any>>(
+    save = { list ->
+        list.map { te ->
+            listOf(te.exerciseId, te.sets, te.reps, te.restSec, te.position)
+        }
+    },
+    restore = { savedList ->
+        savedList.map { item ->
+            @Suppress("UNCHECKED_CAST")
+            val values = item
+            TemplateExercise(
+                exerciseId = values[0] as Long,
+                sets = values[1] as Int,
+                reps = values[2] as Int,
+                restSec = values[3] as Int,
+                position = values[4] as Int
+            )
+        }.toMutableList()
+    }
+)

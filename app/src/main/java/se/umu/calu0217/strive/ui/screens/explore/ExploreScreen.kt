@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -48,8 +49,11 @@ fun ExploreScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
-        var exerciseToAddToTemplate by remember { mutableStateOf<Exercise?>(null) }
+        var selectedExerciseId by rememberSaveable { mutableStateOf<Long?>(null) }
+        var exerciseToAddToTemplateId by rememberSaveable { mutableStateOf<Long?>(null) }
+
+        val selectedExercise = exercises.firstOrNull { it.id == selectedExerciseId }
+        val exerciseToAddToTemplate = exercises.firstOrNull { it.id == exerciseToAddToTemplateId }
 
         val isLandscape = isLandscape()
 
@@ -105,36 +109,36 @@ fun ExploreScreen(
             else -> {
                 ExploreExerciseList(
                     exercises = exercises,
-                    onExerciseClick = { exercise -> selectedExercise = exercise },
-                    onAddToTemplate = { exercise -> exerciseToAddToTemplate = exercise }
+                    onExerciseClick = { exercise -> selectedExerciseId = exercise.id },
+                    onAddToTemplate = { exercise -> exerciseToAddToTemplateId = exercise.id }
                 )
             }
         }
 
         if (selectedExercise != null) {
             ExerciseDetailDialog(
-                exercise = selectedExercise!!,
-                onDismiss = { selectedExercise = null }
+                exercise = selectedExercise,
+                onDismiss = { selectedExerciseId = null }
             )
         }
 
         if (exerciseToAddToTemplate != null) {
             AddToTemplateDialog(
-                exercise = exerciseToAddToTemplate!!,
-                onDismiss = { exerciseToAddToTemplate = null },
+                exercise = exerciseToAddToTemplate,
+                onDismiss = { exerciseToAddToTemplateId = null },
                 onAddToTemplate = { templateId, sets, reps, restSec ->
                     viewModel.addExerciseToTemplate(
-                        exerciseToAddToTemplate!!.id,
+                        exerciseToAddToTemplate.id,
                         templateId,
                         sets,
                         reps,
                         restSec
                     )
-                    exerciseToAddToTemplate = null
+                    exerciseToAddToTemplateId = null
                 },
                 onCreateNewTemplate = { templateName ->
-                    viewModel.createNewTemplate(templateName, exerciseToAddToTemplate!!.id)
-                    exerciseToAddToTemplate = null
+                    viewModel.createNewTemplate(templateName, exerciseToAddToTemplate.id)
+                    exerciseToAddToTemplateId = null
                 }
             )
         }

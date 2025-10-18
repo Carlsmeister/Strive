@@ -3,6 +3,7 @@ package se.umu.calu0217.strive.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import se.umu.calu0217.strive.core.validation.InputValidator
@@ -23,8 +24,8 @@ fun TextInputDialog(
     onConfirm: (String) -> Unit,
     validateInput: ((String) -> String?)? = null
 ) {
-    var inputText by remember { mutableStateOf(initialValue) }
-    var errorText by remember { mutableStateOf<String?>(null) }
+    var inputText by rememberSaveable { mutableStateOf(initialValue) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,

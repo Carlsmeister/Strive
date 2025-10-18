@@ -356,11 +356,12 @@ fun FloatingRunControls(
     onActivitySelected: (ActivityType) -> Unit,
     onStartRun: () -> Unit,
     onStopRun: () -> Unit,
-    gpsReady: Boolean
+    gpsStatus: GpsStatus
 ) {
     val bg = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
     val fg = MaterialTheme.colorScheme.onPrimary
     val isLandscape = isLandscape()
+    val gpsReady = gpsStatus == GpsStatus.READY || gpsStatus == GpsStatus.SEARCHING
 
     Card(
         modifier = modifier.padding(

@@ -7,14 +7,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -135,12 +138,14 @@ fun AddToTemplateDialog(
     viewModel: ExploreViewModel = hiltViewModel()
 ) {
     val templates by viewModel.templates.collectAsStateWithLifecycle()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
-    var selectedTemplateId by remember { mutableStateOf<Long?>(null) }
-    var sets by remember { mutableStateOf("3") }
-    var reps by remember { mutableStateOf("12") }
-    var restSec by remember { mutableStateOf("60") }
-    var showCreateTemplateDialog by remember { mutableStateOf(false) }
+    var selectedTemplateId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var sets by rememberSaveable { mutableStateOf("3") }
+    var reps by rememberSaveable { mutableStateOf("12") }
+    var restSec by rememberSaveable { mutableStateOf("60") }
+    var showCreateTemplateDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadTemplates()
@@ -148,124 +153,271 @@ fun AddToTemplateDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = if (isLandscape) {
+            DialogProperties(usePlatformDefaultWidth = false)
+        } else {
+            DialogProperties()
+        },
         title = { Text(stringResource(R.string.add_to_template_title, exercise.name)) },
         text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 500.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                if (templates.isEmpty()) {
+            if (isLandscape) {
+                // Landscape layout: Two columns
+                Row(
+                    modifier = Modifier
+                        .width(700.dp)
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Left column: Template selection
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(max = 240.dp)
+                    ) {
+                        if (templates.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.no_templates_found),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.select_template),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
+                            )
+                            Column (modifier = Modifier
+                                .heightIn(max = 100.dp)
+                                .verticalScroll(rememberScrollState()),
+                            ) {
+                                templates.forEach { template ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = selectedTemplateId == template.id,
+                                            onClick = { selectedTemplateId = template.id }
+                                        )
+                                        Spacer(modifier = Modifier.width(UiConstants.EXTRA_SMALL_PADDING))
+                                        Text(
+                                            text = template.name,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.weight(1f),
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Row {
+                            TextButton(
+                                onClick = { showCreateTemplateDialog = true }
+                            ) {
+                                Text(stringResource(R.string.new_template))
+                            }
+
+                            Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+
+                            Button(
+                                onClick = {
+                                    val templateId = selectedTemplateId
+                                    val setsInt = sets.toIntOrNull() ?: 3
+                                    val repsInt = reps.toIntOrNull() ?: 12
+                                    val restSecInt = restSec.toIntOrNull() ?: 60
+
+                                    if (templateId != null) {
+                                        onAddToTemplate(templateId, setsInt, repsInt, restSecInt)
+                                    }
+                                },
+                                enabled = selectedTemplateId != null
+                            ) {
+                                Text(stringResource(R.string.add_to_template))
+                            }
+                        }
+                        TextButton(onClick = onDismiss) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    }
+
+                    // Right column: Exercise settings
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(max = 240.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.exercise_settings),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        OutlinedTextField(
+                            value = sets,
+                            onValueChange = { sets = it },
+                            label = { Text(stringResource(R.string.sets)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = reps,
+                            onValueChange = { reps = it },
+                            label = { Text(stringResource(R.string.reps)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = restSec,
+                            onValueChange = { restSec = it },
+                            label = { Text(stringResource(R.string.rest_seconds)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                        )
+                    }
+                }
+            } else {
+                // Portrait layout: Single column
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 500.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (templates.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.no_templates_found),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.select_template),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
+                        )
+                        Column (modifier = Modifier
+                            .heightIn(max = 100.dp)
+                            .verticalScroll(rememberScrollState()),
+                        ) {
+                            templates.forEach { template ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = UiConstants.EXTRA_SMALL_PADDING),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = selectedTemplateId == template.id,
+                                        onClick = { selectedTemplateId = template.id }
+                                    )
+                                    Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                                    Text(
+                                        text = template.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
+                    }
+
                     Text(
-                        text = stringResource(R.string.no_templates_found),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = UiConstants.STANDARD_PADDING)
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.select_template),
+                        text = stringResource(R.string.exercise_settings),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
                     )
 
-                    templates.forEach { template ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = UiConstants.EXTRA_SMALL_PADDING),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selectedTemplateId == template.id,
-                                onClick = { selectedTemplateId = template.id }
-                            )
-                            Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
-                            Text(
-                                text = template.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
+                    OutlinedTextField(
+                        value = sets,
+                        onValueChange = { sets = it },
+                        label = { Text(stringResource(R.string.sets)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = UiConstants.SMALL_PADDING)
+                    )
 
-                    Spacer(modifier = Modifier.height(UiConstants.STANDARD_PADDING))
+                    OutlinedTextField(
+                        value = reps,
+                        onValueChange = { reps = it },
+                        label = { Text(stringResource(R.string.reps)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = UiConstants.SMALL_PADDING)
+                    )
+
+                    OutlinedTextField(
+                        value = restSec,
+                        onValueChange = { restSec = it },
+                        label = { Text(stringResource(R.string.rest_seconds)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = UiConstants.SMALL_PADDING)
+                    )
                 }
-
-                Text(
-                    text = stringResource(R.string.exercise_settings),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = UiConstants.SMALL_PADDING)
-                )
-
-                TextField(
-                    value = sets,
-                    onValueChange = { sets = it },
-                    label = { Text(stringResource(R.string.sets)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = UiConstants.SMALL_PADDING)
-                )
-
-                TextField(
-                    value = reps,
-                    onValueChange = { reps = it },
-                    label = { Text(stringResource(R.string.reps)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = UiConstants.SMALL_PADDING)
-                )
-
-                TextField(
-                    value = restSec,
-                    onValueChange = { restSec = it },
-                    label = { Text(stringResource(R.string.rest_seconds)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = UiConstants.SMALL_PADDING)
-                )
             }
         },
         confirmButton = {
-            Row {
-                TextButton(
-                    onClick = { showCreateTemplateDialog = true }
-                ) {
-                    Text(stringResource(R.string.new_template))
-                }
+            if (!isLandscape) {
+                Row {
+                    TextButton(
+                        onClick = { showCreateTemplateDialog = true }
+                    ) {
+                        Text(stringResource(R.string.new_template))
+                    }
 
-                Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
+                    Spacer(modifier = Modifier.width(UiConstants.SMALL_PADDING))
 
-                Button(
-                    onClick = {
-                        val templateId = selectedTemplateId
-                        val setsInt = sets.toIntOrNull() ?: 3
-                        val repsInt = reps.toIntOrNull() ?: 12
-                        val restSecInt = restSec.toIntOrNull() ?: 60
+                    Button(
+                        onClick = {
+                            val templateId = selectedTemplateId
+                            val setsInt = sets.toIntOrNull() ?: 3
+                            val repsInt = reps.toIntOrNull() ?: 12
+                            val restSecInt = restSec.toIntOrNull() ?: 60
 
-                        if (templateId != null) {
-                            onAddToTemplate(templateId, setsInt, repsInt, restSecInt)
-                        }
-                    },
-                    enabled = selectedTemplateId != null
-                ) {
-                    Text(stringResource(R.string.add_to_template))
+                            if (templateId != null) {
+                                onAddToTemplate(templateId, setsInt, repsInt, restSecInt)
+                            }
+                        },
+                        enabled = selectedTemplateId != null
+                    ) {
+                        Text(stringResource(R.string.add_to_template))
+                    }
                 }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+            if (!isLandscape) {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.cancel))
+                }
             }
         }
+
     )
 
     if (showCreateTemplateDialog) {

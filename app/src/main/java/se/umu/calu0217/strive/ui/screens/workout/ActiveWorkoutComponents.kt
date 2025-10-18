@@ -34,6 +34,7 @@ import se.umu.calu0217.strive.core.utils.isCompactScreen
 import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
 import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.input.KeyboardType
 
 /**
@@ -351,8 +352,8 @@ fun ExerciseCard(
     onCompleteSet: (Int, Int, Double?) -> Unit,
     lastWeightForExercise: Double? = null
 ) {
-    var showRepsDialog by remember { mutableStateOf<Int?>(null) }
-    var showInfoDialog by remember { mutableStateOf(false) }
+    var showRepsDialog by rememberSaveable { mutableStateOf<Int?>(null) }
+    var showInfoDialog by rememberSaveable { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -433,8 +434,8 @@ fun ExerciseCard(
     }
 
     showRepsDialog?.let { setIndex ->
-        var repsInput by remember { mutableStateOf(templateExercise.reps.toString()) }
-        var weightInput by remember {
+        var repsInput by rememberSaveable { mutableStateOf(templateExercise.reps.toString()) }
+        var weightInput by rememberSaveable {
             mutableStateOf(
                 lastWeightForExercise?.toString() ?: ""
             )
