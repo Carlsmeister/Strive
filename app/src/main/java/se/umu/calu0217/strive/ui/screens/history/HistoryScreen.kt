@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +34,7 @@ fun HistoryScreen(
     val runSessions by viewModel.runSessions.collectAsStateWithLifecycle()
     val weeklyStats by viewModel.weeklyStats.collectAsStateWithLifecycle()
 
-    var selectedWorkoutId by remember { mutableStateOf<Long?>(null) }
+    var selectedWorkoutId by rememberSaveable { mutableStateOf<Long?>(null) }
     var workoutDetails by remember { mutableStateOf<WorkoutSession?>(null) }
     var exercisesMap by remember { mutableStateOf<Map<Long, Exercise>>(emptyMap()) }
 

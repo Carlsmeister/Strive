@@ -19,6 +19,7 @@ import se.umu.calu0217.strive.core.utils.PermissionUtils
 import android.content.Context
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
+import com.google.maps.android.compose.rememberCameraPositionState
 import se.umu.calu0217.strive.core.constants.UiConstants
 import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
@@ -42,16 +43,25 @@ fun RunScreen(
     ) { permissions ->
         val allGranted = permissions.values.all { it }
         if (allGranted) {
+            viewModel.setGpsReady()
+            viewModel.refreshCurrentLocation()
             viewModel.startRun()
         } else {
             viewModel.showPermissionError()
         }
     }
 
-    PermissionStatusEffect(viewModel = viewModel, context = context)
-    InitialLocationEffect(viewModel = viewModel)
+    LaunchedEffect(Unit) {
+        val hasPermissions = PermissionUtils.hasLocationPermissions(context)
+        if (hasPermissions) {
+            viewModel.setGpsReady()
+            viewModel.refreshCurrentLocation()
+        } else {
+            viewModel.setGpsNotReady()
+        }
+    }
 
-    val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
+    val cameraPositionState = rememberCameraPositionState()
     var showStopRunConfirmDialog by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = uiState.isRunning) {
@@ -135,7 +145,7 @@ fun RunScreen(
                 }
             },
             onStopRun = { viewModel.stopRun() },
-            gpsReady = uiState.gpsStatus == GpsStatus.READY
+            gpsStatus = uiState.gpsStatus
         )
 
         SnackbarHost(
@@ -199,25 +209,6 @@ private fun RunMapContainer(
         )
     } else {
         MapsApiKeyMissingNotice()
-    }
-}
-
-@Composable
-private fun PermissionStatusEffect(viewModel: RunViewModel, context: Context) {
-    LaunchedEffect(Unit) {
-        val hasPermissions = PermissionUtils.hasLocationPermissions(context)
-        if (hasPermissions) {
-            viewModel.setGpsReady()
-        } else {
-            viewModel.setGpsNotReady()
-        }
-    }
-}
-
-@Composable
-private fun InitialLocationEffect(viewModel: RunViewModel) {
-    LaunchedEffect(Unit) {
-        viewModel.refreshCurrentLocation()
     }
 }
 

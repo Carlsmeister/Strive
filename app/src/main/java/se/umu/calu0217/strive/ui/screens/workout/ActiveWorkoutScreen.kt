@@ -189,7 +189,7 @@ fun ActiveWorkoutScreen(
                     itemsIndexed(template.exercises) { index, templateExercise ->
                         val exercise = uiState.exercises.find { it.id == templateExercise.exerciseId }
                         if (exercise != null) {
-                            var lastWeight by remember { mutableStateOf<Double?>(null) }
+                            var lastWeight by rememberSaveable { mutableStateOf<Double?>(null) }
 
                             LaunchedEffect(exercise.id) {
                                 if (exercise.usesWeight) {

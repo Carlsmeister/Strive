@@ -57,6 +57,10 @@ import se.umu.calu0217.strive.core.utils.isLandscape
 import se.umu.calu0217.strive.core.utils.isCompactScreen
 import se.umu.calu0217.strive.core.utils.AdaptiveIconSize
 import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 /**
  * Main application composable for the Strive fitness app.
@@ -78,7 +82,7 @@ import se.umu.calu0217.strive.core.utils.AdaptiveSpacing
 @Composable
 fun StriveApp() {
     val navController = rememberNavController()
-    var showStartDialog by remember { mutableStateOf(false) }
+    var showStartDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val isLandscape = isLandscape()
     val isCompact = isCompactScreen()
@@ -143,17 +147,18 @@ fun StriveApp() {
             )
         },
         bottomBar = {
-            Box {
+            Box(
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+            ) {
                 NavigationBar(
                     modifier = Modifier.height(if (isCompact || isLandscape) 64.dp else 80.dp)
                 ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
 
-                    // Left side items (first two)
                     items.take(2).forEach { dest ->
                         NavigationBarItem(
-                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 8.dp else 12.dp),
                             icon = {
                                 Icon(
                                     dest.icon,
@@ -178,9 +183,8 @@ fun StriveApp() {
                         )
                     }
 
-                    // Center placeholder to reserve space for the FAB
                     NavigationBarItem(
-                        modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                        modifier = Modifier.offset(y = if (isCompact || isLandscape) 8.dp else 12.dp),
                         icon = { Spacer(modifier = Modifier.size(if (isCompact || isLandscape) 20.dp else AdaptiveIconSize.small)) },
                         label = { Text("") },
                         selected = false,
@@ -188,10 +192,9 @@ fun StriveApp() {
                         enabled = false
                     )
 
-                    // Right side items (last two)
                     items.takeLast(2).forEach { dest ->
                         NavigationBarItem(
-                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 15.dp else 15.dp),
+                            modifier = Modifier.offset(y = if (isCompact || isLandscape) 8.dp else 12.dp),
                             icon = {
                                 Icon(
                                     dest.icon,
