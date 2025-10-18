@@ -26,8 +26,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import se.umu.calu0217.strive.core.utils.PreferencesUtils.setAutoStartGpsEnabled
-import se.umu.calu0217.strive.core.utils.PreferencesUtils.isAutoStartGpsEnabled
 import se.umu.calu0217.strive.core.utils.digits
 import se.umu.calu0217.strive.ui.components.ConfirmationDialog
 import androidx.activity.compose.BackHandler
@@ -215,7 +213,6 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(UiConstants.LARGE_PADDING))
 
             val locationContext = LocalContext.current
-            var autoStartGps by remember { mutableStateOf(isAutoStartGpsEnabled(locationContext)) }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -226,22 +223,7 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(modifier = Modifier.height(UiConstants.EXTRA_SMALL_PADDING))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.start_gps_on_launch))
-                        Switch(
-                            checked = autoStartGps,
-                            onCheckedChange = {
-                                autoStartGps = it
-                                setAutoStartGpsEnabled(locationContext, it)
-                            }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(UiConstants.EXTRA_SMALL_PADDING))
+                    Spacer(modifier = Modifier.height(UiConstants.SMALL_PADDING))
                     OutlinedButton(onClick = {
                         try {
                             val intent = android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
